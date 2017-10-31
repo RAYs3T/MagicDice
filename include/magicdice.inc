@@ -11,8 +11,41 @@
 
 
 /**
- * Adds two numbers together.
+ * Register the module
  *
- * @param plugin    The modul plugin handle
+ * @param name    Full name
  */
-forward void MDRegisterModule(Handle plugin);
+native void MDRegisterModule(char[] name);
+
+/**
+ * Un-Register a module
+ */
+native void MDUnRegisterModule();
+
+/**
+ * Publishes the dice result text from the module
+ *
+ */
+native void MDPublishDiceResult(int client, char[] diceText);
+
+
+public bool MDEvaluateResult(int idx, int client){
+	Diced(client); // This should be implemented by every module
+	
+	char text[255];
+	GetDiceText(text);
+	MDPublishDiceResult(client, text);
+}
+
+
+
+public SharedPlugin __pl_magicdice =
+{
+	name = "magicdice",
+	file = "magicdice.smx",
+#if defined REQUIRE_PLUGIN
+	required = 1,
+#else
+	required = 0,
+#endif
+};

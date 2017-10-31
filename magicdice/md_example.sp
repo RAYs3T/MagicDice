@@ -19,7 +19,8 @@
 #define MODULE_PLUGIN_DESCRIPTION "The Example module as reference"
 #define MODULE_PLUGIN_WEBSITE "https://ptl-clan.de"
 
-#include ../../include/magicdice
+#include ../include/magicdice
+
 
 
 
@@ -32,7 +33,22 @@ public Plugin myinfo =
 	url = MODULE_PLUGIN_WEBSITE
 };
 
-public void OnPluginStart()
+
+public void OnAllPluginsLoaded()
 {
-	MDRegisterModule(INVALID_HANDLE);
+	MDRegisterModule("Example");
+}
+
+public void OnPluginEnd()
+{
+	MDUnRegisterModule();
+}
+
+public void Diced(int client)
+{
+	PrintToServer("Diced me (example)");
+}
+
+public void GetDiceText(char text[255]){
+	Format(text, sizeof(text), "Rolled an example!");
 }
