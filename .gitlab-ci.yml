@@ -1,6 +1,6 @@
 image: rays3t/sourcemod-plugins-builder-ci
-build:
-    stage: build_core
+build_core:
+    stage: build
     script: 
     - spcomp
     - mkdir -p package/addons/sourcemod/plugins
@@ -16,8 +16,8 @@ build:
         paths:
         - package/*
         
-        
-    stage: build_modules
+build_modules:  
+    stage: build
     script: 
     - cd magicdice
     - spcomp
