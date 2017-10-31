@@ -21,14 +21,14 @@ build_modules:
     script: 
     - cd magicdice
     - spcomp
-    - mkdir -p package/addons/sourcemod/plugins/magicdice
-    - mkdir -p package/addons/sourcemod/translations
-    - mkdir -p package/addons/sourcemod/scripting/include
-    - cp ../compiled/*.smx package/addons/sourcemod/plugins/magicdice
-    - cp *.sp package/addons/sourcemod/scripting
-    - cp -r translations/* package/addons/sourcemod/translations
-    - cp include/*.inc package/addons/sourcemod/scripting/include
-    - cd package && rm -rf *.md
+    - mkdir -p ../package/addons/sourcemod/plugins/magicdice
+    - mkdir -p ../package/addons/sourcemod/translations
+    - mkdir -p ../package/addons/sourcemod/scripting/include
+    - cp ../compiled/*.smx ../package/addons/sourcemod/plugins/magicdice
+    - cp *.sp ../package/addons/sourcemod/scripting
+    - cp -r ../translations/* ../package/addons/sourcemod/translations
+    - cp ../include/*.inc ../package/addons/sourcemod/scripting/include
+    - cd ../package && rm -rf *.md
     artifacts:
         name: "${CI_PROJECT_NAME}_modules_${CI_COMMIT_REF_NAME}"
         paths:
