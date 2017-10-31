@@ -86,6 +86,7 @@ public int Native_MDUnRegisterModule(Handle plugin, int params)
 		if(module == plugin)
 		{
 			RemoveFromArray(g_modulesArray, i);
+			ResizeArray(g_modulesArray, GetArraySize(g_modulesArray) - 1); // Shrink the array
 			PrintToServer("%s Un-Registered %s", MD_PREFIX, moduleName);	
 			break;
 		}
@@ -106,6 +107,7 @@ public int Native_MDPublishDiceResult(Handle plugin, int params)
 
 public void ProcessResult(int choosenModuleIndex, int client)
 {
+	PrintToServer("Array size: %i", GetArraySize(g_modulesArray));
 	Handle module = view_as<Handle>(GetArrayCell(g_modulesArray, choosenModuleIndex));
 	
 	// Get the function of the module
@@ -127,7 +129,7 @@ public Action OnDiceCommand(int client, int params)
 	if(!hasModules())
 	{
 		PrintToServer("%s No modules available! You should load at least one module.", MD_PREFIX);	
-		PrintToChat(client, "%s No dice results available!");
+		PrintToChat(client, "%s No dice results available!", MD_PREFIX);
 		return Plugin_Continue;
 	}
 	// TODO Replace with real random
