@@ -49,16 +49,7 @@ public void OnPluginStart()
 	RegConsoleCmd("md", OnDiceCommand);
 }
 
-//public void MDLog(const char[] format, any...)
-//{
-//
-	////Format("%s %s", MD_PREFIX, params);
-	//char buffer[300];
-	//VFormat(buffer, sizeof(buffer), format, 2);
-	////PrintToServer("%s %s", MD_PREFIX, buffer);
-//}
-
-// A new module want to be added	
+// Adds a new module to the module list
 public int Native_MDRegisterModule(Handle plugin, int params)
 {
 	char moduleName[255];
@@ -73,6 +64,7 @@ public int Native_MDRegisterModule(Handle plugin, int params)
 	PrintToServer("%s Registered %s [%s]", MD_PREFIX, moduleName, fullModuleName);	
 }
 
+// Removes a module from the module list
 public int Native_MDUnRegisterModule(Handle plugin, int params)
 {
 	char moduleName[255];
@@ -93,6 +85,7 @@ public int Native_MDUnRegisterModule(Handle plugin, int params)
 	}
 }
 
+// Called by modules, pushishes a text from the module. This text is displayed ingame
 public int Native_MDPublishDiceResult(Handle plugin, int params)
 {
 	char diceText[64];
@@ -105,6 +98,7 @@ public int Native_MDPublishDiceResult(Handle plugin, int params)
 	PrintToServer("%s %s rolled %", MD_PREFIX, clientName, diceText);
 }
 
+// Process the dice result for a roll
 public void ProcessResult(int choosenModuleIndex, int client)
 {
 	PrintToServer("Array size: %i", GetArraySize(g_modulesArray));
@@ -124,6 +118,7 @@ public void ProcessResult(int choosenModuleIndex, int client)
 	Call_Finish();	
 }
 
+// When a use rolls the dice
 public Action OnDiceCommand(int client, int params)
 {
 	if(!hasModules())
