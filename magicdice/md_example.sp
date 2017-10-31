@@ -54,16 +54,10 @@ public void OnPluginEnd()
 // This is called when a used diced this module as result
 // You can do more random operations here
 // Like select a random health value for example.
-// But report this value in GetDiceText, so the user knows what is happening
-public void Diced(int client)
+// diceText is the text reference that is displayer to the client
+// You should set a descriptive text
+public void Diced(int client, char diceText[255])
 {
+	Format(diceText, sizeof(diceText), "Rolled an example!");
 	PrintToServer("Diced me (example)");
-}
-
-// This is the result text
-// You should set a nice text, that explains what is happening
-// A good example might be:
-// You got +200 HP and slow speed
-public void GetDiceText(char text[255]){
-	Format(text, sizeof(text), "Rolled an example!");
 }

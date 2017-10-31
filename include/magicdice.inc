@@ -31,11 +31,9 @@ native void MDPublishDiceResult(int client, char[] diceText);
 
 
 public bool MDEvaluateResult(int idx, int client){
-	Diced(client); // This should be implemented by every module
-	
-	char text[255];
-	GetDiceText(text);
-	MDPublishDiceResult(client, text);
+	char diceText[255];
+	Diced(client, diceText); // This should be implemented by every module
+	MDPublishDiceResult(client, diceText);
 }
 
 
