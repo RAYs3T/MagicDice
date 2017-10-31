@@ -10,6 +10,7 @@
 
 
 
+// TODO Add module groups?
 /**
  * Register the module
  *
