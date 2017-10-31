@@ -127,6 +127,7 @@ public void ProcessResult(int choosenModuleIndex, int client)
 // When a use rolls the dice
 public Action OnDiceCommand(int client, int params)
 {
+	return Plugin_Handled;
 	if(!hasModules())
 	{
 		PrintToServer("%s No modules available! You should load at least one module.", MD_PREFIX);	
@@ -137,6 +138,35 @@ public Action OnDiceCommand(int client, int params)
 	int choosenIndex = GetRandomInt(0, GetArraySize(g_modulesArray) -1);
 	ProcessResult(choosenIndex, client);
 	return Plugin_Handled;
+}
+
+// Pickes a result depending on the probability
+public int SelectModuleByProbability(int modulePropabilities[128])
+{
+	int totalSum = 0;
+	
+	for (int i; i < sizeof(modulePropabilities); i++)
+	{	
+		totalSum += modulePropabilities[i];
+	}
+	
+	int idx = GetRandomInt(0, totalSum);
+	int sum = 0;
+	int i = 0;
+	while(sum < idx)
+	{
+		sum += modulePropabilities[i];
+		i++;
+	}
+	
+	int picked = i -1;
+	if(picked < 0){
+		picked = 0;
+	}
+#if defined DEBUG
+	PrintToServer("%s Picked result: %i | probability: %i | results: %i | overall sum: %i", MD_PREFIX, picked, modulePropabilities[picked], i, totalSum);
+#endif
+	return picked;
 }
 
 public bool hasModules()
