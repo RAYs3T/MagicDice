@@ -7,6 +7,10 @@
 #####################################################
 */
 
+// Includes
+#include <colors>
+
+
 // Code style rules
 #pragma semicolon 1
 #pragma newdecls required
