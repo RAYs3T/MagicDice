@@ -15,7 +15,7 @@
 #define MD_PLUGIN_VERSION "0.1"
 #define MD_PLUGIN_NAME "MagicDice - Modular Roll The Dice Plugin"
 #define MD_PLUGIN_AUTHOR "Kevin 'RAYs3T' Urbainczyk"
-#define MD_PLUGIN_DESCRIPTION "A Modular Roll The Dice Plugin. Supporting for on the fly feature un/re-load"
+#define MD_PLUGIN_DESCRIPTION "A Modular Roll The Dice Plugin. Supporting on the fly feature un/re-load"
 #define MD_PLUGIN_WEBSITE "https://ptl-clan.de"
 
 
