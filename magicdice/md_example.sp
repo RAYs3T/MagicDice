@@ -36,19 +36,34 @@ public Plugin myinfo =
 
 public void OnAllPluginsLoaded()
 {
+	// Registers the module at the master plugin
+	// The parameter is just for log proposes and has no real use
+	// Feel free to use a long version of the module name
 	MDRegisterModule("Example");
 }
 
 public void OnPluginEnd()
 {
+	// THIS IS IMPORTANT!
+	// DO NOT REMOVE / FORGET TO IMPLEMENT THIS IN YOUR MODULE
+	// This ensures that the plugin is unregisterd correctly, so the main plugin 
+	// can continue running smooth and fine
 	MDUnRegisterModule();
 }
 
+// This is called when a used diced this module as result
+// You can do more random operations here
+// Like select a random health value for example.
+// But report this value in GetDiceText, so the user knows what is happening
 public void Diced(int client)
 {
 	PrintToServer("Diced me (example)");
 }
 
+// This is the result text
+// You should set a nice text, that explains what is happening
+// A good example might be:
+// You got +200 HP and slow speed
 public void GetDiceText(char text[255]){
 	Format(text, sizeof(text), "Rolled an example!");
 }
