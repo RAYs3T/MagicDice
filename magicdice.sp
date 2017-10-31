@@ -100,8 +100,9 @@ public int Native_MDPublishDiceResult(Handle plugin, int params)
 	char clientName[128];
 	GetClientName(client, clientName, sizeof(clientName));
 #if defined DEBUG
-	PrintToServer("%s %s rolled %i: %s", MD_PREFIX, clientName, diceText);
+	PrintToServer("%s %s rolled %s", MD_PREFIX, clientName, diceText);
 #endif
+	CPrintToChat(client, "{green}%s {default}You rolled: {lightgreen}%s", MD_PREFIX, diceText);
 }
 
 // Process the dice result for a roll
