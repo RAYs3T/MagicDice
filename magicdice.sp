@@ -19,6 +19,15 @@
 #define MD_PLUGIN_WEBSITE "https://ptl-clan.de"
 
 
+
+#include magicdice
+
+
+#define DEBUG true
+
+char MD_PREFIX[12] = "[MagicDice]";
+
+
 public Plugin myinfo =
 {
 	name = MD_PLUGIN_NAME,
@@ -27,3 +36,24 @@ public Plugin myinfo =
 	version = MD_PLUGIN_VERSION,
 	url = MD_PLUGIN_WEBSITE
 };
+
+//public void MDLog(const char[] format, any...)
+//{
+//
+	////Format("%s %s", MD_PREFIX, params);
+	//char buffer[300];
+	//VFormat(buffer, sizeof(buffer), format, 2);
+	////PrintToServer("%s %s", MD_PREFIX, buffer);
+//}
+
+// A new module want to be added	
+public void MDRegisterModule(Handle plugin)
+{
+	char moduleName[255];
+	GetPluginInfo(plugin, PlInfo_Name, moduleName, sizeof(moduleName));
+	
+
+	PrintToServer("%s %s", MD_PREFIX, moduleName);
+
+	
+}
