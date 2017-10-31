@@ -95,13 +95,14 @@ public int Native_MDPublishDiceResult(Handle plugin, int params)
 	// TODO Show just in debug mode
 	char clientName[128];
 	GetClientName(client, clientName, sizeof(clientName));
+#if defined DEBUG
 	PrintToServer("%s %s rolled %", MD_PREFIX, clientName, diceText);
+#endif
 }
 
 // Process the dice result for a roll
 public void ProcessResult(int choosenModuleIndex, int client)
 {
-	PrintToServer("Array size: %i", GetArraySize(g_modulesArray));
 	Handle module = view_as<Handle>(GetArrayCell(g_modulesArray, choosenModuleIndex));
 	
 	// Get the function of the module
