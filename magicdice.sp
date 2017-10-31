@@ -96,7 +96,7 @@ public int Native_MDPublishDiceResult(Handle plugin, int params)
 	char clientName[128];
 	GetClientName(client, clientName, sizeof(clientName));
 #if defined DEBUG
-	PrintToServer("%s %s rolled %", MD_PREFIX, clientName, diceText);
+	PrintToServer("%s %s rolled %i: %s", MD_PREFIX, clientName, diceText);
 #endif
 }
 
