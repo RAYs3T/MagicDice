@@ -74,15 +74,13 @@ public int Native_MDUnRegisterModule(Handle plugin, int params)
 	char moduleName[255];
 	GetPluginInfo(plugin, PlInfo_Name, moduleName, sizeof(moduleName));
 	
-	// Add the plugin to our list
-	PushArrayCell(g_modulesArray, plugin);
+	// Remove the plugin from the list
 	for (int i = 0;  i < GetArraySize(g_modulesArray); i++)
 	{
 		Handle module = view_as<Handle>(GetArrayCell(g_modulesArray, i));
 		if(module == plugin)
 		{
 			RemoveFromArray(g_modulesArray, i);
-			ResizeArray(g_modulesArray, GetArraySize(g_modulesArray) - 1); // Shrink the array
 			PrintToServer("%s Un-Registered %s", MD_PREFIX, moduleName);	
 			break;
 		}
