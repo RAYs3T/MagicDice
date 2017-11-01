@@ -31,6 +31,11 @@ Handle g_modulesArray;
 
 int g_probabillities[128];
 
+// How many times has an user rolled the dice?
+int g_dices[MAXPLAYERS + 1];
+// How many times can an user roll the dice?
+int g_allowedDices[MAXPLAYERS + 1];
+
 public Plugin myinfo =
 {
 	name = MD_PLUGIN_NAME,
@@ -53,12 +58,27 @@ public void OnPluginStart()
 	g_modulesArray = CreateArray(128);
 	RegConsoleCmd("md", OnDiceCommand);
 	LoadProbabillities(g_probabillities);
-	for (int i = 0; i < sizeof(g_probabillities); i++){
-		if (g_probabillities[i] == 0){
-			break; // Reached the end of valid entries
-		}
-		PrintToServer("Result %i has prob of: %i", i, g_probabillities[i]);
-	}
+	
+	HookEvent("round_start", Event_RoundStart, EventHookMode_Post);
+	HookEvent("round_end", Event_RoundEnd, EventHookMode_Post);
+}
+
+public Action Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
+{
+	ResetDiceCounters();
+}
+
+public Action Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast)
+{
+	UpdateAllAllowedDices(0); // Block any more dices to  the end of the round
+}
+
+public void OnClientAuthorized(int client, const char[] auth)
+{
+	// When still in the round a client may leave the game
+	// However an other client could connect and get the same index as the client before
+	// so we need to clean counters and other fields
+	ResetDiceCounter(client);
 }
 
 // Adds a new module to the module list
@@ -120,9 +140,14 @@ public Action OnDiceCommand(int client, int params)
 		PrintToChat(client, "%s No dice results available!", MD_PREFIX);
 		return Plugin_Continue;
 	}
+	if(!CanPlayerDice(client)){
+		PrintToChat(client, "%s All your dices are gone! (%i) - try again in the next round!", MD_PREFIX, g_allowedDices[client]);
+		return Plugin_Handled;
+	}
 	// TODO Replace with real random
 	//int choosenIndex = GetRandomInt(0, GetArraySize(g_modulesArray) -1);
 	PickResult(client);
+	g_dices[client]++;
 	return Plugin_Handled;
 }
 
@@ -305,6 +330,36 @@ public int SelectByProbability(int modulePropabilities[128])
 	PrintToServer("%s Picked result: %i | probability: %i | results: %i | overall sum: %i", MD_PREFIX, picked, modulePropabilities[picked], i, totalSum);
 #endif
 	return picked;
+}
+
+public bool CanPlayerDice(int client)
+{
+	// TODO Check if the round is in the ending phase and block
+	if(g_dices[client] >= g_allowedDices[client]) {
+		return false;
+	}
+	
+	return true;
+}
+
+public void UpdateAllAllowedDices(int newAllowedDices)
+{
+	for (int i = 0; i < MAXPLAYERS; i++){
+		g_allowedDices[i] = newAllowedDices;
+	} 
+}
+
+public void ResetDiceCounters()
+{
+	for (int i = 0; i < MAXPLAYERS; i++){
+		ResetDiceCounter(i);
+	} 
+}
+
+public void ResetDiceCounter(int client)
+{
+		g_dices[client] = 0;
+		g_allowedDices[client] = 1; // One dice is allowed by default
 }
 
 public bool hasModules()
