@@ -30,9 +30,9 @@ native void MDUnRegisterModule();
 native void MDPublishDiceResult(int client, char[] diceText);
 
 
-public bool MDEvaluateResult(int idx, int client){
+public bool MDEvaluateResult(int idx, int client, char[] param1, char[] param2, char[] param3, char[] param4, char[] param5){
 	char diceText[255];
-	Diced(client, diceText); // This should be implemented by every module
+	Diced(client, diceText, param1, param2, param3, param4, param5); // This should be implemented by every module
 	MDPublishDiceResult(client, diceText);
 }
 

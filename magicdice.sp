@@ -23,12 +23,13 @@
 #define MD_PLUGIN_WEBSITE "https://ptl-clan.de"
 
 
-
 #define DEBUG true
 
 char MD_PREFIX[12] = "[MagicDice]";
 
 Handle g_modulesArray;
+
+int g_probabillities[128];
 
 public Plugin myinfo =
 {
@@ -51,6 +52,13 @@ public void OnPluginStart()
 {
 	g_modulesArray = CreateArray(128);
 	RegConsoleCmd("md", OnDiceCommand);
+	LoadProbabillities(g_probabillities);
+	for (int i = 0; i < sizeof(g_probabillities); i++){
+		if (g_probabillities[i] == 0){
+			break; // Reached the end of valid entries
+		}
+		PrintToServer("Result %i has prob of: %i", i, g_probabillities[i]);
+	}
 }
 
 // Adds a new module to the module list
@@ -103,29 +111,9 @@ public int Native_MDPublishDiceResult(Handle plugin, int params)
 	CPrintToChat(client, "{green}%s {default}You rolled: {lightgreen}%s", MD_PREFIX, diceText);
 }
 
-// Process the dice result for a roll
-public void ProcessResult(int choosenModuleIndex, int client)
-{
-	Handle module = view_as<Handle>(GetArrayCell(g_modulesArray, choosenModuleIndex));
-	
-	// Get the function of the module
-	Function id = GetFunctionByName(module, "MDEvaluateResult");
-	if(id == INVALID_FUNCTION){
-		// TODO Remove invalid modules
-		ThrowError("The selected result index %i is not registred. FunctionId is invalid", choosenModuleIndex);
-	}
-	
-	// Call the function in the module
-	Call_StartFunction(module, id);
-	Call_PushCell(choosenModuleIndex);
-	Call_PushCell(client);
-	Call_Finish();	
-}
-
 // When a use rolls the dice
 public Action OnDiceCommand(int client, int params)
 {
-	return Plugin_Handled;
 	if(!hasModules())
 	{
 		PrintToServer("%s No modules available! You should load at least one module.", MD_PREFIX);	
@@ -133,13 +121,165 @@ public Action OnDiceCommand(int client, int params)
 		return Plugin_Continue;
 	}
 	// TODO Replace with real random
-	int choosenIndex = GetRandomInt(0, GetArraySize(g_modulesArray) -1);
-	ProcessResult(choosenIndex, client);
+	//int choosenIndex = GetRandomInt(0, GetArraySize(g_modulesArray) -1);
+	PickResult(client);
 	return Plugin_Handled;
 }
 
+KeyValues LoadConfig()
+{
+	char file[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, file, sizeof(file), "configs/magicdice/results.cfg");
+	KeyValues kv = new KeyValues("Results");
+	kv.ImportFromFile(file);
+	return kv;
+}
+
+//TODO Add a parsing method to validate modules specified in the config
+// So we can warn the admin if any module is not loaded, but specified in the config
+
+// Load the probabillities from the config and store them in the cache array
+void LoadProbabillities(int[] probabillitiesBuffer)
+{	
+	KeyValues kv = LoadConfig();
+	if (!kv.GotoFirstSubKey())
+	{
+		ThrowError("Unable to load value inside results config. First key not found!");
+	}
+	
+	int lastResultNo = 0;
+ 
+	char resultId[255];
+	do {
+		kv.GetSectionName(resultId, sizeof(resultId));
+		int resultNo = StringToInt(resultId);
+		
+		// Result NOs need to be in the right order.
+		// We check if a result had the correct number
+		int expectedResult = lastResultNo++;
+		if(resultNo != expectedResult) {
+			ThrowError("Results are not in the correct order. Processed no: %i but expected %i", resultNo, expectedResult);
+		}
+		int probabillity = kv.GetNum("prob");
+		if(probabillity < 1 || probabillity > 10) {
+			ThrowError("Invalid probabillity (%i) specified for result: %i", probabillity, resultNo);
+		}
+		probabillitiesBuffer[resultNo] = probabillity;
+#if defined DEBUG
+		PrintToServer("Result %i with prob: %i", resultNo, probabillity);
+#endif
+	} while (kv.GotoNextKey());
+ 
+	delete kv;
+}
+
+// Picks and processes the result
+public void PickResult(int client)
+{
+	int selectedIndex = SelectByProbability(g_probabillities);
+	PrintToServer("Picked result %i", selectedIndex);
+	LoadResultDeatailsAndProcess(selectedIndex, client);
+}
+
+// Loads the responding feature parameters from the config
+// Multiple invocations of different/same features could happen here if specified in the config
+bool LoadResultDeatailsAndProcess(int resultNo, int client)
+{	
+	KeyValues kv = LoadConfig();
+ 
+	// Jump into the first subsection
+	if (!kv.GotoFirstSubKey())
+	{
+		return false;
+	}
+ 
+ 	char searchedResult[12];
+ 	IntToString(resultNo, searchedResult, sizeof(searchedResult));
+ 	
+	// Iterate over subsections at the same nesting level
+	char buffer[255];
+	do {
+		kv.GetSectionName(buffer, sizeof(buffer));
+		if(strcmp(buffer, searchedResult) == 0) {
+		
+			int probabillity = kv.GetNum("prob");
+			kv.GotoFirstSubKey(false);
+			do {
+				do {
+					char bufferFeature[255];
+					kv.GetSectionName(bufferFeature, sizeof(bufferFeature));
+					char param1[32];
+					char param2[32];
+					char param3[32];
+					char param4[32];
+					char param5[32];
+					kv.GetString("param1", param1, sizeof(param1));
+					kv.GetString("param2", param2, sizeof(param2));
+					kv.GetString("param3", param3, sizeof(param3));
+					kv.GetString("param4", param4, sizeof(param4));
+					kv.GetString("param5", param5, sizeof(param5));
+#if defined DEBUG
+					PrintToServer("Result: %s feature: %s prob: %i, p1: %s, p2: %s, p3: %s, p4: %s, p5: %s", 
+						buffer, bufferFeature, probabillity, param1, param2, param3, param4, param5);
+#endif
+						
+					Handle module = FindModuleByName(bufferFeature);
+					if(module == INVALID_HANDLE) {
+						LogError("No matching module found for name: %s", bufferFeature);
+					}
+					ProcessResult(module, resultNo, client, param1, param2, param3, param4, param5);
+				} while (kv.GotoNextKey());
+			} while (kv.GotoNextKey());
+			kv.GoBack();
+		} // Not matching the searched result
+	} while (kv.GotoNextKey());
+ 
+	delete kv;
+	return false;
+}
+
+// Searches for a module by its name
+Handle FindModuleByName(char[] searched) 
+{
+	for (int i = 0;  i < GetArraySize(g_modulesArray); i++)
+	{
+		Handle module = view_as<Handle>(GetArrayCell(g_modulesArray, i));
+		char moduleName[255];
+		GetPluginInfo(module, PlInfo_Name, moduleName, sizeof(moduleName));
+		if (strcmp(searched, moduleName) == 0){
+			return module;
+		}
+	}
+	return INVALID_HANDLE;
+}
+
+// Process the dice result for a roll
+public void ProcessResult(Handle module, int resultNo, int client, char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
+{
+	// Get the function of the module
+	Function id = GetFunctionByName(module, "MDEvaluateResult");
+	if(id == INVALID_FUNCTION){
+		// TODO Remove invalid modules
+		ThrowError("FunctionId is invalid");
+	}
+	
+	// Call the function in the module
+	Call_StartFunction(module, id);
+	Call_PushCell(resultNo);
+	Call_PushCell(client);
+	Call_PushString(param1);
+	Call_PushString(param2);
+	Call_PushString(param3);
+	Call_PushString(param4);
+	Call_PushString(param5);
+	Call_Finish();	
+}
+
+
+
+
 // Pickes a result depending on the probability
-public int SelectModuleByProbability(int modulePropabilities[128])
+public int SelectByProbability(int modulePropabilities[128])
 {
 	int totalSum = 0;
 	

@@ -22,8 +22,6 @@
 #include ../include/magicdice
 
 
-
-
 public Plugin myinfo =
 {
 	name = MODULE_PLUGIN_NAME,
@@ -44,10 +42,31 @@ public void OnPluginEnd()
 	MDUnRegisterModule();
 }
 
-public void Diced(int client, char diceText[255])
+public void Diced(int client, char diceText[255], char[] mode, char[] speedParam, char[] param3, char[] param4, char[] param5)
 {
-	float newSpeed = GetRandomFloat(0.2, 2.5);
-	SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", newSpeed);
 	
-	Format(diceText, sizeof(diceText), "Speed set to %f", newSpeed);
+	float speed = StringToFloat(speedParam);
+	if(strcmp(mode, "set") == 0) 
+	{
+		SetSpeed(client, speed);
+		Format(diceText, sizeof(diceText), "Speed set to %f", speed);
+	} else if(strcmp(mode, "add") == 0) {
+		SetSpeed(client, GetSpeed(client) + speed);
+		Format(diceText, sizeof(diceText), "Added %f of speed", speed);
+	} else if(strcmp(mode, "take") == 0) {
+		SetSpeed(client, GetSpeed(client) - speed);
+		Format(diceText, sizeof(diceText), "Took %f of speed", speed);
+	} else {
+		LogError("Unknown speed mode: %s", mode);
+	}
+}
+
+float GetSpeed(int client) 
+{
+	return GetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue");
+}
+
+void SetSpeed(int client, float newSpeed)
+{
+	SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", newSpeed);
 }

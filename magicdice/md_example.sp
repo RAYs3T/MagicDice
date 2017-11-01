@@ -56,7 +56,7 @@ public void OnPluginEnd()
 // Like select a random health value for example.
 // diceText is the text reference that is displayer to the client
 // You should set a descriptive text
-public void Diced(int client, char diceText[255])
+public void Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
 {
 	Format(diceText, sizeof(diceText), "Rolled an example!");
 	PrintToServer("Diced me (example)");
