@@ -51,6 +51,7 @@ public APLRes AskPluginLoad2(Handle plugin, bool late, char[] error, int err_max
 	CreateNative("MDRegisterModule", Native_MDRegisterModule);
 	CreateNative("MDUnRegisterModule", Native_MDUnRegisterModule);
 	CreateNative("MDPublishDiceResult", Native_MDPublishDiceResult);
+	CreateNative("MDAddAllowedDices", Native_MDAddAllowedDices);
 }
 
 public void OnPluginStart()
@@ -129,6 +130,15 @@ public int Native_MDPublishDiceResult(Handle plugin, int params)
 	PrintToServer("%s %s rolled %s", MD_PREFIX, clientName, diceText);
 #endif
 	CPrintToChat(client, "{green}%s {default}You rolled: {lightgreen}%s", MD_PREFIX, diceText);
+}
+
+// Adds additionals dices for a user
+// This can be usefull for some modules that wants to manipulate the dice counters
+public int Native_MDAddAllowedDices(Handle plugin, int params)
+{
+	int client = GetNativeCell(1);
+	int additionalDiceAmount = GetNativeCell(2);
+	g_allowedDices[client] += additionalDiceAmount;
 }
 
 // When a use rolls the dice

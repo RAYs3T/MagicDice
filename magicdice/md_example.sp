@@ -58,6 +58,8 @@ public void OnPluginEnd()
 // You should set a descriptive text
 public void Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
 {
+	MDAddAllowedDices(client, 2); // Allow the player to roll two more times!
+	
 	Format(diceText, sizeof(diceText), "Rolled an example!");
 	PrintToServer("Diced me (example)");
 }

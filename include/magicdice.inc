@@ -29,6 +29,12 @@ native void MDUnRegisterModule();
  */
 native void MDPublishDiceResult(int client, char[] diceText);
 
+/**
+ * Adds the specified amount of dices, so the user can roll x times more
+ * @param diceAmount the additional amount of dices to add
+ */
+native void MDAddAllowedDices(int client, int diceAmount);
+
 
 public bool MDEvaluateResult(int idx, int client, char[] param1, char[] param2, char[] param3, char[] param4, char[] param5){
 	char diceText[255];
