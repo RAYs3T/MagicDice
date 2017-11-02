@@ -27,7 +27,7 @@ native void MDUnRegisterModule();
  * Publishes the dice result text from the module
  *
  */
-native void MDPublishDiceResult(int client, char[] diceText);
+native void MDPublishDiceResult(int client, char[] diceText, int dicedResultNumber);
 
 /**
  * Adds the specified amount of dices, so the user can roll x times more
@@ -79,7 +79,7 @@ public int MDParseParamInt(char[] param)
 public bool MDEvaluateResult(int idx, int client, char[] param1, char[] param2, char[] param3, char[] param4, char[] param5){
 	char diceText[255];
 	Diced(client, diceText, param1, param2, param3, param4, param5); // This should be implemented by every module
-	MDPublishDiceResult(client, diceText);
+	MDPublishDiceResult(client, diceText, idx);
 }
 
 

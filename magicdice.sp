@@ -124,6 +124,7 @@ public int Native_MDPublishDiceResult(Handle plugin, int params)
 	char diceText[64];
 	int client = GetNativeCell(1);
 	GetNativeString(2, diceText, sizeof(diceText));
+	int dicedResultNumber = GetNativeCell(3);
 	
 	// TODO Show just in debug mode
 	char clientName[128];
@@ -131,7 +132,7 @@ public int Native_MDPublishDiceResult(Handle plugin, int params)
 #if defined DEBUG
 	PrintToServer("%s %s rolled %s", MD_PREFIX, clientName, diceText);
 #endif
-	CPrintToChat(client, "{green}%s {default}You rolled: {lightgreen}%s", MD_PREFIX, diceText);
+	CPrintToChat(client, "{lightgreen}%s {olive}({green}%i{olive}) {olive}%s", MD_PREFIX, dicedResultNumber, diceText);
 }
 
 // Adds additionals dices for a user
@@ -149,11 +150,12 @@ public Action OnDiceCommand(int client, int params)
 	if(!hasModules())
 	{
 		PrintToServer("%s No modules available! You should load at least one module.", MD_PREFIX);	
-		PrintToChat(client, "%s No dice results available!", MD_PREFIX);
+		CPrintToChat(client, "{lightgreen}%s {default}No dice results available!", MD_PREFIX);
 		return Plugin_Continue;
 	}
 	if(!CanPlayerDice(client)){
-		PrintToChat(client, "%s All your dices are gone! (%i) - try again in the next round!", MD_PREFIX, g_allowedDices[client]);
+		CPrintToChat(client, "{lightgreen}%s {default}All your dices are gone! ({green}%i{default}) - {green}try again in the next round!", 
+			MD_PREFIX, g_allowedDices[client]);
 		return Plugin_Handled;
 	}
 	// TODO Replace with real random
@@ -167,7 +169,7 @@ public Action OnDiceCommand(int client, int params)
 public Action OnDiceCommandFocedValue(int client, int params)
 {
 	if(params != 1) {
-		PrintToChat(client, "%s Parameter (dice number) required for fixed result test", MD_PREFIX);
+		CPrintToChat(client, "{lightgreen}%s {default}Parameter (dice number) required for fixed result test", MD_PREFIX);
 		return Plugin_Handled;
 	}
 	char buffer[255];
@@ -175,7 +177,7 @@ public Action OnDiceCommandFocedValue(int client, int params)
 	int index = StringToInt(buffer);
 	
 	if(index > sizeof(g_probabillities) || g_probabillities[index] == 0){
-		PrintToChat(client, "%s Invalid dice result: %i", MD_PREFIX, index);
+		CPrintToChat(client, "{lightgreen}%s {default}Invalid dice result: %i", MD_PREFIX, index);
 		return Plugin_Handled;
 	}
 	
@@ -283,7 +285,12 @@ bool LoadResultDeatailsAndProcess(int resultNo, int client)
 						
 					Handle module = FindModuleByName(bufferFeature);
 					if(module == INVALID_HANDLE) {
-						LogError("No matching module found for name: %s", bufferFeature);
+						LogError("No matching module found for name '%s' Is the responsible module loaded?", bufferFeature);
+						CPrintToChat(client, "{lightgreen}%s {default}Sorry, the responsive module for this result died / or was never alive at all :(", MD_PREFIX);
+						CPrintToChat(client, "{lightgreen}%s {default}...but great news! You can roll the dice one more time!", MD_PREFIX);
+						// Since we had an internal plugin failure / configuration failure, we give the user one more roll.
+						// So there is no reason to be sad :-)
+						g_allowedDices[client] += 1;
 					}
 					ProcessResult(module, resultNo, client, param1, param2, param3, param4, param5);
 				} while (kv.GotoNextKey());
