@@ -3,13 +3,18 @@ build_core:
     stage: build
     script: 
     - spcomp
-    - mkdir -p package/addons/sourcemod/plugins
-    - mkdir -p package/addons/sourcemod/translations
+    # create a package dir
+    - mkdir package
+    # Copy all resources to the package
+    - cp -r /resources/* package
+    # Create package dirs for scripting, include and plugins
     - mkdir -p package/addons/sourcemod/scripting/include
+    - mkdir -p package/addons/sourcemod/plugins
+    # copy compiled plugins, includes and scripts to package
     - cp compiled/*.smx package/addons/sourcemod/plugins
     - cp *.sp package/addons/sourcemod/scripting
-    - cp -r translations/* package/addons/sourcemod/translations
     - cp include/*.inc package/addons/sourcemod/scripting/include
+    # remove all readme files from package
     - cd package && rm -rf *.md
     artifacts:
         name: "${CI_PROJECT_NAME}_core_${CI_COMMIT_REF_NAME}"
@@ -19,11 +24,25 @@ build_core:
 build_modules:
     stage: build
     variables: 
+        # Build plugins in sub dir
         BUILD_DIR: '${CI_PROJECT_DIR}/magicdice'
     script: 
     - spcomp
+    # create a package dir
+    - mkdir package
+    # Copy all resources from magicdice modules to the package
+    - cp -r magicdice/resources/* package
+    # Create package dirs for scripting, include and plugins
+    - mkdir -p package/addons/sourcemod/scripting/include
+    - mkdir -p package/addons/sourcemod/plugins
+    # copy compiled plugins, includes and scripts to package
+    - cp compiled/*.smx package/addons/sourcemod/plugins
+    - cp *.sp package/addons/sourcemod/scripting
+    - cp include/*.inc package/addons/sourcemod/scripting/include
+    # remove all readme files from package
+    - cd package && rm -rf *.md
     artifacts:
-        name: "${CI_PROJECT_NAME}_core_${CI_COMMIT_REF_NAME}"
+        name: "${CI_PROJECT_NAME}_modules_${CI_COMMIT_REF_NAME}"
         paths:
         - package/*
         
