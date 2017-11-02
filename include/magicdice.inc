@@ -35,6 +35,46 @@ native void MDPublishDiceResult(int client, char[] diceText);
  */
 native void MDAddAllowedDices(int client, int diceAmount);
 
+public void MDReportFailure(char[] text, any ...) {
+	int len = strlen(text) + 255;
+	char[] message = new char[len];
+	VFormat(message, len, text, 2);
+	LogError("%s", message);
+}
+
+/**
+ * Complains about a missing / invalid parameter
+ * @param paramPos The position of the parameter
+ * @param paramDesc The name / description of the parameter
+ * @param invalid The invalid value the parameter had
+ */
+public void MDReportInvalidParameter(int paramPos, char[] paramDesc, char[] invalid) {
+	MDReportFailure("Parameter param%i (%s) has an invalid value (%s)", paramPos, paramDesc, invalid);
+}
+
+/**
+ * Checks if the String is set
+ * @param str The string
+ * @return true, if not empty
+ */
+public bool MDIsStringSet(char[] str)
+{
+	return !(strcmp(str, "") == 0);
+}
+
+/**
+ * Parses an integer parameter
+ * @param param the parameter to parse
+ * @return the parsed int, 0 if no param set or invalid.
+ */
+public int MDParseParamInt(char[] param)
+{
+	if(!MDIsStringSet(param)) {
+		return 0;
+	}
+	return StringToInt(param);
+}
+
 
 public bool MDEvaluateResult(int idx, int client, char[] param1, char[] param2, char[] param3, char[] param4, char[] param5){
 	char diceText[255];
