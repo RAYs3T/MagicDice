@@ -6,7 +6,7 @@ build_core:
     # create a package dir
     - mkdir package
     # Copy all resources to the package
-    - cp -r /resources/* package
+    - cp -r resources/* package
     # Create package dirs for scripting, include and plugins
     - mkdir -p package/addons/sourcemod/scripting/include
     - mkdir -p package/addons/sourcemod/plugins
@@ -36,7 +36,7 @@ build_modules:
     - mkdir -p package/addons/sourcemod/scripting/include
     - mkdir -p package/addons/sourcemod/plugins
     # copy compiled plugins, includes and scripts to package
-    - cp compiled/*.smx package/addons/sourcemod/plugins
+    - cp magicdice/compiled/*.smx package/addons/sourcemod/plugins
     - cp *.sp package/addons/sourcemod/scripting
     - cp include/*.inc package/addons/sourcemod/scripting/include
     # remove all readme files from package
