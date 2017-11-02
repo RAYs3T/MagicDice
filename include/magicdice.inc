@@ -49,7 +49,7 @@ public void MDReportFailure(char[] text, any ...) {
  * @param invalid The invalid value the parameter had
  */
 public void MDReportInvalidParameter(int paramPos, char[] paramDesc, char[] invalid) {
-	MDReportFailure("Parameter param%i (paramDesc) has an invalid value (%s)", paramPos, paramDesc, invalid);
+	MDReportFailure("Parameter param%i (%s) has an invalid value (%s)", paramPos, paramDesc, invalid);
 }
 
 /**
