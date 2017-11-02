@@ -61,7 +61,7 @@ public void OnPluginEnd()
 public void Diced(int client, char diceText[255], char[] p_weaponId, char[] p_amount, char[] p_primaryMagSize, char[] p_secondaryMagSize, char[] p_5)
 {
 	// Validate parameter
-	if(MDIsStringSet(p_weaponId)) {
+	if(!MDIsStringSet(p_weaponId)) {
 		MDReportInvalidParameter(1, "weaponId", p_weaponId);
 		return;
 	}
