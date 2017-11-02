@@ -57,7 +57,9 @@ public APLRes AskPluginLoad2(Handle plugin, bool late, char[] error, int err_max
 public void OnPluginStart()
 {
 	g_modulesArray = CreateArray(128);
-	RegConsoleCmd("md", OnDiceCommand);
+	RegConsoleCmd("md", OnDiceCommand, "Rolls the dice");
+	RegConsoleCmd("mdtest", OnDiceCommandFocedValue, "Test command for the dice. Rolls the dice result with the given number", ADMFLAG_ROOT);
+	
 	LoadProbabillities(g_probabillities);
 	
 	HookEvent("round_start", Event_RoundStart, EventHookMode_Post);
@@ -158,6 +160,27 @@ public Action OnDiceCommand(int client, int params)
 	//int choosenIndex = GetRandomInt(0, GetArraySize(g_modulesArray) -1);
 	PickResult(client);
 	g_dices[client]++;
+	return Plugin_Handled;
+}
+
+// Rolls a pre choosen result
+public Action OnDiceCommandFocedValue(int client, int params)
+{
+	if(params != 1) {
+		PrintToChat(client, "%s Parameter (dice number) required for fixed result test", MD_PREFIX);
+		return Plugin_Handled;
+	}
+	char buffer[255];
+	GetCmdArg(1, buffer, sizeof(buffer));
+	int index = StringToInt(buffer);
+	
+	if(index > sizeof(g_probabillities) || g_probabillities[index] == 0){
+		PrintToChat(client, "%s Invalid dice result: %i", MD_PREFIX, index);
+		return Plugin_Handled;
+	}
+	
+	PrintToChat(client, "%s Using a fixed result for dice: %i", MD_PREFIX, index);
+	LoadResultDeatailsAndProcess(index, client);
 	return Plugin_Handled;
 }
 
