@@ -16,3 +16,14 @@ build_core:
         paths:
         - package/*
         
+build_modules:
+    stage: build
+    variables: 
+        BUILD_DIR: '${CI_PROJECT_DIR}/magicdice'
+    script: 
+    - spcomp
+    artifacts:
+        name: "${CI_PROJECT_NAME}_core_${CI_COMMIT_REF_NAME}"
+        paths:
+        - package/*
+        
