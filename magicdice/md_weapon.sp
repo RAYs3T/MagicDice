@@ -21,13 +21,13 @@
 
 #include ../include/magicdice
 #include <sdktools>
+#include <sdkhooks>
+#include <cstrike>
 
-int activeOffset = -1;
-//int clip1Offset = -1;
-int priAmmoTypeOffset = -1;
-//int clip2Offset = -1;
-int secAmmoTypeOffset = -1;
-
+int m_iClip1 = -1;
+int m_iClip2 = -1;
+int m_iAmmo = -1;
+int m_iPrimaryAmmoType = -1;
 
 public Plugin myinfo =
 {
@@ -39,14 +39,11 @@ public Plugin myinfo =
 };
 
 public void OnPluginStart()
-{
-	activeOffset = FindSendPropInfo("CAI_BaseNPC", "m_hActiveWeapon");
-	
-	//clip1Offset = FindSendPropInfo("CBaseCombatWeapon", "m_iClip1");
-	priAmmoTypeOffset = FindSendPropInfo("CBaseCombatWeapon", "m_iPrimaryAmmoCount");
-		
-	//clip2Offset = FindSendPropInfo("CBaseCombatWeapon", "m_iClip2");
-	secAmmoTypeOffset = FindSendPropInfo("CBaseCombatWeapon", "m_iSecondaryAmmoCount");
+{	
+	m_iClip1 			= FindSendPropInfo("CBaseCombatWeapon", "m_iClip1");
+	m_iClip2 			= FindSendPropInfo("CBaseCombatWeapon", "m_iClip2");
+	m_iAmmo  			= FindSendPropInfo("CBasePlayer",     	"m_iAmmo");
+	m_iPrimaryAmmoType  = FindSendPropInfo("CBaseCombatWeapon", "m_iPrimaryAmmoType");
 }
 public void OnAllPluginsLoaded()
 {
@@ -75,42 +72,37 @@ public void Diced(int client, char diceText[255], char[] p_weaponId, char[] p_am
 	int primaryMagSize = MDParseParamInt(p_primaryMagSize);
 	int secondaryMagSize = MDParseParamInt(p_secondaryMagSize);
 
-	
-	
+
 	// Give the player the requested amount of weapons
 	for (int i = 0; i < amount; i++) {
-		GiveItem(client, p_weaponId);
+		int weaponIndex = GiveItem(client, p_weaponId);
+		// To find weaponId in m_iAmmo array we should add multiplied m_iPrimaryAmmoType datamap offset by 4 onto m_iAmmo player array, meh
+		int weaponId = GetEntData(weaponIndex, m_iPrimaryAmmoType) * 4;
+		if(primaryMagSize > 0) {
+			SetEntData(weaponIndex, m_iClip1, primaryMagSize);
+			SetEntData(weaponIndex, m_iClip2, primaryMagSize); // What does the second clip?!
+		}
+		if(secondaryMagSize > 0) {
+			SetEntData(client, m_iAmmo + weaponId, secondaryMagSize);
+		}
 	}
 	
-	// Only set the ammo if mag size given
-	if(primaryMagSize > 0 && secondaryMagSize > 0) {
-			SetAmmo(client, primaryMagSize, secondaryMagSize);
-	}
+	char weaponName[32];
+	strcopy(weaponName, sizeof(weaponName), p_weaponId);
+	// Strip the weapon_ from the id of the weapon
+	ReplaceString(weaponName, 32, "weapon_", "");
+	weaponName[0] = CharToUpper(weaponName[0]);
 	
-	Format(diceText, sizeof(diceText), "You got a weapon!");
+	if(primaryMagSize == 0 || secondaryMagSize == 0) 
+	{
+		Format(diceText, sizeof(diceText), "%i %s", amount, weaponName);
+	} else {
+		Format(diceText, sizeof(diceText), "%i %s with %i/%i ammunation", amount, weaponName, primaryMagSize, secondaryMagSize);
+	}
 }
 
 int GiveItem(int client, char[] weaponId)
 {
 	int entryIndex = GivePlayerItem(client, weaponId);
 	return entryIndex;
-}
-
-void SetAmmo(int client, int primarySpare, int secondSpare)
-{
-	int zomg = GetEntDataEnt2(client, activeOffset);
-	if(zomg != -1) {
-		//if (clip1Offset != -1){ // Primary loaded ammo
-		//	SetEntData(zomg, clip1Offset, primaryLoaded, 4, true);
-		//}
-		if (priAmmoTypeOffset != -1) { // Primary spare ammo
-			SetEntData(zomg, priAmmoTypeOffset, primarySpare, 4, true);
-		}
-		//if (clip2Offset != -1) { // Secondary loaded ammo
-		//	SetEntData(zomg, clip2Offset, secondLoaded, 4, true);
-		//}
-		if (secAmmoTypeOffset != -1) { // Secondary spare ammo
-			SetEntData(zomg, secAmmoTypeOffset, secondSpare, 4, true);
-		}
-	}
 }
