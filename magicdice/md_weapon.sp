@@ -21,8 +21,7 @@
 
 #include ../include/magicdice
 #include <sdktools>
-#include <sdkhooks>
-#include <cstrike>
+
 
 int m_iClip1 = -1;
 int m_iClip2 = -1;
@@ -76,6 +75,7 @@ public void Diced(int client, char diceText[255], char[] p_weaponId, char[] p_am
 	// Give the player the requested amount of weapons
 	for (int i = 0; i < amount; i++) {
 		int weaponIndex = GiveItem(client, p_weaponId);
+		// Set ammo
 		// To find weaponId in m_iAmmo array we should add multiplied m_iPrimaryAmmoType datamap offset by 4 onto m_iAmmo player array, meh
 		int weaponId = GetEntData(weaponIndex, m_iPrimaryAmmoType) * 4;
 		if(primaryMagSize > 0) {
