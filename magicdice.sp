@@ -9,6 +9,8 @@
 
 // Includes
 #include <morecolors>
+#include <autoexecconfig>
+#include <cstrike>
 
 
 // Code style rules
@@ -21,6 +23,17 @@
 #define MD_PLUGIN_AUTHOR "Kevin 'RAYs3T' Urbainczyk"
 #define MD_PLUGIN_DESCRIPTION "A Modular Roll The Dice Plugin. Supporting on the fly feature un/re-load"
 #define MD_PLUGIN_WEBSITE "https://ptl-clan.de"
+
+// Config cvars
+#define CONF_CVAR_DICES_PER_ROUND 		"sm_md_dices_per_round"
+ConVar g_cvar_dicesPerRound;
+
+#define CONF_CVAR_ALLOW_DICE_TEAM_T 	"sm_md_allow_dice_team_t"
+ConVar g_cvar_allowDiceTeamT;
+
+#define CONF_CVAR_ALLOW_DICE_TEAM_CT 	"sm_md_allow_dice_team_ct"
+ConVar g_cvar_allowDiceTeamCT;
+
 
 
 #define DEBUG true
@@ -54,6 +67,21 @@ public APLRes AskPluginLoad2(Handle plugin, bool late, char[] error, int err_max
 	CreateNative("MDAddAllowedDices", Native_MDAddAllowedDices);
 }
 
+void PrepareAndLoadConfig()
+{
+	AutoExecConfig_SetFile("magicdice/general");
+
+	// Dices per round
+	g_cvar_dicesPerRound = 		AutoExecConfig_CreateConVar(CONF_CVAR_DICES_PER_ROUND, "1", "Starting amount of dices allowed each round");
+	
+	// Team dice restrictions
+	g_cvar_allowDiceTeamT = 	AutoExecConfig_CreateConVar(CONF_CVAR_ALLOW_DICE_TEAM_T, "1", "Can the T-team dice?");
+	g_cvar_allowDiceTeamCT = 	AutoExecConfig_CreateConVar(CONF_CVAR_ALLOW_DICE_TEAM_CT, "0", "Can the CT-team dice?");
+	
+	AutoExecConfig_ExecuteFile();
+	AutoExecConfig_CleanFile();
+}
+
 public void OnPluginStart()
 {
 	g_modulesArray = CreateArray(128);
@@ -64,6 +92,8 @@ public void OnPluginStart()
 	
 	HookEvent("round_start", Event_RoundStart, EventHookMode_Post);
 	HookEvent("round_end", Event_RoundEnd, EventHookMode_Post);
+	
+	PrepareAndLoadConfig();
 }
 
 public Action Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
@@ -374,10 +404,28 @@ public int SelectByProbability(int modulePropabilities[128])
 
 public bool CanPlayerDice(int client)
 {
+	// Can the player dice within its team?
+	int team = GetClientTeam(client);
+	char buffer[1];
+	if(team == CS_TEAM_T) {
+		g_cvar_allowDiceTeamT.GetString(buffer, sizeof(buffer));
+		int allowed = StringToInt(buffer);
+		if(allowed != 1) {
+			return false; // rolling the dice in the T team is not allowed
+		}
+	}else if(team == CS_TEAM_CT) {
+		g_cvar_allowDiceTeamCT.GetString(buffer, sizeof(buffer));
+		int allowed = StringToInt(buffer);
+		if(allowed != 1) {
+			return false; // rolling the dice in the CT team is not allowed
+		}
+	} 
+	
 	// TODO Check if the round is in the ending phase and block
 	if(g_dices[client] >= g_allowedDices[client]) {
 		return false;
 	}
+	
 	
 	return true;
 }
@@ -398,8 +446,13 @@ public void ResetDiceCounters()
 
 public void ResetDiceCounter(int client)
 {
-		g_dices[client] = 0;
-		g_allowedDices[client] = 1; // One dice is allowed by default
+		// Get the allowed amout of dices from teh cvar
+		char buffer[11];
+		g_cvar_dicesPerRound.GetString(buffer, sizeof(buffer));
+		int allowed = StringToInt(buffer);
+		
+		g_dices[client] = 0; // Reset current dices of the player
+		g_allowedDices[client] = allowed; // Set new limit
 }
 
 public bool hasModules()
