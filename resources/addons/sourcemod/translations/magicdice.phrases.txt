@@ -31,4 +31,8 @@
 	{
 		"en"		"{red}You cannot dice in the current game phase (round / game end / plugin reload)"
 	}
+	"dice_not_possible_when_dead"
+	{
+		"en"		"YOU ARE DEAD! - How would you dice?"
+	}
 }

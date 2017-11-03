@@ -446,6 +446,11 @@ public bool CanPlayerDiceInTeam(int client)
 
 public bool CanPlayerDice(int client)
 {
+	if(!IsClientInGame(client) || !IsPlayerAlive(client)) {
+		CReplyToCommand(client, "{lightgreen}%s %t", MD_PREFIX, "dice_not_possible_when_dead");
+		return false;
+	}
+	
 	if(g_cannotDice) {
 		CReplyToCommand(client, "{lightgreen}%s %t", MD_PREFIX, "dice_not_possible_in_this_game_phase");
 		return false;

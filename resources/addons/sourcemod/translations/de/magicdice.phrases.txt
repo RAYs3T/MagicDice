@@ -31,4 +31,8 @@
 	{
 		"de"		"{red}In dieser Spielephase kannst du nicht Würfeln. (Map/Runden/-Ende)"
 	}
+	"dice_not_possible_when_dead"
+	{
+		"de"		"DU BIST TOT! - Wie willst du denn so würfeln?!"
+	}
 }
