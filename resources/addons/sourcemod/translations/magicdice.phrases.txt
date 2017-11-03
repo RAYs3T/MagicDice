@@ -1,0 +1,34 @@
+"Phrases"
+{
+	"no_modules_registered"
+	{
+		"en"		"Sorry, no dice modules available at this time :("
+	}
+	"dice_not_allowed_for_your_team"
+	{
+		"en"		"Your team is not allowed to dice!"
+	}
+	"all_dices_are_gone"
+	{
+		"#format"	"{1:i}
+		"en"		"{orange}All your dices are gone! ({blue}{1}{orange}) - {pink}try again in the next round!"
+	}
+	"missing_fixed_result_test_parameter"
+	{
+		"en"		"{default}Parameter (dice number) required for fixed result test"
+	}
+	"not_found_fixed_result"
+	{
+		"#format"	"{1:i}
+		"en"		"{default}Invalid dice result: {1}"
+	}
+	"using_fixed_dice_result"
+	{
+		"#format"	"{1:i}
+		"en"		"{red}Using a fixed result for dice: {1}"
+	}
+	"dice_not_possible_in_this_game_phase"
+	{
+		"en"		"{red}You cannot dice in the current game phase (round / game end / plugin reload)"
+	}
+}

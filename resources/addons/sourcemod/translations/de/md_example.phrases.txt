@@ -1,0 +1,7 @@
+"Phrases"
+{
+	"diced"
+	{
+		"en"		"Dies ist ein Beispiel Text, der als Würfelergebnis angezeigt wird."
+	}
+}

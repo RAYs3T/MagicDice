@@ -33,6 +33,12 @@ public Plugin myinfo =
 	url = MODULE_PLUGIN_WEBSITE
 };
 
+public void OnPluginStart()
+{
+	// This is required to load translations and more
+	MDOnPluginStart();
+}
+
 
 public void OnAllPluginsLoaded()
 {
@@ -58,6 +64,5 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 {
 	MDAddAllowedDices(client, 2); // Allow the player to roll two more times!
 	
-	Format(diceText, sizeof(diceText), "Rolled an example!");
-	PrintToServer("Diced me (example)");
+	Format(diceText, sizeof(diceText), "%t", "diced");
 }

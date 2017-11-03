@@ -1,0 +1,7 @@
+"Phrases"
+{
+	"diced"
+	{
+		"en"		"This is an example diced text"
+	}
+}
