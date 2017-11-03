@@ -49,6 +49,9 @@ int g_dices[MAXPLAYERS + 1];
 // How many times can an user roll the dice?
 int g_allowedDices[MAXPLAYERS + 1];
 
+// A switch to block general dices while the game / round is ending
+bool g_cannotDice = true;
+
 public Plugin myinfo =
 {
 	name = MD_PLUGIN_NAME,
@@ -94,16 +97,20 @@ public void OnPluginStart()
 	HookEvent("round_end", Event_RoundEnd, EventHookMode_Post);
 	
 	PrepareAndLoadConfig();
+	
+	g_cannotDice = false;
 }
 
 public Action Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
 	ResetDiceCounters();
+	g_cannotDice = false;
 }
 
 public Action Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast)
 {
 	UpdateAllAllowedDices(0); // Block any more dices to  the end of the round
+	g_cannotDice = true; // Disable dice in round end phase to prevent round overlapping bugs (like rockets)
 }
 
 public void OnClientAuthorized(int client, const char[] auth)
@@ -184,7 +191,7 @@ public Action OnDiceCommand(int client, int params)
 		return Plugin_Continue;
 	}
 	if(!CanPlayerDice(client)){
-		CPrintToChat(client, "{lightgreen}%s {default}All your dices are gone! ({green}%i{default}) - {green}try again in the next round!", 
+		CPrintToChat(client, "{lightgreen}%s {orange}All your dices are gone! ({blue}%i{orange}) - {pink}try again in the next round!", 
 			MD_PREFIX, g_allowedDices[client]);
 		return Plugin_Handled;
 	}
@@ -404,6 +411,10 @@ public int SelectByProbability(int modulePropabilities[128])
 
 public bool CanPlayerDice(int client)
 {
+	if(g_cannotDice) {
+		CReplyToCommand(client, "{lightgreen}%s {red}You cannot dice in the current game phase (round / game end / plugin reload)", MD_PREFIX);
+		return false;
+	}
 	// Can the player dice within its team?
 	int team = GetClientTeam(client);
 	char buffer[1];
