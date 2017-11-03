@@ -8,7 +8,7 @@
 */
 
 // Includes
-#include <colors>
+#include <morecolors>
 
 
 // Code style rules
