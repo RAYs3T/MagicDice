@@ -195,6 +195,7 @@ public Action OnDiceCommand(int client, int params)
 	
 	if(!CanPlayerDiceInTeam(client)){
 		CReplyToCommand(client, "{lightgreen}%s {orange}%t", MD_PREFIX, "dice_not_allowed_for_your_team");
+		return Plugin_Handled;
 	}
 	if(!CanPlayerDice(client)){
 		CReplyToCommand(client, "{lightgreen}%s %t", 
