@@ -50,5 +50,5 @@ public void OnPluginEnd()
 
 public void Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
 {
-	Format(diceText, sizeof(diceText), "Nothing");
+	Format(diceText, sizeof(diceText), "%t", "diced");
 }

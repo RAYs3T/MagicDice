@@ -1,0 +1,7 @@
+"Phrases"
+{
+	"diced"
+	{
+		"de"		"Nunja. Selbst Luft ist mehr, als dass, was du gefürfelt hast."
+	}
+}

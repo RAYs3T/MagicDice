@@ -1,0 +1,7 @@
+"Phrases"
+{
+	"diced"
+	{
+		"en"		"Well, even air is more then what you diced."
+	}
+}
