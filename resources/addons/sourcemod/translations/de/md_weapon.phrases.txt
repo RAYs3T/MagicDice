@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"got_weapon_default_mag"
+	{
+		"de"		"Du hast {1} {2} bekommen"
+	}
+	"got_weapon_with_modified_mags"
+	{
+		"de"		"Du hast {1} {2} mit {3}/{4} gefüllten Magazinen"
+	}
+}

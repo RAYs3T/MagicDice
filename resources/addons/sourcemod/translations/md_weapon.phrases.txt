@@ -1,0 +1,11 @@
+"Phrases"
+{
+	"got_weapon_default_mag"
+	{
+		"en"		"You got {1} {2}"
+	}
+	"got_weapon_with_modified_mags"
+	{
+		"en"		"You got {1} {2} with mags filled {3}/{4} "
+	}
+}
