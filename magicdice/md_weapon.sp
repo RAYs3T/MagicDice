@@ -39,6 +39,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {	
+	MDOnPluginStart();
 	m_iClip1 			= FindSendPropInfo("CBaseCombatWeapon", "m_iClip1");
 	m_iClip2 			= FindSendPropInfo("CBaseCombatWeapon", "m_iClip2");
 	m_iAmmo  			= FindSendPropInfo("CBasePlayer",     	"m_iAmmo");

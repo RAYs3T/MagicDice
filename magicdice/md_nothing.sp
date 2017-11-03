@@ -33,6 +33,10 @@ public Plugin myinfo =
 	url = MODULE_PLUGIN_WEBSITE
 };
 
+public void OnPluginStart()
+{
+	MDOnPluginStart();
+}
 
 public void OnAllPluginsLoaded()
 {

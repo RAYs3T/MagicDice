@@ -81,6 +81,8 @@ void PrepareAndLoadConfig()
 	g_cvar_allowDiceTeamT = 	AutoExecConfig_CreateConVar(CONF_CVAR_ALLOW_DICE_TEAM_T, "1", "Can the T-team dice?");
 	g_cvar_allowDiceTeamCT = 	AutoExecConfig_CreateConVar(CONF_CVAR_ALLOW_DICE_TEAM_CT, "0", "Can the CT-team dice?");
 	
+	LoadTranslations("magicdice.phrases");
+	
 	AutoExecConfig_ExecuteFile();
 	AutoExecConfig_CleanFile();
 }
@@ -89,7 +91,7 @@ public void OnPluginStart()
 {
 	g_modulesArray = CreateArray(128);
 	RegConsoleCmd("md", OnDiceCommand, "Rolls the dice");
-	RegConsoleCmd("mdtest", OnDiceCommandFocedValue, "Test command for the dice. Rolls the dice result with the given number", ADMFLAG_ROOT);
+	RegConsoleCmd("mdtest", OnDiceCommandFocedValue, "Test command for the dice. Rolls the dice result with the given number", ADMFLAG_CHEATS);
 	
 	LoadProbabillities(g_probabillities);
 	
@@ -158,7 +160,7 @@ public int Native_MDUnRegisterModule(Handle plugin, int params)
 // Called by modules, pushishes a text from the module. This text is displayed ingame
 public int Native_MDPublishDiceResult(Handle plugin, int params)
 {
-	char diceText[64];
+	char diceText[255];
 	int client = GetNativeCell(1);
 	GetNativeString(2, diceText, sizeof(diceText));
 	int dicedResultNumber = GetNativeCell(3);
@@ -187,16 +189,16 @@ public Action OnDiceCommand(int client, int params)
 	if(!hasModules())
 	{
 		PrintToServer("%s No modules available! You should load at least one module.", MD_PREFIX);	
-		CReplyToCommand(client, "{lightgreen}%s {default}No dice results available!", MD_PREFIX);
+		CReplyToCommand(client, "{lightgreen}%s {default}%t", MD_PREFIX, "no_modules_registered");
 		return Plugin_Continue;
 	}
 	
 	if(!CanPlayerDiceInTeam(client)){
-		CReplyToCommand(client, "{lightgreen}%s {orange}Sorry, cou can't roll the dice in your team. :(", MD_PREFIX);
+		CReplyToCommand(client, "{lightgreen}%s {orange}%t", MD_PREFIX, "dice_not_allowed_for_your_team");
 	}
 	if(!CanPlayerDice(client)){
-		CReplyToCommand(client, "{lightgreen}%s {orange}All your dices are gone! ({blue}%i{orange}) - {pink}try again in the next round!", 
-			MD_PREFIX, g_allowedDices[client]);
+		CReplyToCommand(client, "{lightgreen}%s %t", 
+			MD_PREFIX, "all_dices_are_gone", g_allowedDices[client]);
 		return Plugin_Handled;
 	}
 	// TODO Replace with real random
@@ -210,7 +212,7 @@ public Action OnDiceCommand(int client, int params)
 public Action OnDiceCommandFocedValue(int client, int params)
 {
 	if(params != 1) {
-		CReplyToCommand(client, "{lightgreen}%s {default}Parameter (dice number) required for fixed result test", MD_PREFIX);
+		CReplyToCommand(client, "{lightgreen}%s %t", MD_PREFIX, "missing_fixed_result_test_parameter");
 		return Plugin_Handled;
 	}
 	char buffer[255];
@@ -218,11 +220,11 @@ public Action OnDiceCommandFocedValue(int client, int params)
 	int index = StringToInt(buffer);
 	
 	if(index > sizeof(g_probabillities) || g_probabillities[index] == 0){
-		CReplyToCommand(client, "{lightgreen}%s {default}Invalid dice result: %i", MD_PREFIX, index);
+		CReplyToCommand(client, "{lightgreen}%s %t", MD_PREFIX, "not_found_fixed_result", index);
 		return Plugin_Handled;
 	}
 	
-	PrintToChat(client, "%s Using a fixed result for dice: %i", MD_PREFIX, index);
+	CReplyToCommand(client, "%s %t", MD_PREFIX, "using_fixed_dice_result", index);
 	LoadResultDeatailsAndProcess(index, client);
 	return Plugin_Handled;
 }
@@ -444,7 +446,7 @@ public bool CanPlayerDiceInTeam(int client)
 public bool CanPlayerDice(int client)
 {
 	if(g_cannotDice) {
-		CReplyToCommand(client, "{lightgreen}%s {red}You cannot dice in the current game phase (round / game end / plugin reload)", MD_PREFIX);
+		CReplyToCommand(client, "{lightgreen}%s %t", MD_PREFIX, "dice_not_possible_in_this_game_phase");
 		return false;
 	}
 	

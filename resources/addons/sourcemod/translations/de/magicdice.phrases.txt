@@ -1,0 +1,34 @@
+"Phrases"
+{
+	"no_modules_registered"
+	{
+		"de"		"Mhm, du kannst diese Runde nicht mehr würfeln :("
+	}
+	"dice_not_allowed_for_your_team"
+	{
+		"de"		"Dein Team kann den Würfel nicht benutzen!"
+	}
+	"all_dices_are_gone"
+	{
+		"#format"	"{1:i}
+		"de"		"{orange}Du hast keine Würfel mehr über! ({blue}{1}{orange}) - {pink}Versuch es nächste Runde erneut"
+	}
+	"missing_fixed_result_test_parameter"
+	{
+		"de"		"{default}Parameter (dice number) ist für den fixed_result_test erforderlich!"
+	}
+	"not_found_fixed_result"
+	{
+		"#format"	"{1:i}
+		"de"		"{default}Ungültiges Würfelergebnis: {1}"
+	}
+	"using_fixed_dice_result"
+	{
+		"#format"	"{1:i}
+		"de"		"{red}Es wird ein geplantes Ergebnis genutzt: {1}"
+	}
+	"dice_not_possible_in_this_game_phase"
+	{
+		"de"		"{red}In dieser Spielephase kannst du nicht Würfeln. (Map/Runden/-Ende)"
+	}
+}
