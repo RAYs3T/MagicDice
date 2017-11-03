@@ -1,0 +1,7 @@
+"Phrases"
+{
+	"diced"
+	{
+		"de"		"Und los gehts! - Wir wünschen ihnen einen guten Flug mit Air One!"
+	}
+}
