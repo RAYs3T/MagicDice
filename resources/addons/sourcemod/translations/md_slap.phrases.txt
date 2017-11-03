@@ -1,0 +1,8 @@
+"Phrases"
+{
+	"slap_with_damage"
+	{
+		"#format"	"{1:i}"
+		"en"		"You've been slapped with {1} damge!"
+	}
+}

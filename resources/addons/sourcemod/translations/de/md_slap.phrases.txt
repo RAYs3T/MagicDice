@@ -1,0 +1,8 @@
+"Phrases"
+{
+	"slap_with_damage"
+	{
+		"#format"	"{1:i}"
+		"de"		"Du wurdest geschlagen! Dir wurden {1} Schaden hinzugefügt!"
+	}
+}
