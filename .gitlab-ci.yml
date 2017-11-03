@@ -1,5 +1,5 @@
 image: rays3t/sourcemod-plugins-builder-ci
-build_core:
+build:core:
     stage: build
     script: 
     - spcomp
@@ -21,7 +21,7 @@ build_core:
         paths:
         - package/*
         
-build_modules:
+build:modules:
     stage: build
     variables: 
         # Build plugins in sub dir
