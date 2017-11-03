@@ -53,13 +53,13 @@ public void Diced(int client, char diceText[255], char[] mode, char[] speedParam
 	if(strcmp(mode, "set") == 0) 
 	{
 		SetSpeed(client, speed);
-		Format(diceText, sizeof(diceText), "Speed set to %f", speed);
+		Format(diceText, sizeof(diceText), "%t", "speed_set", speed);
 	} else if(strcmp(mode, "add") == 0) {
 		SetSpeed(client, GetSpeed(client) + speed);
-		Format(diceText, sizeof(diceText), "Added %f of speed", speed);
+		Format(diceText, sizeof(diceText), "%t", "speed_add", speed);
 	} else if(strcmp(mode, "take") == 0) {
 		SetSpeed(client, GetSpeed(client) - speed);
-		Format(diceText, sizeof(diceText), "Took %f of speed", speed);
+		Format(diceText, sizeof(diceText), "%t", "speed_take", speed);
 	} else {
 		LogError("Unknown speed mode: %s", mode);
 	}

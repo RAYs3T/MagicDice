@@ -1,0 +1,18 @@
+"Phrases"
+{
+	"speed_set"
+	{
+		"#format"	"{1:f}"
+		"en"		"Geschwindigkeit auf {1} gesetzt"
+	}
+	"speed_add"
+	{
+		"#format"	"{1:f}"
+		"en"		"Du bist um {1} schneller"
+	}
+	"speed_take"
+	{
+		"#format"	"{1:f}"
+		"en"		"Du bist um {1} langsamer"
+	}
+}
