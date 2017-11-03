@@ -36,7 +36,7 @@ public Plugin myinfo =
 
 public void OnAllPluginsLoaded()
 {
-	MDRegisterModule("Nothing");
+	MDRegisterModule();
 }
 
 public void OnPluginEnd()

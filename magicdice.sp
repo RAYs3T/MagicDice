@@ -72,7 +72,7 @@ public APLRes AskPluginLoad2(Handle plugin, bool late, char[] error, int err_max
 
 void PrepareAndLoadConfig()
 {
-	AutoExecConfig_SetFile("magicdice/general");
+	AutoExecConfig_SetFile("general", "magicdice");
 
 	// Dices per round
 	g_cvar_dicesPerRound = 		AutoExecConfig_CreateConVar(CONF_CVAR_DICES_PER_ROUND, "1", "Starting amount of dices allowed each round");
@@ -124,16 +124,16 @@ public void OnClientAuthorized(int client, const char[] auth)
 // Adds a new module to the module list
 public int Native_MDRegisterModule(Handle plugin, int params)
 {
-	char moduleName[255];
+	char moduleName[128];
 	GetPluginInfo(plugin, PlInfo_Name, moduleName, sizeof(moduleName));
 	
-	char fullModuleName[64];
-	GetNativeString(1, fullModuleName, sizeof(fullModuleName));
+	char moduleFileName[64];
+	GetPluginFilename(plugin, moduleFileName, sizeof(moduleFileName));
 	
 	// Add the plugin to our list
 	PushArrayCell(g_modulesArray, plugin);
 	
-	PrintToServer("%s Registered %s [%s]", MD_PREFIX, moduleName, fullModuleName);	
+	PrintToServer("%s Registered [%s] from: %s", MD_PREFIX, moduleName, moduleFileName);	
 }
 
 // Removes a module from the module list
@@ -169,7 +169,7 @@ public int Native_MDPublishDiceResult(Handle plugin, int params)
 #if defined DEBUG
 	PrintToServer("%s %s rolled %s", MD_PREFIX, clientName, diceText);
 #endif
-	CPrintToChat(client, "{lightgreen}%s {olive}({green}%i{olive}) {olive}%s", MD_PREFIX, dicedResultNumber, diceText);
+	CReplyToCommand(client, "{lightgreen}%s {default}({grey}%i{default}) {mediumvioletred}%s", MD_PREFIX, dicedResultNumber, diceText);
 }
 
 // Adds additionals dices for a user
@@ -187,11 +187,15 @@ public Action OnDiceCommand(int client, int params)
 	if(!hasModules())
 	{
 		PrintToServer("%s No modules available! You should load at least one module.", MD_PREFIX);	
-		CPrintToChat(client, "{lightgreen}%s {default}No dice results available!", MD_PREFIX);
+		CReplyToCommand(client, "{lightgreen}%s {default}No dice results available!", MD_PREFIX);
 		return Plugin_Continue;
 	}
+	
+	if(!CanPlayerDiceInTeam(client)){
+		CReplyToCommand(client, "{lightgreen}%s {orange}Sorry, cou can't roll the dice in your team. :(", MD_PREFIX);
+	}
 	if(!CanPlayerDice(client)){
-		CPrintToChat(client, "{lightgreen}%s {orange}All your dices are gone! ({blue}%i{orange}) - {pink}try again in the next round!", 
+		CReplyToCommand(client, "{lightgreen}%s {orange}All your dices are gone! ({blue}%i{orange}) - {pink}try again in the next round!", 
 			MD_PREFIX, g_allowedDices[client]);
 		return Plugin_Handled;
 	}
@@ -206,7 +210,7 @@ public Action OnDiceCommand(int client, int params)
 public Action OnDiceCommandFocedValue(int client, int params)
 {
 	if(params != 1) {
-		CPrintToChat(client, "{lightgreen}%s {default}Parameter (dice number) required for fixed result test", MD_PREFIX);
+		CReplyToCommand(client, "{lightgreen}%s {default}Parameter (dice number) required for fixed result test", MD_PREFIX);
 		return Plugin_Handled;
 	}
 	char buffer[255];
@@ -214,7 +218,7 @@ public Action OnDiceCommandFocedValue(int client, int params)
 	int index = StringToInt(buffer);
 	
 	if(index > sizeof(g_probabillities) || g_probabillities[index] == 0){
-		CPrintToChat(client, "{lightgreen}%s {default}Invalid dice result: %i", MD_PREFIX, index);
+		CReplyToCommand(client, "{lightgreen}%s {default}Invalid dice result: %i", MD_PREFIX, index);
 		return Plugin_Handled;
 	}
 	
@@ -323,8 +327,8 @@ bool LoadResultDeatailsAndProcess(int resultNo, int client)
 					Handle module = FindModuleByName(bufferFeature);
 					if(module == INVALID_HANDLE) {
 						LogError("No matching module found for name '%s' Is the responsible module loaded?", bufferFeature);
-						CPrintToChat(client, "{lightgreen}%s {default}Sorry, the responsive module for this result died / or was never alive at all :(", MD_PREFIX);
-						CPrintToChat(client, "{lightgreen}%s {default}...but great news! You can roll the dice one more time!", MD_PREFIX);
+						CReplyToCommand(client, "{lightgreen}%s {default}Sorry, the responsible module for this result died / or was never alive at all :(", MD_PREFIX);
+						CReplyToCommand(client, "{lightgreen}%s {default}...but great news! You can roll the dice one more time!", MD_PREFIX);
 						// Since we had an internal plugin failure / configuration failure, we give the user one more roll.
 						// So there is no reason to be sad :-)
 						g_allowedDices[client] += 1;
@@ -343,15 +347,23 @@ bool LoadResultDeatailsAndProcess(int resultNo, int client)
 // Searches for a module by its name
 Handle FindModuleByName(char[] searched) 
 {
+	// Adds .smx to the seached module name
+	char searchedWithExtension[32];
+	Format(searchedWithExtension, sizeof(searchedWithExtension), "%s.smx", searched);
+	
+	// Search for a module matching with matching filename
 	for (int i = 0;  i < GetArraySize(g_modulesArray); i++)
 	{
 		Handle module = view_as<Handle>(GetArrayCell(g_modulesArray, i));
-		char moduleName[255];
-		GetPluginInfo(module, PlInfo_Name, moduleName, sizeof(moduleName));
-		if (strcmp(searched, moduleName) == 0){
+		char moduleFileName[64];
+		// Compare name of the current module with the search string
+		GetPluginFilename(module, moduleFileName, sizeof(moduleFileName));
+		if (strcmp(searchedWithExtension, moduleFileName) == 0){
+			// Found a matching module!
 			return module;
 		}
 	}
+	// NO matching modules found :(
 	return INVALID_HANDLE;
 }
 
@@ -409,28 +421,34 @@ public int SelectByProbability(int modulePropabilities[128])
 	return picked;
 }
 
+public bool CanPlayerDiceInTeam(int client)
+{
+	// Can the player dice within its team?
+	int team = GetClientTeam(client);
+	char buffer[11];
+	if(team == CS_TEAM_T) {
+		g_cvar_allowDiceTeamT.GetString(buffer, sizeof(buffer));
+		int allowed = StringToInt(buffer);
+		if(allowed == 1) {
+
+			return true;
+		}
+	}else if(team == CS_TEAM_CT) {
+		g_cvar_allowDiceTeamCT.GetString(buffer, sizeof(buffer));
+		int allowed = StringToInt(buffer);
+		if(allowed == 1) {
+			return true;
+		}
+	} 
+	return false; // Unknown team // not allowed
+}
+
 public bool CanPlayerDice(int client)
 {
 	if(g_cannotDice) {
 		CReplyToCommand(client, "{lightgreen}%s {red}You cannot dice in the current game phase (round / game end / plugin reload)", MD_PREFIX);
 		return false;
 	}
-	// Can the player dice within its team?
-	int team = GetClientTeam(client);
-	char buffer[1];
-	if(team == CS_TEAM_T) {
-		g_cvar_allowDiceTeamT.GetString(buffer, sizeof(buffer));
-		int allowed = StringToInt(buffer);
-		if(allowed != 1) {
-			return false; // rolling the dice in the T team is not allowed
-		}
-	}else if(team == CS_TEAM_CT) {
-		g_cvar_allowDiceTeamCT.GetString(buffer, sizeof(buffer));
-		int allowed = StringToInt(buffer);
-		if(allowed != 1) {
-			return false; // rolling the dice in the CT team is not allowed
-		}
-	} 
 	
 	// TODO Check if the round is in the ending phase and block
 	if(g_dices[client] >= g_allowedDices[client]) {

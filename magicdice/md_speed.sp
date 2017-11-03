@@ -34,7 +34,7 @@ public Plugin myinfo =
 
 public void OnAllPluginsLoaded()
 {
-	MDRegisterModule("Speed");
+	MDRegisterModule();
 }
 
 public void OnPluginEnd()

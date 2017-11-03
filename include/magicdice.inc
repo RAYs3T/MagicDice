@@ -13,10 +13,8 @@
 // TODO Add module groups?
 /**
  * Register the module
- *
- * @param name    Full name
  */
-native void MDRegisterModule(char[] name);
+native void MDRegisterModule();
 
 /**
  * Un-Register a module

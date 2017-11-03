@@ -37,9 +37,7 @@ public Plugin myinfo =
 public void OnAllPluginsLoaded()
 {
 	// Registers the module at the master plugin
-	// The parameter is just for log proposes and has no real use
-	// Feel free to use a long version of the module name
-	MDRegisterModule("Example");
+	MDRegisterModule();
 }
 
 public void OnPluginEnd()

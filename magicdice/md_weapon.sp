@@ -46,7 +46,7 @@ public void OnPluginStart()
 }
 public void OnAllPluginsLoaded()
 {
-	MDRegisterModule("Weapon");
+	MDRegisterModule();
 }
 
 public void OnPluginEnd()
