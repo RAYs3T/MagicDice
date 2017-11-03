@@ -229,10 +229,8 @@ public Action OnDiceCommandFocedValue(int client, int params)
 
 KeyValues LoadConfig()
 {
-	char file[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, file, sizeof(file), "configs/magicdice/results.cfg");
 	KeyValues kv = new KeyValues("Results");
-	kv.ImportFromFile(file);
+	kv.ImportFromFile("cfg/magicdice/results.cfg");
 	return kv;
 }
 
