@@ -1,0 +1,13 @@
+"Phrases"
+{
+	"noclip_direct"
+	{
+		"#format"	"{1:.1f}"
+		"en"		"You can fly trough walls for {1} seconds!"
+	}
+	"noclip_delayed"
+	{
+		"#format"	"{1:.1f},{2:.1f}"
+		"en"		"In {1} seconds you can fly trough walls for {2} seconds"
+	}
+}
