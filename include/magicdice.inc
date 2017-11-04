@@ -98,6 +98,19 @@ public int MDParseParamInt(char[] param)
 	return StringToInt(param);
 }
 
+/**
+ * Parses an float parameter
+ * @param param the parameter to parse
+ * @return the parsed float, 0.0 if no param set or invalid.
+ */
+public float MDParseParamFloat(char[] param)
+{
+	if(!MDIsStringSet(param)) {
+		return 0.0;
+	}
+	return StringToFloat(param);
+}
+
 
 public bool MDEvaluateResult(int idx, int client, char[] param1, char[] param2, char[] param3, char[] param4, char[] param5){
 	char diceText[255];
@@ -105,6 +118,15 @@ public bool MDEvaluateResult(int idx, int client, char[] param1, char[] param2, 
 	MDPublishDiceResult(client, diceText, idx);
 }
 
+
+stock bool IsValidClient(int client, bool nobots = true)
+{ 
+    if (client <= 0 || client > MaxClients || !IsClientConnected(client) || (nobots && IsFakeClient(client)))
+    {
+        return false; 
+    }
+    return IsClientInGame(client); 
+}  
 
 
 public SharedPlugin __pl_magicdice =
