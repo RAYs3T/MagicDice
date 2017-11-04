@@ -1,0 +1,8 @@
+"Phrases"
+{
+	"fov_set"
+	{
+		"format" "{1:.1f}"
+		"de" "Du wurdest für {1} Sekunden eingefroren"
+	}
+}
