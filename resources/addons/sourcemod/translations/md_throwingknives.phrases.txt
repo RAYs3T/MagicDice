@@ -1,0 +1,8 @@
+"Phrases"
+{
+	"you_got_knives"
+	{
+		"#format"	"{1:i}"
+		"en"		"You got {1} throwing knives"
+	}
+}
