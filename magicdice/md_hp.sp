@@ -14,7 +14,7 @@
 
 // Plugin info
 #define MODULE_PLUGIN_VERSION "0.1"
-#define MODULE_PLUGIN_NAME "MagicDice - Example Module"
+#define MODULE_PLUGIN_NAME "MagicDice - HP module"
 #define MODULE_PLUGIN_AUTHOR "Kevin 'RAYs3T' Urbainczyk"
 #define MODULE_PLUGIN_DESCRIPTION "Module to manipulate the clients HP"
 #define MODULE_PLUGIN_WEBSITE "https://ptl-clan.de"
