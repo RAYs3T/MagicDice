@@ -1,0 +1,8 @@
+"Phrases"
+{
+	"fov_set"
+	{
+		"format" "{1:i}"
+		"en" "Your field of view has been set to {1}"
+	}
+}
