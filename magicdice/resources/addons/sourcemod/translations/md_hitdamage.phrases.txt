@@ -1,0 +1,13 @@
+"Phrases"
+{
+	"more_damage"
+	{
+		"#format"	"{1:.1f}"
+		"en"		"You deal {1}x more damage"
+	}
+	"less_damage"
+	{
+		"#format"	"{1:.1f}"
+		"en"		"You only deal {1}x damage"
+	}
+}

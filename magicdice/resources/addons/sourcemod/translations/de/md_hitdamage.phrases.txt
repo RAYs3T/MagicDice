@@ -1,0 +1,13 @@
+"Phrases"
+{
+	"more_damage"
+	{
+		"#format"	"{1:.1f}"
+		"de"		"Du fügst Gegnern  {1}x mehr Schaden zu"
+	}
+	"less_damage"
+	{
+		"#format"	"{1:.1f}"
+		"de"		"Du machst nur noch {1}x Schaden an Gegnern"
+	}
+}
