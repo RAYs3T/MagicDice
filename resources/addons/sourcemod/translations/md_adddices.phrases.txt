@@ -1,0 +1,8 @@
+"Phrases"
+{
+	"dices_granted"
+	{
+		"#format"	"{1:i}"
+		"en"		"You can roll the dice {1} more times!"
+	}
+}

@@ -1,0 +1,8 @@
+"Phrases"
+{
+	"dices_granted"
+	{
+		"#format"	"{1:i}"
+		"de"		"Du kannst weitere {1} mal würfeln!"
+	}
+}
