@@ -13,7 +13,7 @@
 
 // Plugin info
 #define MODULE_PLUGIN_VERSION "0.1"
-#define MODULE_PLUGIN_NAME "MagicDice - Example Module"
+#define MODULE_PLUGIN_NAME "MagicDice - Throwing Knives"
 #define MODULE_PLUGIN_AUTHOR "Kevin 'RAYs3T' Urbainczyk"
 #define MODULE_PLUGIN_DESCRIPTION "Gives the players some knives to throw on other palyers"
 #define MODULE_PLUGIN_WEBSITE "https://ptl-clan.de"
