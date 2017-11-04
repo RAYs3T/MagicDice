@@ -1,0 +1,7 @@
+"Phrases"
+{
+	"diced"
+	{
+		"en"		"You can jump over wider distances"
+	}
+}

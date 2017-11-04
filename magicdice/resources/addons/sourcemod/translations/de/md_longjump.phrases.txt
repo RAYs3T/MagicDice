@@ -1,0 +1,7 @@
+"Phrases"
+{
+	"diced"
+	{
+		"de"		"Du kannst über weitere Distanzen springen"
+	}
+}
