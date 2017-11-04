@@ -1,0 +1,18 @@
+"Phrases"
+{
+	"hp_set"
+	{
+		"#format"	"{1:i}"
+		"en"		"Your HP has been set to {1}"
+	}
+	"hp_added"
+	{
+		"#format"	"{1:i}"
+		"en"		"You got {1} extra HP"
+	}
+	"hp_took"
+	{
+		"#format"	"{1:i}"
+		"en"		"You lost {1} HP"
+	}
+}

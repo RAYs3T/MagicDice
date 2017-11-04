@@ -1,0 +1,18 @@
+"Phrases"
+{
+	"hp_set"
+	{
+		"#format"	"{1:i}"
+		"de"		"Deine Lebenpunkte wurden auf {1} gesetzt"
+	}
+	"hp_added"
+	{
+		"#format"	"{1:i}"
+		"de"		"Du hast {1} zusätzliche Lebenspunkte erhalten"
+	}
+	"hp_took"
+	{
+		"#format"	"{1:i}"
+		"de"		"Du hast {1} Lebenspunkte verloren"
+	}
+}
