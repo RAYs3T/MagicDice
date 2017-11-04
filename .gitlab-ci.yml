@@ -37,7 +37,7 @@ build:modules:
     - mkdir -p package/addons/sourcemod/plugins
     # copy compiled plugins, includes and scripts to package
     - cp magicdice/compiled/*.smx package/addons/sourcemod/plugins
-    - cp *.sp package/addons/sourcemod/scripting
+    - cp magicdice/*.sp package/addons/sourcemod/scripting
     - cp include/*.inc package/addons/sourcemod/scripting/include
     # remove all readme files from package
     - cd package && rm -rf *.md
