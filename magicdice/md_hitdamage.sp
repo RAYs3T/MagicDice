@@ -41,7 +41,7 @@ public void OnPluginStart()
 		
 	// When the  plugin is getting loaded, hook allready connected players. 
 	// Otherwise the plugin would only work at the text map for some players
-	for (int i; i <= MAXPLAYERS; i++) {
+	for (int i; i < MAXPLAYERS; i++) {
 		if(IsValidClient(i, false)) {
 			AddTakeDamageHook(i);
 		}
@@ -79,7 +79,7 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 public Action Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
 	// Reset player damage multiplier
-	for (int i; i <= MAXPLAYERS; i++) {
+	for (int i; i < MAXPLAYERS; i++) {
 		g_playerDamageMultiplier[i] = 0.0;
 	}
 }
