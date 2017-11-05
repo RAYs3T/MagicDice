@@ -2,17 +2,17 @@
 {
 	"speed_set"
 	{
-		"#format"	"{1:f}"
+		"#format"	"{1:.2f}"
 		"de"		"Geschwindigkeit auf {1} gesetzt"
 	}
 	"speed_add"
 	{
-		"#format"	"{1:f}"
+		"#format"	"{1:.2f}"
 		"de"		"Du bist um {1} schneller"
 	}
 	"speed_take"
 	{
-		"#format"	"{1:f}"
+		"#format"	"{1:.2f}"
 		"de"		"Du bist um {1} langsamer"
 	}
 }
