@@ -1,7 +1,7 @@
 /* 
 #####################################################
 # Push The Limits's MagicDice Roll The Dice Plugin' #
-# Module: Example                                    #
+# Module: Gravity                                   #
 # Created by Kevin 'RAYs3T' Urbainczyk              #
 # Copyright (C) 2017 by Push The Limits             #
 # Homepage: https://ptl-clan.de                     #
@@ -14,9 +14,9 @@
 
 // Plugin info
 #define MODULE_PLUGIN_VERSION "0.1"
-#define MODULE_PLUGIN_NAME "MagicDice - Example Module"
+#define MODULE_PLUGIN_NAME "MagicDice - Gravity"
 #define MODULE_PLUGIN_AUTHOR "Philip aka Lightningblade"
-#define MODULE_PLUGIN_DESCRIPTION "The Example module as reference"
+#define MODULE_PLUGIN_DESCRIPTION "Changes the clients gravity"
 #define MODULE_PLUGIN_WEBSITE "https://ptl-clan.de"
 
 #include ../include/magicdice
