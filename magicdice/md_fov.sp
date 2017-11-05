@@ -1,7 +1,7 @@
 /* 
 #####################################################
 # Push The Limits's MagicDice Roll The Dice Plugin' #
-# Module: Example                                    #
+# Module: Field of view								#
 # Created by Kevin 'RAYs3T' Urbainczyk              #
 # Copyright (C) 2017 by Push The Limits             #
 # Homepage: https://ptl-clan.de                     #
