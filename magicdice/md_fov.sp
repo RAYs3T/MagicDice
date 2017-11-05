@@ -1,7 +1,7 @@
 /* 
 #####################################################
 # Push The Limits's MagicDice Roll The Dice Plugin' #
-# Module: Example                                    #
+# Module: Field of view								#
 # Created by Kevin 'RAYs3T' Urbainczyk              #
 # Copyright (C) 2017 by Push The Limits             #
 # Homepage: https://ptl-clan.de                     #
@@ -58,7 +58,7 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 		return;
 	}
 	
-	SetEntProp(client, Prop_Send, "m_iFOV", lowFov);
+	SetEntProp(client, Prop_Send, "m_iFOV", amount);
 	
 	Format(diceText, sizeof(diceText), "%t", "fov_set");
 }
