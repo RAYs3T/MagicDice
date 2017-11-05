@@ -1,7 +1,7 @@
 /* 
 #####################################################
 # Push The Limits's MagicDice Roll The Dice Plugin' #
-# Module: Example                                   #
+# Module: Freeze	                                #
 # Created by Kevin 'RAYs3T' Urbainczyk              #
 # Copyright (C) 2017 by Push The Limits             #
 # Homepage: https://ptl-clan.de                     #
@@ -16,7 +16,7 @@
 #define MODULE_PLUGIN_VERSION "0.1"
 #define MODULE_PLUGIN_NAME "MagicDice - Freeze"
 #define MODULE_PLUGIN_AUTHOR "Lightningblade 'Philip'"
-#define MODULE_PLUGIN_DESCRIPTION "Module to cause a freezelike effect on the player"
+#define MODULE_PLUGIN_DESCRIPTION "Module to cause a freezelike effect"
 #define MODULE_PLUGIN_WEBSITE "https://ptl-clan.de"
 
 #include ../include/magicdice
@@ -58,25 +58,44 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 		return;
 	}
 	
-	GetEntityRenderColor(int client, int &r, int &g, int &b, int &a);
-	
 	if (IsClientInGame(client))
 	{
 		SetEntityMoveType(client, MOVETYPE_NONE);
-		CreateTimer(duration, freezeOff, client, r, g, b, a);
+		
+		DataPack dataPack;
+		
+		int colors[4];
+		
+		GetEntityRenderColor(client, colors[0], colors[1], colors[2], colors[3]);
+		
+		CreateTimer(duration, freezeOff, dataPack);
+		
+		dataPack.WriteCell(colors[0]);
+		dataPack.WriteCell(colors[1]);
+		dataPack.WriteCell(colors[2]);
+		dataPack.WriteCell(colors[3]);
+		dataPack.WriteCell(client);
+		
+		SetEntityRenderColor(client, 0, 170, 240, 180);
+		Format(diceText, sizeof(diceText), "%t", "frozen", duration);
 	}
-	
-	SetEntityRenderColor(client, 0, 170, 240, 180);
-	
-	Format(diceText, sizeof(diceText), "%t", "frozen");
 }
 
 
-public Action:freezeOff(Handle:timer, any:client, int r, int g, int b, int a)
+public Action freezeOff(Handle timer, Handle dataPack)
 {
+	int colors[4];
+	
+	colors[0] = ReadPackCell(dataPack);
+	colors[1] = ReadPackCell(dataPack);
+	colors[2] = ReadPackCell(dataPack);
+	colors[3] = ReadPackCell(dataPack);
+	
+	int client = ReadPackCell(dataPack);
+	
 	SetEntityMoveType(client, MOVETYPE_WALK);
 	
-	SetEntityRenderColor(client, 188, 255, 188, 210);
+	SetEntityRenderColor(client, colors[0], colors[1], colors[2], colors[3]);
 	
 	return Plugin_Handled;
 }
