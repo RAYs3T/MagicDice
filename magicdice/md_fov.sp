@@ -58,7 +58,7 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 		return;
 	}
 	
-	SetEntProp(client, Prop_Send, "m_iFOV", lowFov);
+	SetEntProp(client, Prop_Send, "m_iFOV", amount);
 	
 	Format(diceText, sizeof(diceText), "%t", "fov_set");
 }
