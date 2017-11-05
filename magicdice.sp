@@ -299,6 +299,21 @@ public Action OnReconfigureCommand(int client, int params)
 	// Fetch configs
 	LoadResults();
 	
+	PrintToServer("%s Checking for new added, but not loaded plugins ...", MD_PREFIX);
+	char modules[256][32];
+	GetAllMyKnownModules(modules);
+	for (int i = 0; i < sizeof(modules); i++)
+	{	if(strcmp(modules[i], "") == 0 || StrContains(modules[i], "md_", true) == -1)
+		{
+			continue; // empty / not an md module
+		}
+		if(FindModuleByName(modules[i]) == INVALID_HANDLE)
+		{
+			// This plugin is specified in the config but not loaded yet, loading ...
+			ServerCommand("sm plugins load %s", modules[i]);
+		}
+	}
+	
 	// May release the block, depending on the old state
 	g_cannotDice = oldBlockState;
 }
