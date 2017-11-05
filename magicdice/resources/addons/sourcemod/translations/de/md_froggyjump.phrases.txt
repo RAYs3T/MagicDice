@@ -1,0 +1,8 @@
+"Phrases"
+{
+	"froggy_jump"
+	{
+		"#format"	"{1:i}"
+		"de"		"Du kannst wie ein Frosch springen ({1} mal in der Luft)"
+	}
+}
