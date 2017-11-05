@@ -127,15 +127,12 @@ public void OnMapStart()
 
 public void OnPluginEnd()
 {
-	PrintToServer("%s Shutting down ...", MD_PREFIX);
 	UnloadModules();
 }
 
 // This timer may reloads the results if the plugin was not clean-started
 public void LoadModules() {
-	PrintToServer("Timer Tick: %i", cleanStart);
-	LogMessage("%s WARNING: The plugin was loaded mid round. All submodules should have lost their registration!", MD_PREFIX);
-	LogMessage("%s Going to reload results since the plugin was reloaded in mid-round ...", MD_PREFIX);
+	PrintToServer("Loading all parent plugins ...", cleanStart);
 	
 	char modules[256][32];
 	GetAllMyKnownModules(modules);
@@ -359,13 +356,12 @@ bool LoadResults()
 				
 				moduleCount++;
 #if defined DEBUG
-					/* PrintToServer("%s Module[%s] probabillity[%i]\n\
-					\tParam1: '%s'\n\
-					\tParam2: '%s'\n\
-					\tParam3: '%s'\n\
-					\tParam4: '%s'\n\
-					\tParam5: '%s'\n", 
-					MD_PREFIX, bufferFeature, probabillity, param1, param2, param3, param4, param5); */
+					PrintToServer("%s\tModule[%s] probabillity[%i]", MD_PREFIX, bufferFeature, probabillity);
+					if(strcmp(param1, "") != 0) PrintToServer("%s\t\tParam1: '%s'", MD_PREFIX, param1);
+					if(strcmp(param2, "") != 0) PrintToServer("%s\t\tParam2: '%s'", MD_PREFIX, param2);
+					if(strcmp(param3, "") != 0) PrintToServer("%s\t\tParam3: '%s'", MD_PREFIX, param3);
+					if(strcmp(param4, "") != 0) PrintToServer("%s\t\tParam4: '%s'", MD_PREFIX, param4);
+					if(strcmp(param5, "") != 0) PrintToServer("%s\t\tParam5: '%s'", MD_PREFIX, param5);
 #endif
 			} while (kv.GotoNextKey());
 			resultCount++;
