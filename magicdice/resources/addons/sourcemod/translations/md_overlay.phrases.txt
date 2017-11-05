@@ -1,0 +1,8 @@
+"Phrases"
+{
+	"using_overlay"
+	{
+		"#format"	"{1:s}"
+		"en"		"You've been choosen as subject for the secret Projekt '{1}'"
+	}
+}
