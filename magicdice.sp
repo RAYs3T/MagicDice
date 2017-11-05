@@ -38,11 +38,17 @@ ConVar g_cvar_allowDiceTeamCT;
 
 #define DEBUG true
 
+#define MAX_MODULES 6
+
 char MD_PREFIX[12] = "[MagicDice]";
+
+
+char g_results[256][MAX_MODULES][7][32]; // [result][modules][module_name|probabillity|params][param values]
+int g_probabillities[256];
 
 Handle g_modulesArray;
 
-int g_probabillities[128];
+
 
 // How many times has an user rolled the dice?
 int g_dices[MAXPLAYERS + 1];
@@ -92,8 +98,11 @@ public void OnPluginStart()
 	g_modulesArray = CreateArray(128);
 	RegConsoleCmd("md", OnDiceCommand, "Rolls the dice");
 	RegConsoleCmd("mdtest", OnDiceCommandFocedValue, "Test command for the dice. Rolls the dice result with the given number", ADMFLAG_CHEATS);
-	
-	LoadProbabillities(g_probabillities);
+
+	if(!LoadResults())
+	{
+		ThrowError("Unable to load results from results config");
+	}
 	
 	HookEvent("round_start", Event_RoundStart, EventHookMode_Post);
 	HookEvent("round_end", Event_RoundEnd, EventHookMode_Post);
@@ -226,123 +235,106 @@ public Action OnDiceCommandFocedValue(int client, int params)
 	}
 	
 	CReplyToCommand(client, "%s %t", MD_PREFIX, "using_fixed_dice_result", index);
-	LoadResultDeatailsAndProcess(index, client);
+	PickResult(client, index);
 	return Plugin_Handled;
 }
 
-KeyValues LoadConfig()
-{
+bool LoadResults()
+{	
 	KeyValues kv = new KeyValues("Results");
 	kv.ImportFromFile("cfg/magicdice/results.cfg");
-	return kv;
-}
+	int resultCount = 0;
 
-//TODO Add a parsing method to validate modules specified in the config
-// So we can warn the admin if any module is not loaded, but specified in the config
-
-// Load the probabillities from the config and store them in the cache array
-void LoadProbabillities(int[] probabillitiesBuffer)
-{	
-	KeyValues kv = LoadConfig();
-	if (!kv.GotoFirstSubKey())
-	{
-		ThrowError("Unable to load value inside results config. First key not found!");
-	}
-	
-	int lastResultNo = 0;
- 
-	char resultId[255];
-	do {
-		kv.GetSectionName(resultId, sizeof(resultId));
-		int resultNo = StringToInt(resultId);
-		
-		// Result NOs need to be in the right order.
-		// We check if a result had the correct number
-		int expectedResult = lastResultNo++;
-		if(resultNo != expectedResult) {
-			ThrowError("Results are not in the correct order. Processed no: %i but expected %i", resultNo, expectedResult);
-		}
-		int probabillity = kv.GetNum("prob");
-		if(probabillity < 1 || probabillity > 10) {
-			ThrowError("Invalid probabillity (%i) specified for result: %i", probabillity, resultNo);
-		}
-		probabillitiesBuffer[resultNo] = probabillity;
-#if defined DEBUG
-		PrintToServer("Result %i with prob: %i", resultNo, probabillity);
-#endif
-	} while (kv.GotoNextKey());
- 
-	delete kv;
-}
-
-// Picks and processes the result
-public void PickResult(int client)
-{
-	int selectedIndex = SelectByProbability(g_probabillities);
-	PrintToServer("Picked result %i", selectedIndex);
-	LoadResultDeatailsAndProcess(selectedIndex, client);
-}
-
-// Loads the responding feature parameters from the config
-// Multiple invocations of different/same features could happen here if specified in the config
-bool LoadResultDeatailsAndProcess(int resultNo, int client)
-{	
-	KeyValues kv = LoadConfig();
- 
 	// Jump into the first subsection
 	if (!kv.GotoFirstSubKey())
 	{
 		return false;
 	}
- 
- 	char searchedResult[12];
- 	IntToString(resultNo, searchedResult, sizeof(searchedResult));
  	
 	// Iterate over subsections at the same nesting level
 	char buffer[255];
 	do {
 		kv.GetSectionName(buffer, sizeof(buffer));
-		if(strcmp(buffer, searchedResult) == 0) {
+	
+		char probabillityValue[32];
+		kv.GetString("prob", probabillityValue, sizeof(probabillityValue));
 		
-			int probabillity = kv.GetNum("prob");
-			kv.GotoFirstSubKey(false);
+		int probabillity = kv.GetNum("prob");
+		g_probabillities[resultCount] = probabillity;
+		
+		kv.GotoFirstSubKey(false);
+		do {
+			PrintToServer("%s Loading result: %s", MD_PREFIX, buffer);
+			int moduleCount = 0;
 			do {
-				do {
-					char bufferFeature[255];
-					kv.GetSectionName(bufferFeature, sizeof(bufferFeature));
-					char param1[32];
-					char param2[32];
-					char param3[32];
-					char param4[32];
-					char param5[32];
-					kv.GetString("param1", param1, sizeof(param1));
-					kv.GetString("param2", param2, sizeof(param2));
-					kv.GetString("param3", param3, sizeof(param3));
-					kv.GetString("param4", param4, sizeof(param4));
-					kv.GetString("param5", param5, sizeof(param5));
+				char bufferFeature[32];
+				kv.GetSectionName(bufferFeature, sizeof(bufferFeature));
+				char param1[32];
+				char param2[32];
+				char param3[32];
+				char param4[32];
+				char param5[32];
+				kv.GetString("param1", param1, sizeof(param1));
+				kv.GetString("param2", param2, sizeof(param2));
+				kv.GetString("param3", param3, sizeof(param3));
+				kv.GetString("param4", param4, sizeof(param4));
+				kv.GetString("param5", param5, sizeof(param5));
+				
+				g_results[resultCount][moduleCount][0] = probabillityValue;
+				g_results[resultCount][moduleCount][1] = bufferFeature;
+				g_results[resultCount][moduleCount][2] = param1;
+				g_results[resultCount][moduleCount][3] = param2;
+				g_results[resultCount][moduleCount][4] = param3;
+				g_results[resultCount][moduleCount][5] = param4;
+				g_results[resultCount][moduleCount][6] = param5;
+				
+				moduleCount++;
 #if defined DEBUG
-					PrintToServer("Result: %s feature: %s prob: %i, p1: %s, p2: %s, p3: %s, p4: %s, p5: %s", 
-						buffer, bufferFeature, probabillity, param1, param2, param3, param4, param5);
+					PrintToServer("%s Module[%s] probabillity[%i]\n\
+					\tParam1: '%s'\n\
+					\tParam2: '%s'\n\
+					\tParam3: '%s'\n\
+					\tParam4: '%s'\n\
+					\tParam5: '%s'\n", 
+					MD_PREFIX, bufferFeature, probabillity, param1, param2, param3, param4, param5);
 #endif
-						
-					Handle module = FindModuleByName(bufferFeature);
-					if(module == INVALID_HANDLE) {
-						LogError("No matching module found for name '%s' Is the responsible module loaded?", bufferFeature);
-						CReplyToCommand(client, "{lightgreen}%s {default}Sorry, the responsible module for this result died / or was never alive at all :(", MD_PREFIX);
-						CReplyToCommand(client, "{lightgreen}%s {default}...but great news! You can roll the dice one more time!", MD_PREFIX);
-						// Since we had an internal plugin failure / configuration failure, we give the user one more roll.
-						// So there is no reason to be sad :-)
-						g_allowedDices[client] += 1;
-					}
-					ProcessResult(module, resultNo, client, param1, param2, param3, param4, param5);
-				} while (kv.GotoNextKey());
 			} while (kv.GotoNextKey());
-			kv.GoBack();
-		} // Not matching the searched result
+			resultCount++;
+		} while (kv.GotoNextKey());
+		kv.GoBack();
 	} while (kv.GotoNextKey());
- 
 	delete kv;
-	return false;
+	PrintToServer("%s Loaded %i results", MD_PREFIX, resultCount);
+	return true;
+}
+
+// Picks and processes the result
+void PickResult(int client, int forcedResult = -1)
+{
+	int selectedIndex;
+	if(forcedResult != -1)
+	{
+		selectedIndex = forcedResult;
+	} else {
+		selectedIndex = SelectByProbability(g_probabillities);
+	}
+	
+	PrintToServer("Picked result %i", selectedIndex);
+	for (int i = 0; i < MAX_MODULES; i++)
+	{
+		if(strcmp(g_results[selectedIndex][i][1], "") != 0)
+		{
+			Handle module = FindModuleByName(g_results[selectedIndex][i][1]);
+			ProcessResult(module, selectedIndex, client, 
+			g_results[selectedIndex][i][2], 
+			g_results[selectedIndex][i][3], 
+			g_results[selectedIndex][i][4], 
+			g_results[selectedIndex][i][5], 
+			g_results[selectedIndex][i][6]);
+		} else {
+			break; // No more modules to process for this result
+		}
+	}
 }
 
 // Searches for a module by its name
@@ -394,7 +386,7 @@ public void ProcessResult(Handle module, int resultNo, int client, char[] param1
 
 
 // Pickes a result depending on the probability
-public int SelectByProbability(int modulePropabilities[128])
+public int SelectByProbability(int modulePropabilities[256])
 {
 	int totalSum = 0;
 	
