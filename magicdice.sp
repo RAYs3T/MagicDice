@@ -101,7 +101,7 @@ public void OnPluginStart()
 	g_modulesArray = CreateArray(128);
 	RegConsoleCmd("md", OnDiceCommand, "Rolls the dice");
 	RegConsoleCmd("mdtest", OnDiceCommandFocedValue, "Test command for the dice. Rolls the dice result with the given number", ADMFLAG_CHEATS);
-	RegConsoleCmd("md_reconfigure", OnReconfigureCommand, "Reloads and reconfigures the result configurations", ADMFLAG_ROOT);
+	RegConsoleCmd("md_reconfigure", OnReconfigureCommand, "Reloads and reconfigures the result configurations", ADMFLAG_CONFIG);
 	
 	
 	HookEvent("round_start", Event_RoundStart, EventHookMode_Post);
