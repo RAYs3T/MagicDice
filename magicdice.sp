@@ -98,7 +98,8 @@ public void OnPluginStart()
 	g_modulesArray = CreateArray(128);
 	RegConsoleCmd("md", OnDiceCommand, "Rolls the dice");
 	RegConsoleCmd("mdtest", OnDiceCommandFocedValue, "Test command for the dice. Rolls the dice result with the given number", ADMFLAG_CHEATS);
-
+	RegConsoleCmd("md_reconfigure", OnReconfigureCommand, "Reloads and reconfigures the result configurations", ADMFLAG_ROOT);
+	
 	if(!LoadResults())
 	{
 		ThrowError("Unable to load results from results config");
@@ -237,6 +238,23 @@ public Action OnDiceCommandFocedValue(int client, int params)
 	CReplyToCommand(client, "%s %t", MD_PREFIX, "using_fixed_dice_result", index);
 	PickResult(client, index);
 	return Plugin_Handled;
+}
+
+public Action OnReconfigureCommand(int client, int params)
+{
+	// Ensure that nobody can dice while the plugin is reloading the configuration
+	// This config reload could happen in the game end phase
+	// We need to ensure that the blocking switch is restored with the status it had before
+	// This could lead into trouble if the reloading happens when the round restarts
+	bool oldBlockState = g_cannotDice;
+	// now change the switch - We block any dice attemps
+	g_cannotDice = true;
+	
+	// Fetch configs
+	LoadResults();
+	
+	// May release the block, depending on the old state
+	g_cannotDice = oldBlockState;
 }
 
 bool LoadResults()
