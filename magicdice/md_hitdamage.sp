@@ -96,6 +96,10 @@ void AddTakeDamageHook(int client)
 
 public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype)
 {
+	if(attacker > MAXPLAYERS) {
+		// Damage not caused by another player
+		return Plugin_Continue;
+	}
 	// Do we have to modify the damage of the git player?
 	if(g_playerDamageMultiplier[attacker] != 0.0) {
 		damage *= g_playerDamageMultiplier[attacker];
