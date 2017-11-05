@@ -31,7 +31,6 @@ void MDInitTranslations()
 	char translations[sizeof(pluginName) + 16]; // Add some more space for the extension (.phrases)
 	Format(translations, sizeof(translations), "%s.phrases", pluginName); // Should end up like: md_example.phrases (.txt is added by sourcemod)
 	
-	LogMessage("Loading translation for %s from %s", pluginName, translations);
 	LoadTranslations(translations);
 }
 

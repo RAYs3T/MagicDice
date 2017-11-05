@@ -38,6 +38,9 @@ ConVar g_cvar_allowDiceTeamCT;
 
 #define DEBUG true
 
+// This is set if the plugin was loaded trough a map start and not just loaded mid map
+bool cleanStart = false;
+
 #define MAX_MODULES 6
 
 char MD_PREFIX[12] = "[MagicDice]";
@@ -100,10 +103,6 @@ public void OnPluginStart()
 	RegConsoleCmd("mdtest", OnDiceCommandFocedValue, "Test command for the dice. Rolls the dice result with the given number", ADMFLAG_CHEATS);
 	RegConsoleCmd("md_reconfigure", OnReconfigureCommand, "Reloads and reconfigures the result configurations", ADMFLAG_ROOT);
 	
-	if(!LoadResults())
-	{
-		ThrowError("Unable to load results from results config");
-	}
 	
 	HookEvent("round_start", Event_RoundStart, EventHookMode_Post);
 	HookEvent("round_end", Event_RoundEnd, EventHookMode_Post);
@@ -111,6 +110,56 @@ public void OnPluginStart()
 	PrepareAndLoadConfig();
 	
 	g_cannotDice = false;
+	PrintToServer("%s Plugin start", MD_PREFIX);
+}
+
+
+public void OnMapStart()
+{
+	PrintToServer("%s Map start ...", MD_PREFIX);
+	//ThrowError("MAP START!");
+	//cleanStart = true;
+	LoadResults();
+	
+	LoadModules();
+	
+}
+
+public void OnPluginEnd()
+{
+	PrintToServer("%s Shutting down ...", MD_PREFIX);
+	UnloadModules();
+}
+
+// This timer may reloads the results if the plugin was not clean-started
+public void LoadModules() {
+	PrintToServer("Timer Tick: %i", cleanStart);
+	LogMessage("%s WARNING: The plugin was loaded mid round. All submodules should have lost their registration!", MD_PREFIX);
+	LogMessage("%s Going to reload results since the plugin was reloaded in mid-round ...", MD_PREFIX);
+	
+	char modules[256][32];
+	GetAllMyKnownModules(modules);
+	for (int i = 0; i < sizeof(modules); i++)
+	{	
+		if(strcmp(modules[i], "") == 0 || StrContains(modules[i], "md_", true) == -1)
+		{
+			continue; // empty / not an md module
+		}
+		ServerCommand("sm plugins load %s", modules[i]);
+	}
+}
+
+void UnloadModules()
+{
+	char modules[256][32];
+	GetAllMyKnownModules(modules);
+	for (int i = 0; i < sizeof(modules); i++)
+	{	if(strcmp(modules[i], "") == 0 || StrContains(modules[i], "md_", true) == -1)
+		{
+			continue; // empty / not an md module
+		}
+		ServerCommand("sm plugins unload %s", modules[i]);
+	}
 }
 
 public Action Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
@@ -285,6 +334,8 @@ bool LoadResults()
 			PrintToServer("%s Loading result: %s", MD_PREFIX, buffer);
 			int moduleCount = 0;
 			do {
+				
+				// TODO validate if the specified module is available (avoid typos etc.)
 				char bufferFeature[32];
 				kv.GetSectionName(bufferFeature, sizeof(bufferFeature));
 				char param1[32];
@@ -308,13 +359,13 @@ bool LoadResults()
 				
 				moduleCount++;
 #if defined DEBUG
-					PrintToServer("%s Module[%s] probabillity[%i]\n\
+					/* PrintToServer("%s Module[%s] probabillity[%i]\n\
 					\tParam1: '%s'\n\
 					\tParam2: '%s'\n\
 					\tParam3: '%s'\n\
 					\tParam4: '%s'\n\
 					\tParam5: '%s'\n", 
-					MD_PREFIX, bufferFeature, probabillity, param1, param2, param3, param4, param5);
+					MD_PREFIX, bufferFeature, probabillity, param1, param2, param3, param4, param5); */
 #endif
 			} while (kv.GotoNextKey());
 			resultCount++;
@@ -325,6 +376,8 @@ bool LoadResults()
 	PrintToServer("%s Loaded %i results", MD_PREFIX, resultCount);
 	return true;
 }
+
+
 
 // Picks and processes the result
 void PickResult(int client, int forcedResult = -1)
@@ -351,6 +404,38 @@ void PickResult(int client, int forcedResult = -1)
 			g_results[selectedIndex][i][6]);
 		} else {
 			break; // No more modules to process for this result
+		}
+	}
+}
+
+/*
+ * Find all the module names of the modules that are currently registered at the core
+ * @param collectedModules buffer for the module names to
+ */
+void GetAllMyKnownModules(char collectedModules[256][32])
+{
+	int addedModules = 0;
+	for (int r = 0; r < 256; r++) // Loop trough the results
+	{
+		for (int m = 0; m < MAX_MODULES; m++) // Loop trough the modules of a result
+		{
+			bool inList = false;
+			char currentModule[32];
+			for (int c = 0; c < sizeof(collectedModules); c++) // Loop trough all the resoults we have allready collected
+			{
+				if(strcmp(g_results[r][m][1], collectedModules[c]) == 0)
+				{
+					inList = true;
+					break;
+				}else {
+					currentModule = g_results[r][m][1];
+				}
+			}
+			if(!inList && strcmp(g_results[r][m][1], "") != 0)
+			{
+				// The current module is not in the collected list yet, add it
+				collectedModules[addedModules++] = g_results[r][m][1];		
+			}
 		}
 	}
 }
