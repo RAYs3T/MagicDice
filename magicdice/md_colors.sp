@@ -75,10 +75,5 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 	
 	SetEntityRenderColor(client, red, green, blue, alpha);
 	
-	if(alpha != 255)
-	{
-		Format(diceText, sizeof(diceText), "%t", "transparented", (1 - ((alpha / 256) * 100)) );
-	}
-	
 	Format(diceText, sizeof(diceText), "%t", "colored", ((red / 256) * 100), ((green / 256) * 100), ((blue / 256) * 100));
 }

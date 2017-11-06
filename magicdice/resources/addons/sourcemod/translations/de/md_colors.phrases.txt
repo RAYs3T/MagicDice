@@ -3,7 +3,7 @@
 	"colored"
 	{
 		"#format"	"{1:.1f}{2:.1f}{3:.1f}"
-		"en"		"Du wurdes eingefärbt. {black}({fullred}Rot: {1}% {lime}Grün: {2}% {aqua}Blau: {3}%{black})"
+		"en"		"Du wurdest eingefärbt. {black}({fullred}Rot: {1}% {lime}Grün: {2}% {aqua}Blau: {3}%{black})"
 	}
 	"transparented"
 	{
