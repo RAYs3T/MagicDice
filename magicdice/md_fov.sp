@@ -92,7 +92,6 @@ public Action Timer_UpdateFOV(Handle timer)
 					continue; // Skip this dead player
 				}
 				SetEntProp(i, Prop_Send, "m_iFOV", g_fovClients[i]);
-				SetEntProp(i, Prop_Send, "m_iDefaultFOV", g_fovClients[i]);
 			}
 	}
 	return Plugin_Continue;
