@@ -62,7 +62,7 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 	{
 		SetEntityMoveType(client, MOVETYPE_NONE);
 		
-		DataPack dataPack;
+		DataPack dataPack = new DataPack();
 		
 		int colors[4];
 		
