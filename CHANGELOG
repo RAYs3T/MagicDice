@@ -1,0 +1,11 @@
+# v0.1
+## New Features
+* Freezegrenade
+* Multiple dices
+* Up to 5 dice features are possible per dice
+* ...
+
+## Fixes compared to the old plugin:
+* Starting a demo record will no longer stop/break screen effect (they will be set by a timer)
+* We try to ensure that no round overlapping bugs can happen anymore (like dice a rocket and the and of the round and exploding after spawning)
+* Fixed many performace issues
