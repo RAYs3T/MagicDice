@@ -3,11 +3,11 @@
 	"colored"
 	{
 		"#format"	"{1:.1f}{2:.1f}{3:.1f}"
-		"en"		"Du wurdest eingefärbt. {black}({fullred}Rot: {1}% {lime}Grün: {2}% {aqua}Blau: {3}%{black})"
+		"de"		"Du wurdest eingefärbt. {black}({fullred}Rot: {1}% {lime}Grün: {2}% {aqua}Blau: {3}%{black})"
 	}
 	"transparented"
 	{
 		"#format"	"{1:.1f}"
-		"en"		"Du bist {1}% transparenter"
+		"de"		"Du bist {1}% transparenter"
 	}
 }
