@@ -1,0 +1,13 @@
+"Phrases"
+{
+	"colored"
+	{
+		"#format"	"{1:.1f}{2:.1f}{3:.1f}"
+		"en"		"Your colors have been altered. {black}({fullred}Red: {1}% {lime}Green: {2}% {aqua}Blue: {3}%{black})"
+	}
+	"transparented"
+	{
+		"#format"	"{1:.1f}"
+		"en"		"You are {1}% more transparent"
+	}
+}
