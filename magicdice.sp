@@ -26,24 +26,22 @@
 
 // Config cvars
 #define CONF_CVAR_DICES_PER_ROUND 		"sm_md_dices_per_round"
-ConVar g_cvar_dicesPerRound;
+static ConVar g_cvar_dicesPerRound;
 
 #define CONF_CVAR_ALLOW_DICE_TEAM_T 	"sm_md_allow_dice_team_t"
-ConVar g_cvar_allowDiceTeamT;
+static ConVar g_cvar_allowDiceTeamT;
 
 #define CONF_CVAR_ALLOW_DICE_TEAM_CT 	"sm_md_allow_dice_team_ct"
-ConVar g_cvar_allowDiceTeamCT;
+static ConVar g_cvar_allowDiceTeamCT;
 
 
 
 #define DEBUG true
 
-// This is set if the plugin was loaded trough a map start and not just loaded mid map
-bool cleanStart = false;
 
 
-char MD_PREFIX[12] = "[MagicDice]";
-char MD_PREFIX_COLORED[64] = "{default}[{fuchsia}Magic{haunted}Dice{default}]";
+public char MD_PREFIX[12] = "[MagicDice]";
+public char MD_PREFIX_COLORED[64] = "{default}[{fuchsia}Magic{haunted}Dice{default}]";
 
 #define MAX_MODULES 6 //
 
@@ -60,21 +58,21 @@ enum ModuleField // Helper enum for array access
 	MAX_MODULE_FIELDS // Fake last position to get the number of params
 };
 
-char g_results[256][MAX_MODULES][MAX_MODULE_FIELDS][32]; // [result][modules][module_name|probabillity|params][param values]
+static char g_results[256][MAX_MODULES][MAX_MODULE_FIELDS][32]; // [result][modules][module_name|probabillity|params][param values]
 
-int g_probabillities[256];
+static int g_probabillities[256];
 
-Handle g_modulesArray;
+static Handle g_modulesArray;
 
 
 
 // How many times has an user rolled the dice?
-int g_dices[MAXPLAYERS + 1];
+static int g_dices[MAXPLAYERS + 1];
 // How many times can an user roll the dice?
-int g_allowedDices[MAXPLAYERS + 1];
+static int g_allowedDices[MAXPLAYERS + 1];
 
 // A switch to block general dices while the game / round is ending
-bool g_cannotDice = true;
+static bool g_cannotDice = true;
 
 public Plugin myinfo =
 {
@@ -131,13 +129,8 @@ public void OnPluginStart()
 
 public void OnMapStart()
 {
-	PrintToServer("%s Map start ...", MD_PREFIX);
-	//ThrowError("MAP START!");
-	//cleanStart = true;
 	LoadResults();
-	
-	LoadModules();
-	
+	LoadModules();	
 }
 
 public void OnPluginEnd()
@@ -145,10 +138,8 @@ public void OnPluginEnd()
 	UnloadModules();
 }
 
-// This timer may reloads the results if the plugin was not clean-started
-public void LoadModules() {
-	PrintToServer("Loading all parent plugins ...", cleanStart);
-	
+static void LoadModules() 
+{
 	char modules[256][32];
 	GetAllMyKnownModules(modules);
 	for (int i = 0; i < sizeof(modules); i++)
@@ -161,7 +152,7 @@ public void LoadModules() {
 	}
 }
 
-void UnloadModules()
+static void UnloadModules()
 {
 	char modules[256][32];
 	GetAllMyKnownModules(modules);
@@ -333,7 +324,7 @@ public Action OnReconfigureCommand(int client, int params)
 	g_cannotDice = oldBlockState;
 }
 
-bool LoadResults()
+static bool LoadResults()
 {	
 	KeyValues kv = new KeyValues("Results");
 	kv.ImportFromFile("cfg/magicdice/results.cfg");
@@ -409,7 +400,7 @@ bool LoadResults()
 
 
 // Picks and processes the result
-void PickResult(int client, int forcedResult = -1)
+static void PickResult(int client, int forcedResult = -1)
 {
 	int selectedIndex;
 	if(forcedResult != -1)
@@ -466,7 +457,7 @@ void PickResult(int client, int forcedResult = -1)
  * Find all the module names of the modules that are currently registered at the core
  * @param collectedModules buffer for the module names to
  */
-void GetAllMyKnownModules(char collectedModules[256][32])
+static void GetAllMyKnownModules(char collectedModules[256][32])
 {
 	int addedModules = 0;
 	for (int r = 0; r < 256; r++) // Loop trough the results
@@ -497,7 +488,7 @@ void GetAllMyKnownModules(char collectedModules[256][32])
 }
 
 // Searches for a module by its name
-Handle FindModuleByName(char[] searched) 
+static Handle FindModuleByName(char[] searched) 
 {
 	// Adds .smx to the seached module name
 	char searchedWithExtension[32];
@@ -576,7 +567,7 @@ static bool GetTeamProbabillities(int teamResults[256][2], int team)
 }
 
 // Pickes a result depending on the probability
-public int SelectByProbability(int modulePropabilities[256])
+static int SelectByProbability(int modulePropabilities[256])
 {
 	int totalSum = 0;
 	
@@ -604,7 +595,7 @@ public int SelectByProbability(int modulePropabilities[256])
 	return picked;
 }
 
-public bool CanPlayerDiceInTeam(int client)
+static bool CanPlayerDiceInTeam(int client)
 {
 	// Can the player dice within its team?
 	int team = GetClientTeam(client);
@@ -626,7 +617,7 @@ public bool CanPlayerDiceInTeam(int client)
 	return false; // Unknown team // not allowed
 }
 
-public bool CanPlayerDice(int client)
+static bool CanPlayerDice(int client)
 {
 	if(!IsClientInGame(client) || !IsPlayerAlive(client)) {
 		CReplyToCommand(client, "{lightgreen}%s %t", MD_PREFIX, "dice_not_possible_when_dead");
@@ -647,23 +638,23 @@ public bool CanPlayerDice(int client)
 	return true;
 }
 
-public void UpdateAllAllowedDices(int newAllowedDices)
+static void UpdateAllAllowedDices(int newAllowedDices)
 {
 	for (int i = 0; i < MAXPLAYERS; i++){
 		g_allowedDices[i] = newAllowedDices;
 	} 
 }
 
-public void ResetDiceCounters()
+static void ResetDiceCounters()
 {
 	for (int i = 0; i < MAXPLAYERS; i++){
 		ResetDiceCounter(i);
 	} 
 }
 
-public void ResetDiceCounter(int client)
+static void ResetDiceCounter(int client)
 {
-		// Get the allowed amout of dices from teh cvar
+		// Get the allowed amout of dices from the cvar
 		char buffer[11];
 		g_cvar_dicesPerRound.GetString(buffer, sizeof(buffer));
 		int allowed = StringToInt(buffer);
@@ -672,7 +663,7 @@ public void ResetDiceCounter(int client)
 		g_allowedDices[client] = allowed; // Set new limit
 }
 
-public bool hasModules()
+static bool hasModules()
 {
 	return GetArraySize(g_modulesArray) > 0;
 }
