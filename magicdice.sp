@@ -44,11 +44,12 @@ public char MD_PREFIX[12] = "[MagicDice]";
 public char MD_PREFIX_COLORED[64] = "{default}[{fuchsia}Magic{haunted}Dice{default}]";
 
 #define MAX_MODULES 6 //
+#define MODULE_PARAMETER_SIZE 128
 
 enum ModuleField // Helper enum for array access
 {
 	ModuleField_ModuleName, // Virtual field for the module name (from layer before)
-	ModuleField_Probabillity, // Virtual field for the module probabillity (from layer before)
+	ModuleField_Probability, // Virtual field for the module probability (from layer before)
 	ModuleField_Team, // Virtual field for the module's team (from layer before)
 	ModuleField_Param1,
 	ModuleField_Param2,
@@ -58,7 +59,7 @@ enum ModuleField // Helper enum for array access
 	MAX_MODULE_FIELDS // Fake last position to get the number of params
 };
 
-static char g_results[256][MAX_MODULES][MAX_MODULE_FIELDS][32]; // [result][modules][module_name|probabillity|params][param values]
+static char g_results[256][MAX_MODULES][MAX_MODULE_FIELDS][MODULE_PARAMETER_SIZE]; // [result][modules][module_name|probability|params][param values]
 
 static int g_probabillities[256];
 
@@ -140,7 +141,7 @@ public void OnPluginEnd()
 
 static void LoadModules() 
 {
-	char modules[256][32];
+	char modules[256][MODULE_PARAMETER_SIZE];
 	GetAllMyKnownModules(modules);
 	for (int i = 0; i < sizeof(modules); i++)
 	{	
@@ -154,7 +155,7 @@ static void LoadModules()
 
 static void UnloadModules()
 {
-	char modules[256][32];
+	char modules[256][MODULE_PARAMETER_SIZE];
 	GetAllMyKnownModules(modules);
 	for (int i = 0; i < sizeof(modules); i++)
 	{	if(strcmp(modules[i], "") == 0)
@@ -306,7 +307,7 @@ public Action OnReconfigureCommand(int client, int params)
 	LoadResults();
 	
 	PrintToServer("%s Checking for new added, but not loaded plugins ...", MD_PREFIX);
-	char modules[256][32];
+	char modules[256][MODULE_PARAMETER_SIZE];
 	GetAllMyKnownModules(modules);
 	for (int i = 0; i < sizeof(modules); i++)
 	{	if(strcmp(modules[i], "") == 0 || StrContains(modules[i], "md_", true) == -1)
@@ -341,11 +342,17 @@ static bool LoadResults()
 	do {
 		kv.GetSectionName(buffer, sizeof(buffer));
 	
-		char probabillityValue[32];
-		kv.GetString("prob", probabillityValue, sizeof(probabillityValue));
+		char probabilityValue[32];
+		kv.GetString("prob", probabilityValue, sizeof(probabilityValue));
 		
-		int probabillity = kv.GetNum("prob");
-		g_probabillities[resultCount] = probabillity;
+		int probability = kv.GetNum("prob");
+		
+		if(probability == 0)
+		{
+			SetFailState("Unable to load a dice result without probability in range (1-100)");
+		}
+		
+		g_probabillities[resultCount] = probability;
 		
 		char team[32];
 		kv.GetString("team", team, sizeof(team));
@@ -356,20 +363,21 @@ static bool LoadResults()
 			int moduleCount = 0;
 			do {
 				// TODO validate if the specified module is available (avoid typos etc.)
-				char bufferFeature[32];
+				char bufferFeature[MODULE_PARAMETER_SIZE];
 				kv.GetSectionName(bufferFeature, sizeof(bufferFeature));
-				char param1[32];
-				char param2[32];
-				char param3[32];
-				char param4[32];
-				char param5[32];
+				char param1[MODULE_PARAMETER_SIZE];
+				char param2[MODULE_PARAMETER_SIZE];
+				char param3[MODULE_PARAMETER_SIZE];
+				char param4[MODULE_PARAMETER_SIZE];
+				char param5[MODULE_PARAMETER_SIZE];
+				
 				kv.GetString("param1", param1, sizeof(param1));
 				kv.GetString("param2", param2, sizeof(param2));
 				kv.GetString("param3", param3, sizeof(param3));
 				kv.GetString("param4", param4, sizeof(param4));
 				kv.GetString("param5", param5, sizeof(param5));
 				
-				g_results[resultCount][moduleCount][ModuleField_Probabillity] = probabillityValue;
+				g_results[resultCount][moduleCount][ModuleField_Probability] = probabilityValue;
 				g_results[resultCount][moduleCount][ModuleField_ModuleName] = bufferFeature;
 				g_results[resultCount][moduleCount][ModuleField_Team] = team;
 				g_results[resultCount][moduleCount][ModuleField_Param1] = param1;
@@ -380,7 +388,7 @@ static bool LoadResults()
 				
 				moduleCount++;
 #if defined DEBUG
-					PrintToServer("%s\tModule[%s] probabillity[%i]", MD_PREFIX, bufferFeature, probabillity);
+					PrintToServer("%s\tModule[%s] probability[%i]", MD_PREFIX, bufferFeature, probability);
 					if(strcmp(param1, "") != 0) PrintToServer("%s\t\tParam1: '%s'", MD_PREFIX, param1);
 					if(strcmp(param2, "") != 0) PrintToServer("%s\t\tParam2: '%s'", MD_PREFIX, param2);
 					if(strcmp(param3, "") != 0) PrintToServer("%s\t\tParam3: '%s'", MD_PREFIX, param3);
@@ -409,9 +417,9 @@ static void PickResult(int client, int forcedResult = -1)
 	} else {
 		// Now things getting complicated:
 		// We store all results by index, but when it comes to team selection
-		// this indexes are no loger valid for our probabillity selection.
+		// this indexes are no loger valid for our probability selection.
 		// So we need to remap them to get only the ones matching for the requested team
-		// (othwewise we would mess up the probabillity selection)
+		// (othwewise we would mess up the probability selection)
 		// At the end (when a result for a team is choosen), we need to get its original index again.
 		
 		int team = GetClientTeam(client);
@@ -430,9 +438,9 @@ static void PickResult(int client, int forcedResult = -1)
 		{
 			selectableProbabillities[i] = teamProbabillities[i][1];
 		}
-		int selectedTeamProbabillity = SelectByProbability(selectableProbabillities);
+		int selectedTeamProbability = SelectByProbability(selectableProbabillities);
 		// Get the real result index
-		selectedIndex = teamProbabillities[selectedTeamProbabillity][0];
+		selectedIndex = teamProbabillities[selectedTeamProbability][0];
 	}
 	
 	PrintToServer("Picked result %i", selectedIndex);
@@ -457,7 +465,7 @@ static void PickResult(int client, int forcedResult = -1)
  * Find all the module names of the modules that are currently registered at the core
  * @param collectedModules buffer for the module names to
  */
-static void GetAllMyKnownModules(char collectedModules[256][32])
+static void GetAllMyKnownModules(char collectedModules[256][MODULE_PARAMETER_SIZE])
 {
 	int addedModules = 0;
 	for (int r = 0; r < 256; r++) // Loop trough the results
@@ -465,7 +473,7 @@ static void GetAllMyKnownModules(char collectedModules[256][32])
 		for (int m = 0; m < MAX_MODULES; m++) // Loop trough the modules of a result
 		{
 			bool inList = false;
-			char currentModule[32];
+			char currentModule[MODULE_PARAMETER_SIZE];
 			for (int c = 0; c < sizeof(collectedModules); c++) // Loop trough all the results we have allready collected
 			{
 				if(strcmp(g_results[r][m][ModuleField_ModuleName], collectedModules[c]) == 0)
@@ -520,16 +528,27 @@ public void ProcessResult(Handle module, int resultNo, int client, char[] param1
 		ThrowError("FunctionId is invalid");
 	}
 	
+	char selectedValue1[MODULE_PARAMETER_SIZE];
+	bool isParamRandom1 = ParseRandomParameter(param1, selectedValue1);
+	char selectedValue2[MODULE_PARAMETER_SIZE];
+	bool isParamRandom2 = ParseRandomParameter(param2, selectedValue2);
+	char selectedValue3[MODULE_PARAMETER_SIZE];
+	bool isParamRandom3 = ParseRandomParameter(param3, selectedValue3);
+	char selectedValue4[MODULE_PARAMETER_SIZE];
+	bool isParamRandom4 = ParseRandomParameter(param4, selectedValue4);
+	char selectedValue5[MODULE_PARAMETER_SIZE];
+	bool isParamRandom5 = ParseRandomParameter(param5, selectedValue5);
+				
 	// Call the function in the module
 	Call_StartFunction(module, id);
 	Call_PushCell(resultNo);
 	Call_PushCell(client);
-	Call_PushString(param1);
-	Call_PushString(param2);
-	Call_PushString(param3);
-	Call_PushString(param4);
-	Call_PushString(param5);
-	Call_Finish();	
+	Call_PushString(isParamRandom1 ? selectedValue1 : param1);
+	Call_PushString(isParamRandom2 ? selectedValue2 : param2);
+	Call_PushString(isParamRandom3 ? selectedValue3 : param3);
+	Call_PushString(isParamRandom4 ? selectedValue4 : param4);
+	Call_PushString(isParamRandom5 ? selectedValue5 : param5);
+	Call_Finish();
 }
 
 /*
@@ -541,7 +560,7 @@ static bool GetTeamProbabillities(int teamResults[256][2], int team)
 {
 	bool foundResults = false;
 	int newResultCount = 0;
-	char resultTeamBuffer[32];
+	char resultTeamBuffer[MODULE_PARAMETER_SIZE];
 	for (int i = 0; i < sizeof(g_results); i++)
 	{
 		if(strcmp(g_results[i][0][ModuleField_ModuleName], "") == 0)
@@ -555,7 +574,7 @@ static bool GetTeamProbabillities(int teamResults[256][2], int team)
 		int resultTeam = StringToInt(resultTeamBuffer);
 		if(strcmp(resultTeamBuffer, "") == 0 || resultTeam == team) // Empty (all teams) or matching the team
 		{
-			int prob = StringToInt(g_results[i][0][ModuleField_Probabillity]); // Since every module has the prob field we just use the first (0))
+			int prob = StringToInt(g_results[i][0][ModuleField_Probability]); // Since every module has the prob field we just use the first (0))
 
 			teamResults[newResultCount][0] = i;
 			teamResults[newResultCount][1] = prob;
@@ -666,4 +685,141 @@ static void ResetDiceCounter(int client)
 static bool hasModules()
 {
 	return GetArraySize(g_modulesArray) > 0;
+}
+
+// Values: <|random:values ONE:6,TWO:3,THREE:1|>
+// Float: <|random:float 5.0,15.0|>
+
+static bool ParseRandomParameter(char[] parameter, char selectedValue[MODULE_PARAMETER_SIZE])
+{
+	Regex randomRegex = CompileRegex("^\\<\\|rnd:(int|float|val|pval)\\ (.*)\\|\\>$");
+	RegexError error;
+	int subStrings = randomRegex.Match(parameter, error);
+	
+	if(subStrings == -1)
+	{
+		// Parameter not matching the regex, just using as regular parameter
+		return false;
+	}
+	
+	char typeBuffer[64];
+	char valueBuffer[256];
+	bool hasType = randomRegex.GetSubString(1, typeBuffer, sizeof(typeBuffer));
+	bool hasValues = randomRegex.GetSubString(2, valueBuffer, sizeof(valueBuffer));
+	
+	if(!hasType || !hasValues)
+	{	
+		return false;
+	}
+	
+	if(strcmp(typeBuffer, "pval") == 0)
+	{
+		ParseRandomValueList(valueBuffer, selectedValue, true);
+		return true;
+	}
+	if(strcmp(typeBuffer, "val") == 0)
+	{
+		ParseRandomValueList(valueBuffer, selectedValue, false);
+		return true;
+	}
+	else if (strcmp(typeBuffer, "int") == 0)
+	{
+		 IntToString(ParseRandomInt(valueBuffer), selectedValue, sizeof(selectedValue));
+		 return true;
+	}
+	else if (strcmp(typeBuffer, "float") == 0)
+	{
+		FloatToString(ParseRandomFloat(valueBuffer), selectedValue, sizeof(selectedValue));
+		return true;
+	}
+
+	// Nothing replaced
+	return false;
+}
+
+/*
+ * Parses a parameter and may replace random placeholer with real values
+ * @param list The random string from the parameter
+ * @param selectedValue The (by random) choosen  value
+ * @param probSelect bool switch, true means we have to deal with a KEY:PROB list instead of 
+ * a normal list (false)
+ * @return bool true, if we replaced something, false if not
+ */
+static bool ParseRandomValueList(char[] list, char selectedValue[MODULE_PARAMETER_SIZE], bool probSelect = false)
+{
+	char map[10][2][MODULE_PARAMETER_SIZE];
+	char parts[10][MODULE_PARAMETER_SIZE];
+	
+	int partCount = ExplodeString(list, ",", parts, 10, MODULE_PARAMETER_SIZE);
+	int entries = 0;
+	for (int i = 0; i < partCount; i++)
+	{
+		char entry[2][MODULE_PARAMETER_SIZE];
+		if(!probSelect)
+		{
+			map[i][0] = parts[i];
+		} else {
+			ExplodeString(parts[i], ":", entry, 2, MODULE_PARAMETER_SIZE);
+			map[i][0] = entry[0];
+			map[i][1] = entry[1];
+		}
+		entries++;
+	}	
+	
+	if(!probSelect)
+	{
+		// We just need to return any entry, prob does not matter
+		selectedValue = map[GetRandomInt(0, entries -1)][0];
+		return true;
+	}
+	
+	int probMap[256];
+	for (int i = 0; i < sizeof(map); i++)
+	{
+		probMap[i] = StringToInt(map[i][1]);
+	}
+	int selected = SelectByProbability(probMap);
+	selectedValue = map[selected][0];
+	return true;
+}
+
+/*
+ * Simple int random selector
+ * Parses: 1,5 (where 1 is min and 5 max, for example)
+ * @param values the string containing the min,max values
+ * @return int the (by random) choosen int
+ */
+static int ParseRandomInt(char values[256])
+{
+	// 5,15
+	char buffer[2][11];
+	if(ExplodeString(values, ",", buffer, 2, 11) != 2)
+	{
+		LogError("Unable to parse random int with values: %s", values);
+		return 0;		
+	}
+	int min = StringToInt(buffer[0]);
+	int max = StringToInt(buffer[1]);
+	
+	return GetRandomInt(min, max);
+}
+
+/*
+ * Simple float random selector
+ * Parses: 2.5,6.09 (where 2.5 is min and 6.09 max, for example)
+ * @param values the string containing the min,max values
+ * @return float the (by random) choosen float
+ */
+static float ParseRandomFloat(char values[256])
+{
+	char buffer[2][11];
+	if(ExplodeString(values, ",", buffer, 2, 11) != 2)
+	{
+		LogError("Unable to parse random float with values: %s", values);
+		return 0.0;		
+	}
+	float min = StringToFloat(buffer[0]);
+	float max = StringToFloat(buffer[1]);
+	
+	return GetRandomFloat(min, max);
 }
