@@ -1,0 +1,8 @@
+"Phrases"
+{
+	"Nervous"
+	{
+		"#format"	"{1:.1f}{2:.1f}"
+		"en"	"You have become nervous. Your aim will change every {2} seconds with an intensity of {1}"
+	}
+}
