@@ -43,6 +43,7 @@ bool cleanStart = false;
 
 
 char MD_PREFIX[12] = "[MagicDice]";
+char MD_PREFIX_COLORED[64] = "{default}[{fuchsia}Magic{haunted}Dice{default}]";
 
 #define MAX_MODULES 6 //
 
@@ -241,7 +242,7 @@ public int Native_MDPublishDiceResult(Handle plugin, int params)
 #if defined DEBUG
 	PrintToServer("%s %s rolled %s", MD_PREFIX, clientName, diceText);
 #endif
-	CReplyToCommand(client, "{lightgreen}%s {default}({grey}%i{default}) {mediumvioletred}%s", MD_PREFIX, dicedResultNumber, diceText);
+	CReplyToCommand(client, "{lightgreen}%s {default}({grey}%i{default}) {mediumvioletred}%s", MD_PREFIX_COLORED, dicedResultNumber, diceText);
 }
 
 // Adds additionals dices for a user
@@ -259,17 +260,17 @@ public Action OnDiceCommand(int client, int params)
 	if(!hasModules())
 	{
 		PrintToServer("%s No modules available! You should load at least one module.", MD_PREFIX);	
-		CReplyToCommand(client, "{lightgreen}%s {default}%t", MD_PREFIX, "no_modules_registered");
+		CReplyToCommand(client, "{lightgreen}%s {default}%t", MD_PREFIX_COLORED, "no_modules_registered");
 		return Plugin_Continue;
 	}
 	
 	if(!CanPlayerDiceInTeam(client)){
-		CReplyToCommand(client, "{lightgreen}%s {orange}%t", MD_PREFIX, "dice_not_allowed_for_your_team");
+		CReplyToCommand(client, "{lightgreen}%s {orange}%t", MD_PREFIX_COLORED, "dice_not_allowed_for_your_team");
 		return Plugin_Handled;
 	}
 	if(!CanPlayerDice(client)){
 		CReplyToCommand(client, "{lightgreen}%s %t", 
-			MD_PREFIX, "all_dices_are_gone", g_allowedDices[client]);
+			MD_PREFIX_COLORED, "all_dices_are_gone", g_allowedDices[client]);
 		return Plugin_Handled;
 	}
 	// TODO Replace with real random
@@ -283,7 +284,7 @@ public Action OnDiceCommand(int client, int params)
 public Action OnDiceCommandFocedValue(int client, int params)
 {
 	if(params != 1) {
-		CReplyToCommand(client, "{lightgreen}%s %t", MD_PREFIX, "missing_fixed_result_test_parameter");
+		CReplyToCommand(client, "{lightgreen}%s %t", MD_PREFIX_COLORED, "missing_fixed_result_test_parameter");
 		return Plugin_Handled;
 	}
 	char buffer[255];
@@ -291,11 +292,11 @@ public Action OnDiceCommandFocedValue(int client, int params)
 	int index = StringToInt(buffer);
 	
 	if(index > sizeof(g_probabillities) || g_probabillities[index] == 0){
-		CReplyToCommand(client, "{lightgreen}%s %t", MD_PREFIX, "not_found_fixed_result", index);
+		CReplyToCommand(client, "{lightgreen}%s %t", MD_PREFIX_COLORED, "not_found_fixed_result", index);
 		return Plugin_Handled;
 	}
 	
-	CReplyToCommand(client, "%s %t", MD_PREFIX, "using_fixed_dice_result", index);
+	CReplyToCommand(client, "%s %t", MD_PREFIX_COLORED, "using_fixed_dice_result", index);
 	PickResult(client, index);
 	return Plugin_Handled;
 }
@@ -429,7 +430,7 @@ void PickResult(int client, int forcedResult = -1)
 		if(!hasResults)
 		{
 			// No results for the clients team
-			PrintToChat(client, "%s %t", MD_PREFIX, "no_dice_results_for_your_team");
+			CPrintToChat(client, "%s %t", MD_PREFIX_COLORED, "no_dice_results_for_your_team");
 			return;
 		}
 		
