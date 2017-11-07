@@ -49,7 +49,7 @@ public char MD_PREFIX_COLORED[64] = "{default}[{fuchsia}Magic{haunted}Dice{defau
 enum ModuleField // Helper enum for array access
 {
 	ModuleField_ModuleName, // Virtual field for the module name (from layer before)
-	ModuleField_Probabillity, // Virtual field for the module probabillity (from layer before)
+	ModuleField_Probability, // Virtual field for the module probability (from layer before)
 	ModuleField_Team, // Virtual field for the module's team (from layer before)
 	ModuleField_Param1,
 	ModuleField_Param2,
@@ -59,7 +59,7 @@ enum ModuleField // Helper enum for array access
 	MAX_MODULE_FIELDS // Fake last position to get the number of params
 };
 
-static char g_results[256][MAX_MODULES][MAX_MODULE_FIELDS][MODULE_PARAMETER_SIZE]; // [result][modules][module_name|probabillity|params][param values]
+static char g_results[256][MAX_MODULES][MAX_MODULE_FIELDS][MODULE_PARAMETER_SIZE]; // [result][modules][module_name|probability|params][param values]
 
 static int g_probabillities[256];
 
@@ -342,11 +342,11 @@ static bool LoadResults()
 	do {
 		kv.GetSectionName(buffer, sizeof(buffer));
 	
-		char probabillityValue[32];
-		kv.GetString("prob", probabillityValue, sizeof(probabillityValue));
+		char probabilityValue[32];
+		kv.GetString("prob", probabilityValue, sizeof(probabilityValue));
 		
-		int probabillity = kv.GetNum("prob");
-		g_probabillities[resultCount] = probabillity;
+		int probability = kv.GetNum("prob");
+		g_probabillities[resultCount] = probability;
 		
 		char team[32];
 		kv.GetString("team", team, sizeof(team));
@@ -387,7 +387,7 @@ static bool LoadResults()
 				PrintToServer("Selected random4: %s", selectedValue4);
 				PrintToServer("Selected random5: %s", selectedValue5);
 				
-				g_results[resultCount][moduleCount][ModuleField_Probabillity] = probabillityValue;
+				g_results[resultCount][moduleCount][ModuleField_Probability] = probabilityValue;
 				g_results[resultCount][moduleCount][ModuleField_ModuleName] = bufferFeature;
 				g_results[resultCount][moduleCount][ModuleField_Team] = team;
 				g_results[resultCount][moduleCount][ModuleField_Param1] = param1;
@@ -398,7 +398,7 @@ static bool LoadResults()
 				
 				moduleCount++;
 #if defined DEBUG
-					PrintToServer("%s\tModule[%s] probabillity[%i]", MD_PREFIX, bufferFeature, probabillity);
+					PrintToServer("%s\tModule[%s] probability[%i]", MD_PREFIX, bufferFeature, probability);
 					if(strcmp(param1, "") != 0) PrintToServer("%s\t\tParam1: '%s'", MD_PREFIX, param1);
 					if(strcmp(param2, "") != 0) PrintToServer("%s\t\tParam2: '%s'", MD_PREFIX, param2);
 					if(strcmp(param3, "") != 0) PrintToServer("%s\t\tParam3: '%s'", MD_PREFIX, param3);
@@ -427,9 +427,9 @@ static void PickResult(int client, int forcedResult = -1)
 	} else {
 		// Now things getting complicated:
 		// We store all results by index, but when it comes to team selection
-		// this indexes are no loger valid for our probabillity selection.
+		// this indexes are no loger valid for our probability selection.
 		// So we need to remap them to get only the ones matching for the requested team
-		// (othwewise we would mess up the probabillity selection)
+		// (othwewise we would mess up the probability selection)
 		// At the end (when a result for a team is choosen), we need to get its original index again.
 		
 		int team = GetClientTeam(client);
@@ -448,9 +448,9 @@ static void PickResult(int client, int forcedResult = -1)
 		{
 			selectableProbabillities[i] = teamProbabillities[i][1];
 		}
-		int selectedTeamProbabillity = SelectByProbability(selectableProbabillities);
+		int selectedTeamProbability = SelectByProbability(selectableProbabillities);
 		// Get the real result index
-		selectedIndex = teamProbabillities[selectedTeamProbabillity][0];
+		selectedIndex = teamProbabillities[selectedTeamProbability][0];
 	}
 	
 	PrintToServer("Picked result %i", selectedIndex);
@@ -573,7 +573,7 @@ static bool GetTeamProbabillities(int teamResults[256][2], int team)
 		int resultTeam = StringToInt(resultTeamBuffer);
 		if(strcmp(resultTeamBuffer, "") == 0 || resultTeam == team) // Empty (all teams) or matching the team
 		{
-			int prob = StringToInt(g_results[i][0][ModuleField_Probabillity]); // Since every module has the prob field we just use the first (0))
+			int prob = StringToInt(g_results[i][0][ModuleField_Probability]); // Since every module has the prob field we just use the first (0))
 
 			teamResults[newResultCount][0] = i;
 			teamResults[newResultCount][1] = prob;
