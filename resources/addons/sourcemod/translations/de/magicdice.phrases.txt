@@ -35,4 +35,8 @@
 	{
 		"de"		"DU BIST TOT! - Wie willst du denn so würfeln?!"
 	}
+	"no_dice_results_for_your_team"
+	{
+		"de"		"Entschuldige, für dein Team gibt es keine Würfelergebnisse"
+	}
 }

@@ -35,4 +35,8 @@
 	{
 		"en"		"YOU ARE DEAD! - How would you dice?"
 	}
+	"no_dice_results_for_your_team"
+	{
+		"en"		"Sorry, there are no dice results for your team"
+	}
 }

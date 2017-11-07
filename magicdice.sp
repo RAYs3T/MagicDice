@@ -50,6 +50,7 @@ enum ModuleField // Helper enum for array access
 {
 	ModuleField_ModuleName, // Virtual field for the module name (from layer before)
 	ModuleField_Probabillity, // Virtual field for the module probabillity (from layer before)
+	ModuleField_Team, // Virtual field for the module's team (from layer before)
 	ModuleField_Param1,
 	ModuleField_Param2,
 	ModuleField_Param3,
@@ -354,12 +355,14 @@ bool LoadResults()
 		int probabillity = kv.GetNum("prob");
 		g_probabillities[resultCount] = probabillity;
 		
+		char team[32];
+		kv.GetString("team", team, sizeof(team));
+		 
 		kv.GotoFirstSubKey(false);
 		do {
 			PrintToServer("%s Loading result: %s", MD_PREFIX, buffer);
 			int moduleCount = 0;
 			do {
-				
 				// TODO validate if the specified module is available (avoid typos etc.)
 				char bufferFeature[32];
 				kv.GetSectionName(bufferFeature, sizeof(bufferFeature));
@@ -376,6 +379,7 @@ bool LoadResults()
 				
 				g_results[resultCount][moduleCount][ModuleField_Probabillity] = probabillityValue;
 				g_results[resultCount][moduleCount][ModuleField_ModuleName] = bufferFeature;
+				g_results[resultCount][moduleCount][ModuleField_Team] = team;
 				g_results[resultCount][moduleCount][ModuleField_Param1] = param1;
 				g_results[resultCount][moduleCount][ModuleField_Param2] = param2;
 				g_results[resultCount][moduleCount][ModuleField_Param3] = param3;
@@ -411,7 +415,32 @@ void PickResult(int client, int forcedResult = -1)
 	{
 		selectedIndex = forcedResult;
 	} else {
-		selectedIndex = SelectByProbability(g_probabillities);
+		// Now things getting complicated:
+		// We store all results by index, but when it comes to team selection
+		// this indexes are no loger valid for our probabillity selection.
+		// So we need to remap them to get only the ones matching for the requested team
+		// (othwewise we would mess up the probabillity selection)
+		// At the end (when a result for a team is choosen), we need to get its original index again.
+		
+		int team = GetClientTeam(client);
+		
+		int teamProbabillities[256][2];
+		bool hasResults = GetTeamProbabillities(teamProbabillities, team);
+		if(!hasResults)
+		{
+			// No results for the clients team
+			PrintToChat(client, "%s %t", MD_PREFIX, "no_dice_results_for_your_team");
+			return;
+		}
+		
+		int selectableProbabillities[256];
+		for (int i = 0; i < sizeof(teamProbabillities); i++)
+		{
+			selectableProbabillities[i] = teamProbabillities[i][1];
+		}
+		int selectedTeamProbabillity = SelectByProbability(selectableProbabillities);
+		// Get the real result index
+		selectedIndex = teamProbabillities[selectedTeamProbabillity][0];
 	}
 	
 	PrintToServer("Picked result %i", selectedIndex);
@@ -511,8 +540,39 @@ public void ProcessResult(Handle module, int resultNo, int client, char[] param1
 	Call_Finish();	
 }
 
+/*
+ * Returns all probabillities for results that matches the given team
+ * @param team	The requested team for the probabillities
+ * @retun bool false if no results for that team exist
+ */
+static bool GetTeamProbabillities(int teamResults[256][2], int team)
+{
+	bool foundResults = false;
+	int newResultCount = 0;
+	char resultTeamBuffer[32];
+	for (int i = 0; i < sizeof(g_results); i++)
+	{
+		if(strcmp(g_results[i][0][ModuleField_ModuleName], "") == 0)
+		{
+			// We reached the end of results.
+			// There was no module name
+			break;
+		}
+		
+		resultTeamBuffer = g_results[i][0][ModuleField_Team];
+		int resultTeam = StringToInt(resultTeamBuffer);
+		if(strcmp(resultTeamBuffer, "") == 0 || resultTeam == team) // Empty (all teams) or matching the team
+		{
+			int prob = StringToInt(g_results[i][0][ModuleField_Probabillity]); // Since every module has the prob field we just use the first (0))
 
-
+			teamResults[newResultCount][0] = i;
+			teamResults[newResultCount][1] = prob;
+			newResultCount++;
+			foundResults = true;
+		}		
+	}
+	return foundResults;
+}
 
 // Pickes a result depending on the probability
 public int SelectByProbability(int modulePropabilities[256])
