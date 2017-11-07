@@ -41,12 +41,25 @@ ConVar g_cvar_allowDiceTeamCT;
 // This is set if the plugin was loaded trough a map start and not just loaded mid map
 bool cleanStart = false;
 
-#define MAX_MODULES 6
 
 char MD_PREFIX[12] = "[MagicDice]";
 
+#define MAX_MODULES 6 //
 
-char g_results[256][MAX_MODULES][7][32]; // [result][modules][module_name|probabillity|params][param values]
+enum ModuleField // Helper enum for array access
+{
+	ModuleField_ModuleName, // Virtual field for the module name (from layer before)
+	ModuleField_Probabillity, // Virtual field for the module probabillity (from layer before)
+	ModuleField_Param1,
+	ModuleField_Param2,
+	ModuleField_Param3,
+	ModuleField_Param4,
+	ModuleField_Param5,
+	MAX_MODULE_FIELDS // Fake last position to get the number of params
+};
+
+char g_results[256][MAX_MODULES][MAX_MODULE_FIELDS][32]; // [result][modules][module_name|probabillity|params][param values]
+
 int g_probabillities[256];
 
 Handle g_modulesArray;
@@ -138,7 +151,7 @@ public void LoadModules() {
 	GetAllMyKnownModules(modules);
 	for (int i = 0; i < sizeof(modules); i++)
 	{	
-		if(strcmp(modules[i], "") == 0 || StrContains(modules[i], "md_", true) == -1)
+		if(strcmp(modules[i], "") == 0)
 		{
 			continue; // empty / not an md module
 		}
@@ -151,7 +164,7 @@ void UnloadModules()
 	char modules[256][32];
 	GetAllMyKnownModules(modules);
 	for (int i = 0; i < sizeof(modules); i++)
-	{	if(strcmp(modules[i], "") == 0 || StrContains(modules[i], "md_", true) == -1)
+	{	if(strcmp(modules[i], "") == 0)
 		{
 			continue; // empty / not an md module
 		}
@@ -361,13 +374,13 @@ bool LoadResults()
 				kv.GetString("param4", param4, sizeof(param4));
 				kv.GetString("param5", param5, sizeof(param5));
 				
-				g_results[resultCount][moduleCount][0] = probabillityValue;
-				g_results[resultCount][moduleCount][1] = bufferFeature;
-				g_results[resultCount][moduleCount][2] = param1;
-				g_results[resultCount][moduleCount][3] = param2;
-				g_results[resultCount][moduleCount][4] = param3;
-				g_results[resultCount][moduleCount][5] = param4;
-				g_results[resultCount][moduleCount][6] = param5;
+				g_results[resultCount][moduleCount][ModuleField_Probabillity] = probabillityValue;
+				g_results[resultCount][moduleCount][ModuleField_ModuleName] = bufferFeature;
+				g_results[resultCount][moduleCount][ModuleField_Param1] = param1;
+				g_results[resultCount][moduleCount][ModuleField_Param2] = param2;
+				g_results[resultCount][moduleCount][ModuleField_Param3] = param3;
+				g_results[resultCount][moduleCount][ModuleField_Param4] = param4;
+				g_results[resultCount][moduleCount][ModuleField_Param5] = param5;
 				
 				moduleCount++;
 #if defined DEBUG
@@ -406,13 +419,13 @@ void PickResult(int client, int forcedResult = -1)
 	{
 		if(strcmp(g_results[selectedIndex][i][1], "") != 0)
 		{
-			Handle module = FindModuleByName(g_results[selectedIndex][i][1]);
+			Handle module = FindModuleByName(g_results[selectedIndex][i][ModuleField_ModuleName]);
 			ProcessResult(module, selectedIndex, client, 
-			g_results[selectedIndex][i][2], 
-			g_results[selectedIndex][i][3], 
-			g_results[selectedIndex][i][4], 
-			g_results[selectedIndex][i][5], 
-			g_results[selectedIndex][i][6]);
+			g_results[selectedIndex][i][ModuleField_Param1], 
+			g_results[selectedIndex][i][ModuleField_Param2], 
+			g_results[selectedIndex][i][ModuleField_Param3], 
+			g_results[selectedIndex][i][ModuleField_Param4], 
+			g_results[selectedIndex][i][ModuleField_Param5]);
 		} else {
 			break; // No more modules to process for this result
 		}
@@ -432,20 +445,22 @@ void GetAllMyKnownModules(char collectedModules[256][32])
 		{
 			bool inList = false;
 			char currentModule[32];
-			for (int c = 0; c < sizeof(collectedModules); c++) // Loop trough all the resoults we have allready collected
+			for (int c = 0; c < sizeof(collectedModules); c++) // Loop trough all the results we have allready collected
 			{
-				if(strcmp(g_results[r][m][1], collectedModules[c]) == 0)
+				if(strcmp(g_results[r][m][ModuleField_ModuleName], collectedModules[c]) == 0)
 				{
 					inList = true;
 					break;
 				}else {
-					currentModule = g_results[r][m][1];
+					currentModule = g_results[r][m][ModuleField_ModuleName];
 				}
 			}
-			if(!inList && strcmp(g_results[r][m][1], "") != 0)
+			if(!inList 	// Not in the list yet 
+				&& strcmp(g_results[r][m][ModuleField_ModuleName], "") != 0 // Not empty
+				&& StrContains(g_results[r][m][ModuleField_ModuleName], "md_", true) != -1) // is a module 
 			{
 				// The current module is not in the collected list yet, add it
-				collectedModules[addedModules++] = g_results[r][m][1];		
+				collectedModules[addedModules++] = g_results[r][m][ModuleField_ModuleName];		
 			}
 		}
 	}
