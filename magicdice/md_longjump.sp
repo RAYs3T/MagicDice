@@ -13,7 +13,7 @@
 #pragma newdecls required
 
 // Plugin info
-#define MODULE_PLUGIN_VERSION "0.1"
+#define MODULE_PLUGIN_VERSION "${-version-}" // Version is replaced by the GitLab-Runner compile script
 #define MODULE_PLUGIN_NAME "MagicDice - LongJump Module"
 #define MODULE_PLUGIN_AUTHOR "Kevin 'RAYs3T' Urbainczyk"
 #define MODULE_PLUGIN_DESCRIPTION "Jump longer"

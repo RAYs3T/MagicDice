@@ -13,7 +13,7 @@
 #pragma newdecls required
 
 // Plugin info
-#define MODULE_PLUGIN_VERSION "0.1"
+#define MODULE_PLUGIN_VERSION "${-version-}" // Version is replaced by the GitLab-Runner compile script
 #define MODULE_PLUGIN_NAME "MagicDice - Fov Module"
 #define MODULE_PLUGIN_AUTHOR "Philip 'Lightningblade'"
 #define MODULE_PLUGIN_DESCRIPTION "Changes the field of view of the client"
