@@ -1,6 +1,8 @@
 image: rays3t/sourcemod-plugins-builder-ci
 build:core:
     stage: build
+    variables:
+        AUTO_VERSION_REPLACE: '1'
     script: 
     - spcomp
     # create a package dir
@@ -26,6 +28,7 @@ build:modules:
     variables: 
         # Build plugins in sub dir
         BUILD_DIR: '${CI_PROJECT_DIR}/magicdice'
+        AUTO_VERSION_REPLACE: '1'
     script: 
     - spcomp
     # create a package dir

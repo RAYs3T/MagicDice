@@ -18,7 +18,7 @@
 #pragma newdecls required
 
 // Plugin Info
-#define MD_PLUGIN_VERSION "0.1"
+#define MD_PLUGIN_VERSION "${-version-}" // Version is replaced by the GitLab-Runner compile script
 #define MD_PLUGIN_NAME "MagicDice - Modular Roll The Dice Plugin"
 #define MD_PLUGIN_AUTHOR "Kevin 'RAYs3T' Urbainczyk"
 #define MD_PLUGIN_DESCRIPTION "A Modular Roll The Dice Plugin. Supporting on the fly feature un/re-load"
