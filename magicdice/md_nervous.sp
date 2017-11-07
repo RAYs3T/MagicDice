@@ -71,7 +71,7 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 	pack.WriteCell(client);
 	pack.WriteFloat(intensity);
 	
-	Format(diceText, sizeof(diceText), "%t", "nervous", ticktime, intensity);
+	Format(diceText, sizeof(diceText), "%t", "nervous", intensity,ticktime );
 }
 
 public Action nervous_loop(Handle timer, Handle pack)
