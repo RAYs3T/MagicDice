@@ -69,21 +69,22 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 	nervous_timer[client] = CreateTimer(ticktime, nervous_loop, pack, TIMER_REPEAT);
 	
 	pack.WriteCell(client);
-	pack.WriteCell(intensity);
+	pack.WriteFloat(intensity);
 	
 	Format(diceText, sizeof(diceText), "%t", "nervous", ticktime, intensity);
 }
 
 public Action nervous_loop(Handle timer, Handle pack)
 {
+	ResetPack(pack, false);
 	int client = ReadPackCell(pack);
 	
-	if (!IsClientInGame(client) || !IsPlayerAlive(client))
+	if (!IsClientInGame(client) || !IsPlayerAlive(client) || nervous_timer[client] == INVALID_HANDLE)
 	{
 		return Plugin_Stop;
 	}
 	
-	float intensity = ReadPackCell(pack);
+	float intensity = ReadPackFloat(pack);
 	
 	float vAngles[3];
 	GetClientEyeAngles(client, vAngles);
