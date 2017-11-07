@@ -346,6 +346,12 @@ static bool LoadResults()
 		kv.GetString("prob", probabilityValue, sizeof(probabilityValue));
 		
 		int probability = kv.GetNum("prob");
+		
+		if(probability == 0)
+		{
+			SetFailState("Unable to load a dice result without probability in range (1-100)");
+		}
+		
 		g_probabillities[resultCount] = probability;
 		
 		char team[32];
@@ -370,22 +376,6 @@ static bool LoadResults()
 				kv.GetString("param3", param3, sizeof(param3));
 				kv.GetString("param4", param4, sizeof(param4));
 				kv.GetString("param5", param5, sizeof(param5));
-				
-				char selectedValue1[MODULE_PARAMETER_SIZE];
-				ParseRandomParameter(param1, selectedValue1);
-				char selectedValue2[MODULE_PARAMETER_SIZE];
-				ParseRandomParameter(param2, selectedValue2);
-				char selectedValue3[MODULE_PARAMETER_SIZE];
-				ParseRandomParameter(param3, selectedValue3);
-				char selectedValue4[MODULE_PARAMETER_SIZE];
-				ParseRandomParameter(param4, selectedValue4);
-				char selectedValue5[MODULE_PARAMETER_SIZE];
-				ParseRandomParameter(param5, selectedValue5);
-				PrintToServer("Selected random1: %s", selectedValue1);
-				PrintToServer("Selected random2: %s", selectedValue2);
-				PrintToServer("Selected random3: %s", selectedValue3);
-				PrintToServer("Selected random4: %s", selectedValue4);
-				PrintToServer("Selected random5: %s", selectedValue5);
 				
 				g_results[resultCount][moduleCount][ModuleField_Probability] = probabilityValue;
 				g_results[resultCount][moduleCount][ModuleField_ModuleName] = bufferFeature;
@@ -538,16 +528,27 @@ public void ProcessResult(Handle module, int resultNo, int client, char[] param1
 		ThrowError("FunctionId is invalid");
 	}
 	
+	char selectedValue1[MODULE_PARAMETER_SIZE];
+	bool isParamRandom1 = ParseRandomParameter(param1, selectedValue1);
+	char selectedValue2[MODULE_PARAMETER_SIZE];
+	bool isParamRandom2 = ParseRandomParameter(param2, selectedValue2);
+	char selectedValue3[MODULE_PARAMETER_SIZE];
+	bool isParamRandom3 = ParseRandomParameter(param3, selectedValue3);
+	char selectedValue4[MODULE_PARAMETER_SIZE];
+	bool isParamRandom4 = ParseRandomParameter(param4, selectedValue4);
+	char selectedValue5[MODULE_PARAMETER_SIZE];
+	bool isParamRandom5 = ParseRandomParameter(param5, selectedValue5);
+				
 	// Call the function in the module
 	Call_StartFunction(module, id);
 	Call_PushCell(resultNo);
 	Call_PushCell(client);
-	Call_PushString(param1);
-	Call_PushString(param2);
-	Call_PushString(param3);
-	Call_PushString(param4);
-	Call_PushString(param5);
-	Call_Finish();	
+	Call_PushString(isParamRandom1 ? selectedValue1 : param1);
+	Call_PushString(isParamRandom2 ? selectedValue2 : param2);
+	Call_PushString(isParamRandom3 ? selectedValue3 : param3);
+	Call_PushString(isParamRandom4 ? selectedValue4 : param4);
+	Call_PushString(isParamRandom5 ? selectedValue5 : param5);
+	Call_Finish();
 }
 
 /*
@@ -698,7 +699,6 @@ static bool ParseRandomParameter(char[] parameter, char selectedValue[MODULE_PAR
 	if(subStrings == -1)
 	{
 		// Parameter not matching the regex, just using as regular parameter
-		PrintToServer("NOT MATCHING! %s", parameter);
 		return false;
 	}
 	
@@ -755,16 +755,21 @@ static bool ParseRandomValueList(char[] list, char selectedValue[MODULE_PARAMETE
 	for (int i = 0; i < partCount; i++)
 	{
 		char entry[2][MODULE_PARAMETER_SIZE];
-		ExplodeString(parts[i], ":", entry, 2, MODULE_PARAMETER_SIZE);
-		map[i][0] = entry[0];
-		map[i][1] = entry[1];
+		if(!probSelect)
+		{
+			map[i][0] = parts[i];
+		} else {
+			ExplodeString(parts[i], ":", entry, 2, MODULE_PARAMETER_SIZE);
+			map[i][0] = entry[0];
+			map[i][1] = entry[1];
+		}
 		entries++;
 	}	
 	
 	if(!probSelect)
 	{
 		// We just need to return any entry, prob does not matter
-		IntToString(GetRandomInt(0, entries), selectedValue, sizeof(selectedValue));
+		selectedValue = map[GetRandomInt(0, entries -1)][0];
 		return true;
 	}
 	
@@ -816,7 +821,5 @@ static float ParseRandomFloat(char values[256])
 	float min = StringToFloat(buffer[0]);
 	float max = StringToFloat(buffer[1]);
 	
-	PrintToServer("RANDOM MINMAX: %i, %i", min, max);
 	return GetRandomFloat(min, max);
-	
 }
