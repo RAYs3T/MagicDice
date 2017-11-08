@@ -79,7 +79,7 @@ public Action nervous_loop(Handle timer, Handle pack)
 	ResetPack(pack, false);
 	int client = ReadPackCell(pack);
 	
-	if (!IsClientInGame(client) || !IsPlayerAlive(client) || nervous_timer[client] == INVALID_HANDLE)
+	if (IsValidClient(client) || !IsPlayerAlive(client) || nervous_timer[client] == INVALID_HANDLE)
 	{
 		return Plugin_Stop;
 	}
