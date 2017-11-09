@@ -32,7 +32,6 @@
 #define MD_PLUGIN_DESCRIPTION "A Modular Roll The Dice Plugin. Supporting on the fly feature un/re-load"
 #define MD_PLUGIN_WEBSITE "https://ptl-clan.de"
 
-
 // Config cvars
 static ConVar g_cvar_dicesPerRound;
 static ConVar g_cvar_allowDiceTeamT;
@@ -70,6 +69,11 @@ static int g_allowedDices[MAXPLAYERS + 1];
 
 // A switch to block general dices while the game / round is ending
 static bool g_cannotDice = true;
+
+
+// Core components include
+#include "core_components/database.inc" 
+
 
 public Plugin myinfo =
 {
