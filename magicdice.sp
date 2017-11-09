@@ -72,7 +72,7 @@ static bool g_cannotDice = true;
 
 
 // Core components include
-#include "core_components/database.inc" 
+#include core_components/database.inc
 
 
 public Plugin myinfo =
