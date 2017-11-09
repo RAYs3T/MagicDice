@@ -12,7 +12,6 @@
 #include <autoexecconfig>
 #include <cstrike>
 
-
 // Code style rules
 #pragma semicolon 1
 #pragma newdecls required
@@ -24,14 +23,10 @@
 #define MD_PLUGIN_DESCRIPTION "A Modular Roll The Dice Plugin. Supporting on the fly feature un/re-load"
 #define MD_PLUGIN_WEBSITE "https://ptl-clan.de"
 
+
 // Config cvars
-#define CONF_CVAR_DICES_PER_ROUND 		"sm_md_dices_per_round"
 static ConVar g_cvar_dicesPerRound;
-
-#define CONF_CVAR_ALLOW_DICE_TEAM_T 	"sm_md_allow_dice_team_t"
 static ConVar g_cvar_allowDiceTeamT;
-
-#define CONF_CVAR_ALLOW_DICE_TEAM_CT 	"sm_md_allow_dice_team_ct"
 static ConVar g_cvar_allowDiceTeamCT;
 
 
@@ -98,11 +93,11 @@ void PrepareAndLoadConfig()
 	AutoExecConfig_SetFile("general", "magicdice");
 
 	// Dices per round
-	g_cvar_dicesPerRound = 		AutoExecConfig_CreateConVar(CONF_CVAR_DICES_PER_ROUND, "1", "Starting amount of dices allowed each round");
+	g_cvar_dicesPerRound = 		AutoExecConfig_CreateConVar("sm_md_dices_per_round", "1", "Starting amount of dices allowed each round");
 	
 	// Team dice restrictions
-	g_cvar_allowDiceTeamT = 	AutoExecConfig_CreateConVar(CONF_CVAR_ALLOW_DICE_TEAM_T, "1", "Can the T-team dice?");
-	g_cvar_allowDiceTeamCT = 	AutoExecConfig_CreateConVar(CONF_CVAR_ALLOW_DICE_TEAM_CT, "0", "Can the CT-team dice?");
+	g_cvar_allowDiceTeamT = 	AutoExecConfig_CreateConVar("sm_md_allow_dice_team_t", "1", "Can the T-team dice?");
+	g_cvar_allowDiceTeamCT = 	AutoExecConfig_CreateConVar("sm_md_allow_dice_team_ct", "0", "Can the CT-team dice?");
 	
 	LoadTranslations("magicdice.phrases");
 	
