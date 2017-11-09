@@ -12,6 +12,9 @@
 #include <autoexecconfig>
 #include <cstrike>
 
+// Switch to enable / disable debugging 
+#define DEBUG true
+
 // Code style rules
 #pragma semicolon 1
 #pragma newdecls required
@@ -29,15 +32,11 @@ static ConVar g_cvar_dicesPerRound;
 static ConVar g_cvar_allowDiceTeamT;
 static ConVar g_cvar_allowDiceTeamCT;
 
-
-
-#define DEBUG true
-
-
-
+// Plugin prefixes used by console and chat outputs
 public char MD_PREFIX[12] = "[MagicDice]";
 public char MD_PREFIX_COLORED[64] = "{default}[{fuchsia}Magic{haunted}Dice{default}]";
 
+// Array size definitions
 #define MAX_MODULES 6 //
 #define MODULE_PARAMETER_SIZE 128
 
