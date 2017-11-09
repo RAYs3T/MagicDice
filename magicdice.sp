@@ -58,7 +58,7 @@ enum ModuleField // Helper enum for array access
 	MAX_MODULE_FIELDS // Fake last position to get the number of params
 };
 
-static char g_results[256][MAX_MODULES][MAX_MODULE_FIELDS][MODULE_PARAMETER_SIZE]; // [result][modules][module_name|probability|params][param values]
+char g_results[256][MAX_MODULES][MAX_MODULE_FIELDS][MODULE_PARAMETER_SIZE]; // [result][modules][module_name|probability|params][param values]
 static int g_probabillities[256];
 static Handle g_modulesArray;
 
@@ -72,6 +72,7 @@ static bool g_cannotDice = true;
 
 
 // Core components include
+#include core_components/probability_calculation.inc
 #include core_components/database.inc
 
 
@@ -551,68 +552,6 @@ public void ProcessResult(Handle module, int resultNo, int client, char[] param1
 	Call_Finish();
 }
 
-/*
- * Returns all probabillities for results that matches the given team
- * @param team	The requested team for the probabillities
- * @retun bool false if no results for that team exist
- */
-static bool GetTeamProbabillities(int teamResults[256][2], int team)
-{
-	bool foundResults = false;
-	int newResultCount = 0;
-	char resultTeamBuffer[MODULE_PARAMETER_SIZE];
-	for (int i = 0; i < sizeof(g_results); i++)
-	{
-		if(strcmp(g_results[i][0][ModuleField_ModuleName], "") == 0)
-		{
-			// We reached the end of results.
-			// There was no module name
-			break;
-		}
-		
-		resultTeamBuffer = g_results[i][0][ModuleField_Team];
-		int resultTeam = StringToInt(resultTeamBuffer);
-		if(strcmp(resultTeamBuffer, "") == 0 || resultTeam == team) // Empty (all teams) or matching the team
-		{
-			int prob = StringToInt(g_results[i][0][ModuleField_Probability]); // Since every module has the prob field we just use the first (0))
-
-			teamResults[newResultCount][0] = i;
-			teamResults[newResultCount][1] = prob;
-			newResultCount++;
-			foundResults = true;
-		}		
-	}
-	return foundResults;
-}
-
-// Pickes a result depending on the probability
-static int SelectByProbability(int modulePropabilities[256])
-{
-	int totalSum = 0;
-	
-	for (int i; i < sizeof(modulePropabilities); i++)
-	{	
-		totalSum += modulePropabilities[i];
-	}
-	
-	int idx = GetRandomInt(0, totalSum);
-	int sum = 0;
-	int i = 0;
-	while(sum < idx)
-	{
-		sum += modulePropabilities[i];
-		i++;
-	}
-	
-	int picked = i -1;
-	if(picked < 0){
-		picked = 0;
-	}
-#if defined DEBUG
-	PrintToServer("%s Picked result: %i | probability: %i | results: %i | overall sum: %i", MD_PREFIX, picked, modulePropabilities[picked], i, totalSum);
-#endif
-	return picked;
-}
 
 static bool CanPlayerDiceInTeam(int client)
 {
