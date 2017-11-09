@@ -54,12 +54,8 @@ enum ModuleField // Helper enum for array access
 };
 
 static char g_results[256][MAX_MODULES][MAX_MODULE_FIELDS][MODULE_PARAMETER_SIZE]; // [result][modules][module_name|probability|params][param values]
-
 static int g_probabillities[256];
-
 static Handle g_modulesArray;
-
-
 
 // How many times has an user rolled the dice?
 static int g_dices[MAXPLAYERS + 1];
