@@ -75,7 +75,7 @@ static bool g_cannotDice = true;
 #include core_components/configuration.inc
 #include core_components/probability_calculation.inc
 #include core_components/random_string_parser.inc
-#include core_components/database.inc
+//#include core_components/database.inc
 
 
 public Plugin myinfo =
@@ -128,6 +128,8 @@ public void OnPluginStart()
 	
 	g_cannotDice = false;
 	PrintToServer("%s Plugin start", MD_PREFIX);
+	
+	InitializeDatabase();
 }
 
 
