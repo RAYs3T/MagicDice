@@ -1,11 +1,13 @@
 /* 
-#####################################################
-# Push The Limits's MagicDice Roll The Dice Plugin' #
-# Module: Freeze	                                #
-# Created by Kevin 'RAYs3T' Urbainczyk              #
-# Copyright (C) 2017 by Push The Limits             #
-# Homepage: https://ptl-clan.de                     #
-#####################################################
+###################################################################################
+# Copyright © 2017 Kevin Urbainczyk <kevin@rays3t.info> - All Rights Reserved     #
+# Unauthorized copying of this file, via any medium is strictly prohibited.       #
+# Proprietary and confidential.                                                   #
+#                                                                                 #
+# This file is part of the MagicDice-Plugin.                                      #
+# Written by Philip 'Lightningblade'                                              #
+# Homepage: https://ptl-clan.de                                                   #
+###################################################################################
 */
 
 // Code style rules
