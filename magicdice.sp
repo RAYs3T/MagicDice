@@ -509,7 +509,6 @@ static bool CanPlayerDice(int client)
 		return false;
 	}
 	
-	// TODO Check if the round is in the ending phase and block
 	if(g_dices[client] >= g_allowedDices[client]) {
 		return false;
 	}
