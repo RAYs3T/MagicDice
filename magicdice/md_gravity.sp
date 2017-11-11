@@ -54,20 +54,22 @@ public void OnPluginEnd()
 public void Diced(int client, char diceText[255], char[] mode, char[] gravityParam, char[] param3, char[] param4, char[] param5)
 {
 	
-	float gravity = StringToFloat(gravityParam);
+	float gravityInput = MDParseParamFloat(gravityParam);
 	
 	float currentGravity = GetGravity(client);
+	//TODO remove the line below and find solution for the line above
+	currentGravity = 1.0;
 	
 	if(strcmp(mode, "set") == 0) 
 	{
-		SetGravity(client, gravity);
-		Format(diceText, sizeof(diceText), "%t", "gravity_set", gravity);
+		SetGravity(client, gravityInput);
+		Format(diceText, sizeof(diceText), "%t", "gravity_set", gravityInput * 100);
 	} 
 	else if(strcmp(mode, "mult") == 0)
 	{
-		float newGravity = (currentGravity * gravity);
+		float newGravity = (currentGravity * gravityInput);
 		SetGravity(client, newGravity);
-		Format(diceText, sizeof(diceText), "%t", "gravity_mult", gravity * 100);
+		Format(diceText, sizeof(diceText), "%t", "gravity_mult", gravityInput * 100 , newGravity * 100);
 	}
 	else
 	{

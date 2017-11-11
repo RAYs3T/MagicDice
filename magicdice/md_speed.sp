@@ -51,20 +51,21 @@ public void OnPluginEnd()
 public void Diced(int client, char diceText[255], char[] mode, char[] speedParam, char[] param3, char[] param4, char[] param5)
 {
 	
-	float speed = StringToFloat(speedParam);
+	float speedInput = MDParseParamFloat(speedParam);
 	
 	float currentSpeed = GetSpeed(client);
 	
 	if(strcmp(mode, "set") == 0) 
 	{
-		SetSpeed(client, speed);
-		Format(diceText, sizeof(diceText), "%t", "speed_set", speed);
+		SetSpeed(client, speedInput);
+		Format(diceText, sizeof(diceText), "%t", "speed_set", speedInput * 100);
 	} 
 	else if(strcmp(mode, "mult") == 0)
 	{
-		float newSpeed = (currentSpeed * speed);
+		PrintToChat(client, "Du stinkst asd %f", currentSpeed);
+		float newSpeed = (currentSpeed * speedInput);
 		SetSpeed(client, newSpeed);
-		Format(diceText, sizeof(diceText), "%t", "speed_mult", speed * 100);
+		Format(diceText, sizeof(diceText), "%t", "speed_mult", speedInput * 100, newSpeed * 100);
 	}
 	else 
 	{

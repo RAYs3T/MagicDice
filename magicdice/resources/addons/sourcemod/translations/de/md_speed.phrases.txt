@@ -2,12 +2,12 @@
 {
 	"speed_set"
 	{
-		"#format"	"{1:.2f}"
-		"de"		"Deine Geschwindigkeit wurde auf {1} gesetzt"
+		"#format"	"{1:.1f}"
+		"de"		"Deine Geschwindigkeit wurde auf {1}%% gesetzt"
 	}
 	"speed_mult"
 	{
-		"#format"	"{1:.1f}"
-		"de"		"Deine Geschwindigkeit wurde auf {1}%% gesetzt"
+		"#format"	"{1:.1f}{2:.1f}"
+		"de"		"Deine Geschwindigkeit wurde um {1}%% verändert ({2}%%)"
 	}
 }
