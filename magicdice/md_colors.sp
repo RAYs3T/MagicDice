@@ -54,28 +54,28 @@ public void OnPluginEnd()
 public void Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
 {
 	
-	int red = 255;
-	int green = 255;
-	int blue = 255;
-	int alpha = 255;
+	float red = 255.0;
+	float green = 255.0;
+	float blue = 255.0;
+	float alpha = 255.0;
 	
 	if(MDIsStringSet(param1)){
-		red = MDParseParamInt(param1);
+		red = MDParseParamFloat(param1);
 	}
 	
 	if(MDIsStringSet(param2)){
-		green = MDParseParamInt(param2);
+		green = MDParseParamFloat(param2);
 	}
 	
 	if(MDIsStringSet(param3)){
-		blue = MDParseParamInt(param3);
+		blue = MDParseParamFloat(param3);
 	}
 	
 	if(MDIsStringSet(param4)){
-		alpha = MDParseParamInt(param4);
+		alpha = MDParseParamFloat(param4);
 	}
 	
-	SetEntityRenderColor(client, red, green, blue, alpha);
+	SetEntityRenderColor(client, RoundToCeil(red), RoundToCeil(green), RoundToCeil(blue), RoundToCeil(alpha));
 	
-	Format(diceText, sizeof(diceText), "%t", "colored", ((red / 256) * 100), ((green / 256) * 100), ((blue / 256) * 100));
+	Format(diceText, sizeof(diceText), "%t", "colored", ((red / 256) * 100), ((green / 256) * 100), ((blue / 256) * 100), ((alpha / 256) * 100));
 }
