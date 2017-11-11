@@ -2,7 +2,7 @@
 {
 	"gravity_set"
 	{
-		"format" "{1:.2f}"
+		"#format" "{1:.2f}"
 		"en" "Your gravity has been set to {1}"
 	}
 }

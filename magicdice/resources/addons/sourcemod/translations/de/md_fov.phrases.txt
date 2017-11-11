@@ -2,7 +2,7 @@
 {
 	"fov_set"
 	{
-		"format" "{1:i}"
+		"#format" "{1:i}"
 		"de" "Dein Sichtfeld wurde auf {1} gesetzt"
 	}
 }

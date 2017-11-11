@@ -2,6 +2,6 @@
 {
 	"diced"
 	{
-		"de"		"Nunja. Selbst Luft ist mehr, als dass, was du gefürfelt hast."
+		"de"		"Nunja. Selbst Luft ist mehr, als das, was du gefürfelt hast."
 	}
 }

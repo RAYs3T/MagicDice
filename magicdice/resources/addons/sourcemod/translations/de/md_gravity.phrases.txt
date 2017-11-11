@@ -2,7 +2,7 @@
 {
 	"gravity_set"
 	{
-		"format" "{1:.2f}"
+		"#format" "{1:.2f}"
 		"de" "Deine Gravitation wurde auf {1} gesetzt"
 	}
 }
