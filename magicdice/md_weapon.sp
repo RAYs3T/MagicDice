@@ -98,9 +98,21 @@ public void Diced(int client, char diceText[255], char[] p_weaponId, char[] p_am
 	
 	if(primaryMagSize == 0 || secondaryMagSize == 0) 
 	{
-		Format(diceText, sizeof(diceText), "%t", "got_weapon_default_mag", amount, weaponName);
+		if(amount > 1)
+		{
+			Format(diceText, sizeof(diceText), "%t", "got_multiple_weapon_default_mag", amount, weaponName);
+		} else {
+			Format(diceText, sizeof(diceText), "%t", "got_weapon_default_mag", weaponName);
+		}
+		
 	} else {
-		Format(diceText, sizeof(diceText), "%t", "got_weapon_with_modified_mags", amount, weaponName, primaryMagSize, secondaryMagSize);
+		if(amount > 1)
+		{
+			Format(diceText, sizeof(diceText), "%t", "got_multiple_weapon_with_modified_mags", amount, weaponName, primaryMagSize, secondaryMagSize);
+		} else {
+			Format(diceText, sizeof(diceText), "%t", "got_weapon_with_modified_mags", weaponName, primaryMagSize, secondaryMagSize);
+		}
+		
 	}
 }
 

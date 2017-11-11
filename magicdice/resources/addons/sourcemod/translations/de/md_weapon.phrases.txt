@@ -2,12 +2,22 @@
 {
 	"got_weapon_default_mag"
 	{
-		"#format"	"{1:i}, {2:s}"
+		"#format"	"{1:s}"
+		"de"		"Du hast eine {1} bekommen"
+	}
+	"got_multiple_weapon_default_mag"
+	{
+		"#format"	"{1:i},{2:s}"
 		"de"		"Du hast {1} {2} bekommen"
 	}
 	"got_weapon_with_modified_mags"
 	{
-		"#format"	"{1:i}, {2:s},{3:i}, {4:i}"
+		"#format"	"{1:s},{2:i},{3:i}"
+		"de"		"Du hast eine {2} mit {3}/{4} gefüllten Magazinen"
+	}
+	"got_multiple_weapon_with_modified_mags"
+	{
+		"#format"	"{1:i},{2:s},{3:i},{4:i}"
 		"de"		"Du hast {1} {2} mit {3}/{4} gefüllten Magazinen"
 	}
 }
