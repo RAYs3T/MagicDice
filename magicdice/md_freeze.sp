@@ -22,9 +22,23 @@
 #define MODULE_PLUGIN_WEBSITE "https://ptl-clan.de"
 
 #include ../include/magicdice
+#include ../include/autoexecconfig
+#include <sdktools>
 
 
+static ConVar g_soundStartFreeze;
+static ConVar g_soundStartPlayOffset;
+static ConVar g_soundEndFreeze;
+static ConVar g_soundEndPlayOffset;
 
+#define FREEZE_STEPS 16
+
+static int g_freezeColor[] = {0, 170, 240, 180};
+
+int g_BeamSprite = -1;
+int g_HaloSprite = -1;
+
+char g_freezeOverlay[] = "Effects/com_shield002a.vmt";
 
 public Plugin myinfo =
 {
@@ -38,6 +52,22 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	MDOnPluginStart();
+	
+	AutoExecConfig_SetFile("md_freeze", "magicdice");
+	g_soundStartFreeze = 		AutoExecConfig_CreateConVar("md_freeze_start_sound", 
+	"magicdice/magicdice_freeze.mp3", "Sound to play when the freeze starts");
+	g_soundEndFreeze = 			AutoExecConfig_CreateConVar("md_freeze_end_sound", 
+	"magicdice/magicdice_unfreeze.mp3", "Sound to play when the freeze stops");
+	g_soundStartPlayOffset = 	AutoExecConfig_CreateConVar("md_freeze_start_sound_offset", "2.0", 
+	"Offset (in seconds 0.00) the sound should start before the freeze happens");
+	g_soundEndPlayOffset = 		AutoExecConfig_CreateConVar("md_freeze_end_sound_offset", "0.1",
+	"Time in seconds (0.00) the end sound should start playing, before the unfreeze happens");
+	
+	AutoExecConfig_ExecuteFile();
+	AutoExecConfig_CleanFile();
+	
+	g_BeamSprite = PrecacheModel("materials/sprites/bomb_planted_ring.vmt");
+	g_HaloSprite = PrecacheModel("materials/sprites/halo.vtf");
 }
 
 
@@ -46,6 +76,24 @@ public void OnAllPluginsLoaded()
 	MDRegisterModule();
 }
 
+public void OnConfigsExecuted()
+{
+	// Starting sound
+	char startSound[PLATFORM_MAX_PATH];
+	g_soundStartFreeze.GetString(startSound, sizeof(startSound));
+	char startSoundPath[PLATFORM_MAX_PATH];
+	Format(startSoundPath, sizeof(startSoundPath), "sound/%s", startSound);
+	PrecacheSound(startSound, true);
+	AddFileToDownloadsTable(startSoundPath);
+	
+	// Ending sound
+	char endSound[PLATFORM_MAX_PATH];
+	g_soundEndFreeze.GetString(endSound, sizeof(endSound));
+	char endSoundPath[PLATFORM_MAX_PATH];
+	Format(endSoundPath, sizeof(endSoundPath), "sound/%s", endSound);
+	PrecacheSound(endSound, true);
+	AddFileToDownloadsTable(endSoundPath);
+}
 public void OnPluginEnd()
 {
 	MDUnRegisterModule();
@@ -62,29 +110,120 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 	
 	if (IsValidClient(client))
 	{
-		SetEntityMoveType(client, MOVETYPE_NONE);
+		char startSound[PLATFORM_MAX_PATH];
+		g_soundStartFreeze.GetString(startSound, sizeof(startSound));
 		
-		DataPack dataPack = new DataPack();
+		float position[3];
+		GetEntPropVector(client, Prop_Send, "m_vecOrigin", position);
+		EmitAmbientSound(startSound, position, client, SNDLEVEL_RAIDSIREN);
 		
 		int colors[4];
-		
+	
+		// Save the clients old colors
 		GetEntityRenderColor(client, colors[0], colors[1], colors[2], colors[3]);
 		
+		// Pack the old values in a datapack to pass it to the unfreeze timer
+		DataPack dataPack = new DataPack();
 		dataPack.WriteCell(colors[0]);
 		dataPack.WriteCell(colors[1]);
 		dataPack.WriteCell(colors[2]);
 		dataPack.WriteCell(colors[3]);
 		dataPack.WriteCell(client);
 		
-		CreateTimer(duration, freezeOff, dataPack);
-
-		SetEntityRenderColor(client, 0, 170, 240, 180);
+		char startOffsetBuffer[11];
+		g_soundStartPlayOffset.GetString(startOffsetBuffer, sizeof(startOffsetBuffer));
+		float startOffset = StringToFloat(startOffsetBuffer);
+		
+		char endOffsetBuffer[11];
+		g_soundEndPlayOffset.GetString(endOffsetBuffer, sizeof(endOffsetBuffer));
+		float endOffset = StringToFloat(endOffsetBuffer);
+		
+		float freezeStepSize = startOffset / FREEZE_STEPS;
+		float newSpeed = 1.0;
+		float speedStep = 1.0 / FREEZE_STEPS;
+		
+		int colorStepSize[4];		
+		int newColors[4];
+		for (int c = 0; c < 4; c++)
+		{
+			colorStepSize[c] = (colors[c] - g_freezeColor[c]) / FREEZE_STEPS;
+			newColors[c] = colors[c];
+		}
+		
+		int backCounter = FREEZE_STEPS;
+		for (int i = 1; i <= FREEZE_STEPS; i++)
+		{
+			
+			newSpeed -= speedStep;
+			DataPack slowPack = new DataPack();
+			slowPack.WriteCell(client);
+			slowPack.WriteFloat(newSpeed);
+			for (int c = 0; c < 4; c++)
+			{
+				newColors[c] -= colorStepSize[c];
+				slowPack.WriteCell(newColors[c]);
+			}
+			
+			CreateTimer(i * freezeStepSize, Timer_SlowPlayer, slowPack);
+			backCounter--;
+		}
+		
+		CreateTimer(startOffset, Timer_FreezePlayer, client);
+		CreateTimer(duration, Timer_PlayUnfreezeSound, client);	
+		CreateTimer(duration + endOffset, Timer_UnfreezePlayer, dataPack);	
+	
 		Format(diceText, sizeof(diceText), "%t", "frozen", duration);
 	}
 }
 
+public Action Timer_SlowPlayer(Handle tiemr, any data)
+{
+	ResetPack(data);
+	int client = ReadPackCell(data);
+	float newSpeed = ReadPackFloat(data);
+	int newColors[4];
+	for (int c = 0; c < 4; c++)
+	{
+		newColors[c] = ReadPackCell(data);
+	}
+	SetEntityRenderColor(client, newColors[0], newColors[1], newColors[2], newColors[3]);	
+	PrintToChat(client, "Slowing ... %f, colors: %i %i %i %i", newSpeed, newColors[0], newColors[1], newColors[2], newColors[3]);
+	SetSpeed(client, newSpeed);
+	
+	
+}
+public Action Timer_FreezePlayer(Handle tiemr, any client)
+{
+	if(!IsValidClient(client))
+	{
+		return Plugin_Stop;
+	}
+	// Freeze the player
+	SetEntityMoveType(client, MOVETYPE_NONE);
+	
+	// Set "freezy" color
+	SetEntityRenderColor(client, 0, 170, 240, 180);
+	SetClientOverlay(client);
+	return Plugin_Handled;
+}
 
-public Action freezeOff(Handle timer, Handle dataPack)
+public Action Timer_PlayUnfreezeSound(Handle tiemr, any client)
+{
+	if(!IsValidClient(client))
+	{
+		return Plugin_Stop;
+	}
+	char endSound[PLATFORM_MAX_PATH];
+	g_soundEndFreeze.GetString(endSound, sizeof(endSound));
+	
+	float position[3];
+	GetEntPropVector(client, Prop_Send, "m_vecOrigin", position);
+	EmitAmbientSound(endSound, position, client, SNDLEVEL_RAIDSIREN);
+	ShowBeacon(client);
+	return Plugin_Handled;
+}
+
+public Action Timer_UnfreezePlayer(Handle timer, Handle dataPack)
 {
 	ResetPack(dataPack);
 	int colors[4];
@@ -95,9 +234,40 @@ public Action freezeOff(Handle timer, Handle dataPack)
 	
 	int client = ReadPackCell(dataPack);
 	
+	if(!IsValidClient(client))
+	{
+		return Plugin_Stop;
+	}
 	SetEntityMoveType(client, MOVETYPE_WALK);
-	
+	SetSpeed(client, 1.0);
 	SetEntityRenderColor(client, colors[0], colors[1], colors[2], colors[3]);
-	
+	ResetClientOverlay(client);
 	return Plugin_Handled;
+}
+
+static void SetSpeed(int client, float newSpeed)
+{
+	SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", newSpeed);
+}
+
+public void ShowBeacon(int client)
+{
+	float vec[3];
+	GetClientAbsOrigin(client, vec);
+	vec[2] += 10;
+	TE_SetupBeamRingPoint(vec, 5.0, 200.0, g_BeamSprite, g_HaloSprite, 0, 10, 0.6, 10.0, 1.5, g_freezeColor, 10, 0);
+	TE_SendToAll();
+}
+
+void SetClientOverlay(int client)
+{
+	ClientCommand(client, "r_screenoverlay %s", g_freezeOverlay);
+}
+
+void ResetClientOverlay(int client)
+{
+	if(IsValidClient(client)) 
+	{
+		ClientCommand(client, "r_screenoverlay off");
+	}
 }
