@@ -60,7 +60,7 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 		return;
 	}
 	
-	if (IsClientInGame(client))
+	if (IsValidClient(client))
 	{
 		SetEntityMoveType(client, MOVETYPE_NONE);
 		
