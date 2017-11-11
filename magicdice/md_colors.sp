@@ -67,11 +67,11 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 		green = MDParseParamInt(param2);
 	}
 	
-	if(MDIsStringSet(param1)){
+	if(MDIsStringSet(param3)){
 		blue = MDParseParamInt(param3);
 	}
 	
-	if(MDIsStringSet(param1)){
+	if(MDIsStringSet(param4)){
 		alpha = MDParseParamInt(param4);
 	}
 	
