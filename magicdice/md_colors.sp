@@ -75,6 +75,15 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 		alpha = MDParseParamFloat(param4);
 	}
 	
+	RenderMode renderMode;
+	if(alpha < 255.0) {
+		renderMode = RENDER_TRANSCOLOR;
+	}
+	else
+	{
+		renderMode = RENDER_NORMAL;
+	}
+	SetEntityRenderMode(client, renderMode);
 	SetEntityRenderColor(client, RoundToCeil(red), RoundToCeil(green), RoundToCeil(blue), RoundToCeil(alpha));
 	
 	Format(diceText, sizeof(diceText), "%t", "colored", ((red / 256) * 100), ((green / 256) * 100), ((blue / 256) * 100), ((alpha / 256) * 100));
