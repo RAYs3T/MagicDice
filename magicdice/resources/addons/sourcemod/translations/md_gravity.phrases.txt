@@ -2,7 +2,12 @@
 {
 	"gravity_set"
 	{
-		"#format" "{1:.2f}"
-		"en" "Your gravity has been set to {1}"
+		"#format"	"{1:.2f}"
+		"en"		"Your gravity has been set to {1}"
+	}
+	"gravity_mult"
+	{
+		"#format"	"{1:.1f}"
+		"en"		"Your gravity has been set to {1}%%"
 	}
 }
