@@ -70,14 +70,14 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 		
 		GetEntityRenderColor(client, colors[0], colors[1], colors[2], colors[3]);
 		
-		CreateTimer(duration, freezeOff, dataPack);
-		
 		dataPack.WriteCell(colors[0]);
 		dataPack.WriteCell(colors[1]);
 		dataPack.WriteCell(colors[2]);
 		dataPack.WriteCell(colors[3]);
 		dataPack.WriteCell(client);
 		
+		CreateTimer(duration, freezeOff, dataPack);
+
 		SetEntityRenderColor(client, 0, 170, 240, 180);
 		Format(diceText, sizeof(diceText), "%t", "frozen", duration);
 	}
@@ -86,8 +86,8 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 
 public Action freezeOff(Handle timer, Handle dataPack)
 {
+	ResetPack(dataPack);
 	int colors[4];
-	
 	colors[0] = ReadPackCell(dataPack);
 	colors[1] = ReadPackCell(dataPack);
 	colors[2] = ReadPackCell(dataPack);
