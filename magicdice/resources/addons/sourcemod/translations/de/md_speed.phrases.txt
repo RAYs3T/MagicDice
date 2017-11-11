@@ -3,16 +3,11 @@
 	"speed_set"
 	{
 		"#format"	"{1:.2f}"
-		"de"		"Geschwindigkeit auf {1} gesetzt"
+		"de"		"Deine Geschwindigkeit würde auf {1} gesetzt"
 	}
-	"speed_add"
+	"speed_mult"
 	{
-		"#format"	"{1:.2f}"
-		"de"		"Du bist um {1} schneller"
-	}
-	"speed_take"
-	{
-		"#format"	"{1:.2f}"
-		"de"		"Du bist um {1} langsamer"
+		"#format"	"{1:.1f}"
+		"de"		"Deine Geschwindigkeit würde auf {1}% gesetzt"
 	}
 }

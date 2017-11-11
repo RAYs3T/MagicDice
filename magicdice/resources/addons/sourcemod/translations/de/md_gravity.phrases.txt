@@ -2,7 +2,12 @@
 {
 	"gravity_set"
 	{
-		"#format" "{1:.2f}"
-		"de" "Deine Gravitation wurde auf {1} gesetzt"
+		"#format"	"{1:.2f}"
+		"de"		"Deine Geschwindigkeit würde auf {1} gesetzt"
+	}
+	"gravity_mult"
+	{
+		"#format"	"{1:.1f}"
+		"de"		"Deine Geschwindigkeit würde auf {1}% gesetzt"
 	}
 }

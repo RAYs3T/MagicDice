@@ -51,17 +51,36 @@ public void OnPluginEnd()
 	MDUnRegisterModule();
 }
 
-public void Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
+public void Diced(int client, char diceText[255], char[] mode, char[] gravityParam, char[] param3, char[] param4, char[] param5)
 {
-	//If the param isnt set or the param is negative
-	if(!MDIsStringSet(param1) || MDParseParamFloat(param1) < 0){
-		MDReportInvalidParameter(1, "gravityMultiplier", param1);
-		return;
+	
+	float gravity = StringToFloat(gravityParam);
+	
+	float currentGravity = GetGravity(client);
+	
+	if(strcmp(mode, "set") == 0) 
+	{
+		SetGravity(client, gravity);
+		Format(diceText, sizeof(diceText), "%t", "gravity_set", gravity);
+	} 
+	else if(strcmp(mode, "mult") == 0)
+	{
+		float newGravity = (currentGravity * gravity);
+		SetGravity(client, newGravity);
+		Format(diceText, sizeof(diceText), "%t", "gravity_mult", gravity * 100);
 	}
-	
-	float amount = MDParseParamFloat(param1);
-	
-	SetEntityGravity(client, amount);
-	
-	Format(diceText, sizeof(diceText), "%t", "gravity_set", amount);
+	else
+	{
+		LogError("Unknown gravity mode: %s", mode);
+	}
+}
+
+static float GetGravity(int client)
+{
+	return GetEntityGravity(client);
+}
+
+static void SetGravity(int client, float newGravity)
+{
+	SetEntityGravity(client, newGravity);
 }
