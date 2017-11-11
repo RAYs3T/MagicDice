@@ -8,6 +8,6 @@
 	"speed_mult"
 	{
 		"#format"	"{1:.1f}"
-		"en"		"Your gravity has been set to {1}%"
+		"en"		"Your gravity has been set to {1}%%"
 	}
 }

@@ -8,6 +8,6 @@
 	"gravity_mult"
 	{
 		"#format"	"{1:.1f}"
-		"de"		"Deine Geschwindigkeit würde auf {1}% gesetzt"
+		"de"		"Deine Geschwindigkeit würde auf {1}%% gesetzt"
 	}
 }
