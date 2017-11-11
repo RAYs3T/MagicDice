@@ -187,7 +187,9 @@ public Action Timer_SlowPlayer(Handle tiemr, any data)
 		newColors[c] = ReadPackCell(data);
 	}
 	SetEntityRenderColor(client, newColors[0], newColors[1], newColors[2], newColors[3]);	
+	#if defined DEBUG
 	PrintToChat(client, "Slowing ... %f, colors: %i %i %i %i", newSpeed, newColors[0], newColors[1], newColors[2], newColors[3]);
+	#endif
 	SetSpeed(client, newSpeed);
 	
 	
