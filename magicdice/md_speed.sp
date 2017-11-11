@@ -62,7 +62,6 @@ public void Diced(int client, char diceText[255], char[] mode, char[] speedParam
 	} 
 	else if(strcmp(mode, "mult") == 0)
 	{
-		PrintToChat(client, "Du stinkst asd %f", currentSpeed);
 		float newSpeed = (currentSpeed * speedInput);
 		SetSpeed(client, newSpeed);
 		Format(diceText, sizeof(diceText), "%t", "speed_mult", speedInput * 100, newSpeed * 100);
