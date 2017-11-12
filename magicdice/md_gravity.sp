@@ -38,6 +38,7 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	MDOnPluginStart();
+	HookEvent("round_end", Event_RoundEnd, EventHookMode_Post);
 }
 
 
@@ -74,6 +75,14 @@ public void Diced(int client, char diceText[255], char[] mode, char[] gravityPar
 	else
 	{
 		LogError("Unknown gravity mode: %s", mode);
+	}
+}
+
+public Action Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast)
+{
+	for (int i = 0; i < MAXPLAYERS; i++)
+	{
+		SetEntityGravity(i, 1.0);
 	}
 }
 
