@@ -35,9 +35,6 @@ static ConVar g_soundEndPlayOffset;
 
 static int g_freezeColor[] = {0, 170, 240, 180};
 
-int g_BeamSprite = -1;
-int g_HaloSprite = -1;
-
 char g_freezeOverlay[] = "Effects/com_shield002a.vmt";
 
 public Plugin myinfo =
@@ -65,9 +62,6 @@ public void OnPluginStart()
 	
 	AutoExecConfig_ExecuteFile();
 	AutoExecConfig_CleanFile();
-	
-	g_BeamSprite = PrecacheModel("materials/sprites/bomb_planted_ring.vmt");
-	g_HaloSprite = PrecacheModel("materials/sprites/halo.vtf");
 }
 
 
@@ -221,7 +215,6 @@ public Action Timer_PlayUnfreezeSound(Handle tiemr, any client)
 	float position[3];
 	GetEntPropVector(client, Prop_Send, "m_vecOrigin", position);
 	EmitAmbientSound(endSound, position, client, SNDLEVEL_RAIDSIREN);
-	ShowBeacon(client);
 	return Plugin_Handled;
 }
 
@@ -250,15 +243,6 @@ public Action Timer_UnfreezePlayer(Handle timer, Handle dataPack)
 static void SetSpeed(int client, float newSpeed)
 {
 	SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", newSpeed);
-}
-
-public void ShowBeacon(int client)
-{
-	float vec[3];
-	GetClientAbsOrigin(client, vec);
-	vec[2] += 10;
-	TE_SetupBeamRingPoint(vec, 5.0, 200.0, g_BeamSprite, g_HaloSprite, 0, 10, 0.6, 10.0, 1.5, g_freezeColor, 10, 0);
-	TE_SendToAll();
 }
 
 void SetClientOverlay(int client)
