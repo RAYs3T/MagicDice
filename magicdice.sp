@@ -510,12 +510,12 @@ static bool CanPlayerDiceInTeam(int client)
 static bool CanPlayerDice(int client)
 {
 	if(!IsClientInGame(client) || !IsPlayerAlive(client)) {
-		CPrintToChat(client, "{lightgreen}%s %t", MD_PREFIX, "dice_not_possible_when_dead");
+		CPrintToChat(client, "%s {red}%t", MD_PREFIX_COLORED, "dice_not_possible_when_dead");
 		return false;
 	}
 	
 	if(g_cannotDice) {
-		CPrintToChat(client, "{lightgreen}%s %t", MD_PREFIX, "dice_not_possible_in_this_game_phase");
+		CPrintToChat(client, "%s {red}%t", MD_PREFIX_COLORED, "dice_not_possible_in_this_game_phase");
 		return false;
 	}
 	
