@@ -22,6 +22,7 @@
 #define MODULE_PLUGIN_WEBSITE "https://ptl-clan.de"
 
 #include ../include/magicdice
+#include ../include/autoexecconfig
 #include <sdkhooks>
 #include <sdktools>
 
@@ -36,8 +37,11 @@ static Handle g_playerSlowRemoveTimers[MAXPLAYERS + 1] = {INVALID_HANDLE, ...};
 static int g_playerSlowOriginalColors[MAXPLAYERS + 1][4];
 static int g_freezeColor[] = {0, 170, 240, 180};
 
+static ConVar g_soundFire;
+static ConVar g_soundFreeze;
+
 #define FREEZE_STEPS 5
-#define DEBUG 1
+
 public Plugin myinfo =
 {
 	name = MODULE_PLUGIN_NAME,
@@ -58,6 +62,33 @@ public void OnPluginStart()
 	for (int i; i < MAXPLAYERS; i++) {
 		AddTakeDamageHook(i);
 	}
+	
+	AutoExecConfig_SetFile("md_aftermath", "magicdice");
+	g_soundFire = 		AutoExecConfig_CreateConVar("md_aftermath_fire_sound", 
+	"magicdice/magicdice_aftermath_fire.mp3", "Sound to play if a player dices fire");
+	g_soundFreeze = 		AutoExecConfig_CreateConVar("md_aftermath_freeze_sound", 
+	"magicdice/magicdice_aftermath_freeze.mp3", "Sound to play if a player dices freeze");
+	
+	AutoExecConfig_ExecuteFile();
+	AutoExecConfig_CleanFile();
+}
+
+public void OnConfigsExecuted()
+{
+	// Precache sounds
+	char fireSound[PLATFORM_MAX_PATH];
+	g_soundFire.GetString(fireSound, sizeof(fireSound));
+	char fireSoundPath[PLATFORM_MAX_PATH];
+	Format(fireSoundPath, sizeof(fireSoundPath), "sound/%s", fireSound);
+	PrecacheSound(fireSound, true);
+	AddFileToDownloadsTable(fireSoundPath);
+	
+	char freezeSound[PLATFORM_MAX_PATH];
+	g_soundFreeze.GetString(freezeSound, sizeof(freezeSound));
+	char freezeSoundPath[PLATFORM_MAX_PATH];
+	Format(freezeSoundPath, sizeof(freezeSoundPath), "sound/%s", freezeSound);
+	PrecacheSound(freezeSound, true);
+	AddFileToDownloadsTable(freezeSoundPath);
 }
 
 
@@ -101,14 +132,29 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 		return;
 	}
 	
+	float position[3];
+	GetEntPropVector(client, Prop_Send, "m_vecOrigin", position);
+		
 	if(strcmp(param1, "fire") == 0)
 	{
 		g_effectStrengthFire[client] = strength;
+		
+		char fireSound[PLATFORM_MAX_PATH];
+		g_soundFire.GetString(fireSound, sizeof(fireSound));
+		
+		EmitAmbientSound(fireSound, position, client, SNDLEVEL_RAIDSIREN);
+		
 		Format(diceText, sizeof(diceText), "%t", "fire", strength);		
 	} 
 	else if(strcmp(param1, "freeze") == 0)
 	{
 		g_effectStrengthFreeze[client] = strength;
+		
+		char freezeSound[PLATFORM_MAX_PATH];
+		g_soundFreeze.GetString(freezeSound, sizeof(freezeSound));
+		
+		
+		EmitAmbientSound(freezeSound, position, client, SNDLEVEL_RAIDSIREN);
 		Format(diceText, sizeof(diceText), "%t", "freezed", strength);
 	} 
 	else 
@@ -129,7 +175,6 @@ static void SlowPlayer(int client, float time)
 	{
 		KillTimer(g_playerSlowRemoveTimers[client]);
 		g_playerSlowRemoveTimers[client] = CreateTimer(time + 0.2, Timer_ResetSlowPlayer, client);
-		PrintToServer("(resettet) Slow timer startet: %f", time);
 		// STOP HERE, END TIMER WAS RESETTET AND CLIENT IS STILL SLOW (OR SLOWING DOWN!)
 		return;
 	}
@@ -170,7 +215,6 @@ static void SlowPlayer(int client, float time)
 	}
 	// Create a new reset timer
 	g_playerSlowRemoveTimers[client] = CreateTimer(time + 0.2, Timer_ResetSlowPlayer, client);
-	PrintToServer("Slow timer startet: %f", time);
 }
 
 
@@ -198,7 +242,6 @@ public Action Timer_SlowPlayer(Handle timer, any data)
 
 public Action Timer_ResetSlowPlayer(Handle timer, any client)
 {
-	PrintToServer("Unfreeze");
 	g_playerSlowRemoveTimers[client] = INVALID_HANDLE;
 	if(!IsValidClient(client, false) && !IsPlayerAlive(client))
 	{
