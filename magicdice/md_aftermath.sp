@@ -128,7 +128,7 @@ static void SlowPlayer(int client, float time)
 	if(g_playerSlowRemoveTimers[client] != INVALID_HANDLE)
 	{
 		KillTimer(g_playerSlowRemoveTimers[client]);
-		g_playerSlowRemoveTimers[client] = CreateTimer(time + 0.1, Timer_ResetSlowPlayer, client);
+		g_playerSlowRemoveTimers[client] = CreateTimer(time + 0.2, Timer_ResetSlowPlayer, client);
 		PrintToServer("(resettet) Slow timer startet: %f", time);
 		// STOP HERE, END TIMER WAS RESETTET AND CLIENT IS STILL SLOW (OR SLOWING DOWN!)
 		return;
@@ -169,7 +169,7 @@ static void SlowPlayer(int client, float time)
 		CreateTimer(i * freezeStepSize, Timer_SlowPlayer, slowPack);
 	}
 	// Create a new reset timer
-	g_playerSlowRemoveTimers[client] = CreateTimer(time, Timer_ResetSlowPlayer, client);
+	g_playerSlowRemoveTimers[client] = CreateTimer(time + 0.2, Timer_ResetSlowPlayer, client);
 	PrintToServer("Slow timer startet: %f", time);
 }
 
