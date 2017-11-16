@@ -127,6 +127,7 @@ public bool MDEvaluateResult(int idx, int client, char[] param1, char[] param2, 
 	if(status == DiceStatus_Success)
 	{
 		MDPublishDiceResult(client, diceText, idx);
+		return true;
 	}
 	else if(status == DiceStatus_Failed)
 	{
@@ -146,6 +147,7 @@ public bool MDEvaluateResult(int idx, int client, char[] param1, char[] param2, 
 	{
 		MDReportFailure("Module respond with unknown return code: %i", status);
 	}
+	return false;
 }
 
 

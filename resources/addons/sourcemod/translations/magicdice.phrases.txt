@@ -4,6 +4,10 @@
 	{
 		"en"		"Sorry, no dice modules available at this time :("
 	}
+	"dice_module_error"
+	{
+		"en"		"Sorry, one of the result modules decided to die instead of serve you :( - You can dice again!"
+	}
 	"dice_not_allowed_for_your_team"
 	{
 		"en"		"Your team is not allowed to dice!"

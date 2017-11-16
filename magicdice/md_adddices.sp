@@ -51,14 +51,15 @@ public void OnPluginEnd()
 	MDUnRegisterModule();
 }
 
-public void Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
+public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
 {
 	int dices = MDParseParamInt(param1);
 	if(dices == 0) {
 		MDReportInvalidParameter(1, "Amount of additional dices", param1);
-		return;
+		return DiceStatus_Failed;
 	}
 	MDAddAllowedDices(client, dices);
 	
 	Format(diceText, sizeof(diceText), "%t", "dices_granted", dices);
+	return DiceStatus_Success;
 }

@@ -391,6 +391,7 @@ static void PickResult(int client, int forcedResult = -1)
 			if(!success)
 			{
 				LogError("%s Unable to process with result module: %s", MD_PREFIX, g_results[selectedIndex][i][ModuleField_ModuleName]);
+				CPrintToChat(client, "%s %t", MD_PREFIX_COLORED, "dice_module_error");
 			}
 		} else {
 			break; // No more modules to process for this result
