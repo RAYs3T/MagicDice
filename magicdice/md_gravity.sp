@@ -82,6 +82,10 @@ public Action Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast
 {
 	for (int i = 0; i < MAXPLAYERS; i++)
 	{
+		if(!IsValidClient(i))
+		{
+			continue; // Skip invalid clients
+		}
 		SetEntityGravity(i, 1.0);
 	}
 }
