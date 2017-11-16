@@ -110,11 +110,13 @@ bool StartNoClip(int client, float time, float delay)
 
 public Action Timer_StartDelay(Handle timer, int client){
 	ToggleNoClip(client, true);
+	delayTimers[client] = INVALID_HANDLE;
 	return Plugin_Stop;
 }
 
 public Action Timer_StopNoclip(Handle timer, int client) {
 	ToggleNoClip(client, false);
+	clipTimers[client] = INVALID_HANDLE;
 	return Plugin_Stop;
 }
 
