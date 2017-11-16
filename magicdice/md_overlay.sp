@@ -137,7 +137,7 @@ void InitializeOverlays()
 	kv.ImportFromFile("cfg/magicdice/md_overlay.cfg");
 	if(!kv.GotoFirstSubKey())
 	{
-		MDReportFailure("No overlays configured!");
+		MDReportFailure("No overlays configured! Please check: cfg/magicdice/md_overlay.cfg");
 		return;
 	}
 	do {
