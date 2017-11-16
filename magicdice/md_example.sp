@@ -57,14 +57,20 @@ public void OnPluginEnd()
 	MDUnRegisterModule();
 }
 
-// This is called when a used diced this module as result
+// This is called when a user diced this module as result
 // You can do more random operations here
 // Like select a random health value for example.
-// diceText is the text reference that is displayer to the client
+// diceText is the text reference that is displayed to the client
 // You should set a descriptive text
-public void Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
+// The @return DiceStatus value represents if the dice was successfull or not
+public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
 {
 	MDAddAllowedDices(client, 2); // Allow the player to roll two more times!
 	
 	Format(diceText, sizeof(diceText), "%t", "diced");
+	
+	// This tells the core that the dice result has been processed without errors
+	// If you notice any kinds of errors you should return DiceStatus_Failed
+	// This will ensure that the player can dice again
+	return DiceStatus_Success;
 }

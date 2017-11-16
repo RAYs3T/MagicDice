@@ -382,12 +382,16 @@ static void PickResult(int client, int forcedResult = -1)
 		if(strcmp(g_results[selectedIndex][i][1], "") != 0)
 		{
 			Handle module = FindModuleByName(g_results[selectedIndex][i][ModuleField_ModuleName]);
-			ProcessResult(module, selectedIndex, client, 
+			bool success = ProcessResult(module, selectedIndex, client, 
 			g_results[selectedIndex][i][ModuleField_Param1], 
 			g_results[selectedIndex][i][ModuleField_Param2], 
 			g_results[selectedIndex][i][ModuleField_Param3], 
 			g_results[selectedIndex][i][ModuleField_Param4], 
 			g_results[selectedIndex][i][ModuleField_Param5]);
+			if(!success)
+			{
+				LogError("%s Unable to process with result module: %s", MD_PREFIX, g_results[selectedIndex][i][ModuleField_ModuleName]);
+			}
 		} else {
 			break; // No more modules to process for this result
 		}
@@ -452,7 +456,7 @@ static Handle FindModuleByName(char[] searched)
 }
 
 // Process the dice result for a roll
-public void ProcessResult(Handle module, int resultNo, int client, char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
+public bool ProcessResult(Handle module, int resultNo, int client, char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
 {
 	// Get the function of the module
 	Function id = GetFunctionByName(module, "MDEvaluateResult");
@@ -481,7 +485,11 @@ public void ProcessResult(Handle module, int resultNo, int client, char[] param1
 	Call_PushString(isParamRandom3 ? selectedValue3 : param3);
 	Call_PushString(isParamRandom4 ? selectedValue4 : param4);
 	Call_PushString(isParamRandom5 ? selectedValue5 : param5);
-	Call_Finish();
+	
+	bool wasDiceSuccessfully;
+	Call_Finish(wasDiceSuccessfully);
+	
+	return wasDiceSuccessfully;
 }
 
 
