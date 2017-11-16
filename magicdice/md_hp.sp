@@ -52,17 +52,17 @@ public void OnPluginEnd()
 	MDUnRegisterModule();
 }
 
-public void Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
+public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
 {
 	if(!MDIsStringSet(param1)){
 		MDReportInvalidParameter(1, "Mode", param1);
-		return;
+		return DiceStatus_Failed;
 	}
 	
 	int amount = MDParseParamInt(param2);
 	if(amount == 0){
 		MDReportInvalidParameter(2, "Amount", param2);
-		return;
+		return DiceStatus_Failed;
 	}
 	
 	if(strcmp(param1, "set") == 0) {
@@ -79,8 +79,11 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 		
 		UpdateHealth(client, amount * -1, false);
 		Format(diceText, sizeof(diceText), "%t", "hp_took", amount);
-		
+	}else{
+		MDReportInvalidParameter(1, "Mode", param1);
+		return DiceStatus_Failed;
 	}
+	return DiceStatus_Success;
 }
 
 void UpdateHealth(int client, int amount, bool onlySet)

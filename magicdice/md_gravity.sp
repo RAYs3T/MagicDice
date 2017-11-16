@@ -52,7 +52,7 @@ public void OnPluginEnd()
 	MDUnRegisterModule();
 }
 
-public void Diced(int client, char diceText[255], char[] mode, char[] gravityParam, char[] param3, char[] param4, char[] param5)
+public DiceStatus Diced(int client, char diceText[255], char[] mode, char[] gravityParam, char[] param3, char[] param4, char[] param5)
 {
 	
 	float gravityInput = MDParseParamFloat(gravityParam);
@@ -74,8 +74,10 @@ public void Diced(int client, char diceText[255], char[] mode, char[] gravityPar
 	}
 	else
 	{
-		LogError("Unknown gravity mode: %s", mode);
+		MDReportFailure("Unknown gravity mode: %s", mode);
+		return DiceStatus_Failed;
 	}
+	return DiceStatus_Success;
 }
 
 public Action Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast)

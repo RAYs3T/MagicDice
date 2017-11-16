@@ -52,13 +52,14 @@ public void OnPluginEnd()
 	MDUnRegisterModule();
 }
 
-public void Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
+public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
 {
 	int damage = MDParseParamInt(param1);
 	if(damage == 0){
 		MDReportInvalidParameter(1, "Damage", param1);
-		return;
+		return DiceStatus_Failed;
 	}
 	SlapPlayer(client, damage);
 	Format(diceText, sizeof(diceText), "%t", "slap_with_damage", damage);
+	return DiceStatus_Success;
 }

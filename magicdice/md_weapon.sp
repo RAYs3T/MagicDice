@@ -57,18 +57,18 @@ public void OnPluginEnd()
 	MDUnRegisterModule();
 }
 
-public void Diced(int client, char diceText[255], char[] p_weaponId, char[] p_amount, char[] p_primaryMagSize, char[] p_secondaryMagSize, char[] p_5)
+public DiceStatus Diced(int client, char diceText[255], char[] p_weaponId, char[] p_amount, char[] p_primaryMagSize, char[] p_secondaryMagSize, char[] p_5)
 {
 	// Validate parameter
 	if(!MDIsStringSet(p_weaponId)) {
 		MDReportInvalidParameter(1, "weaponId", p_weaponId);
-		return;
+		return DiceStatus_Failed;
 	}
 	
 	int amount = MDParseParamInt(p_amount);
 	if (amount == 0) {
 		MDReportInvalidParameter(2, "amount", p_amount);
-		return;
+		return DiceStatus_Failed;
 	}
 	
 	int primaryMagSize = MDParseParamInt(p_primaryMagSize);
@@ -112,8 +112,8 @@ public void Diced(int client, char diceText[255], char[] p_weaponId, char[] p_am
 		} else {
 			Format(diceText, sizeof(diceText), "%t", "got_weapon_with_modified_mags", weaponName, primaryMagSize, secondaryMagSize);
 		}
-		
 	}
+	return DiceStatus_Success;
 }
 
 int GiveItem(int client, char[] weaponId)

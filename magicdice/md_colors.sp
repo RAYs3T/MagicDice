@@ -51,7 +51,7 @@ public void OnPluginEnd()
 	MDUnRegisterModule();
 }
 
-public void Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
+public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
 {
 	
 	float red = 255.0;
@@ -87,4 +87,5 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 	SetEntityRenderColor(client, RoundToCeil(red), RoundToCeil(green), RoundToCeil(blue), RoundToCeil(alpha));
 	
 	Format(diceText, sizeof(diceText), "%t", "colored", ((red / 256) * 100), ((green / 256) * 100), ((blue / 256) * 100), ((alpha / 256) * 100));
+	return DiceStatus_Success;
 }
