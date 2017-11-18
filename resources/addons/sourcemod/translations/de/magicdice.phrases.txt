@@ -10,7 +10,7 @@
 	}
 	"all_dices_are_gone"
 	{
-		"#format"	"{1:i}
+		"#format"	"{1:i}"
 		"de"		"{orange}Du hast keine Würfel mehr über! ({blue}{1}{orange}) - {pink}Versuch es nächste Runde erneut"
 	}
 	"missing_fixed_result_test_parameter"
@@ -19,12 +19,12 @@
 	}
 	"not_found_fixed_result"
 	{
-		"#format"	"{1:i}
+		"#format"	"{1:i}"
 		"de"		"{default}Ungültiges Würfelergebnis: {1}"
 	}
 	"using_fixed_dice_result"
 	{
-		"#format"	"{1:i}
+		"#format"	"{1:i}"
 		"de"		"{red}Es wird ein geplantes Ergebnis genutzt: {1}"
 	}
 	"dice_not_possible_in_this_game_phase"
