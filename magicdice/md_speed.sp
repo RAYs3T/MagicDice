@@ -48,7 +48,7 @@ public void OnPluginEnd()
 	MDUnRegisterModule();
 }
 
-public void Diced(int client, char diceText[255], char[] mode, char[] speedParam, char[] param3, char[] param4, char[] param5)
+public DiceStatus Diced(int client, char diceText[255], char[] mode, char[] speedParam, char[] param3, char[] param4, char[] param5)
 {
 	
 	float speedInput = MDParseParamFloat(speedParam);
@@ -68,8 +68,10 @@ public void Diced(int client, char diceText[255], char[] mode, char[] speedParam
 	}
 	else 
 	{
-		LogError("Unknown speed mode: %s", mode);
+		MDReportFailure("Unknown speed mode: %s", mode);
+		return DiceStatus_Failed;
 	}
+	return DiceStatus_Success;
 }
 
 static float GetSpeed(int client) 

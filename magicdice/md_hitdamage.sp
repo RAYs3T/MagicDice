@@ -61,11 +61,12 @@ public void OnPluginEnd()
 	MDUnRegisterModule();
 }
 
-public void Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
+public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
 {	
 	float damageMultiplier = MDParseParamFloat(param1);
 	if(damageMultiplier == 0.0) {
 		MDReportInvalidParameter(1, "Damage multiplier", param1);
+		return DiceStatus_Failed;
 	}
 	
 	g_playerDamageMultiplier[client] = damageMultiplier;
@@ -75,7 +76,7 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 	} else {
 		Format(diceText, sizeof(diceText), "%t", "less_damage", damageMultiplier);
 	}
-	
+	return DiceStatus_Success;
 }
 
 public Action Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)

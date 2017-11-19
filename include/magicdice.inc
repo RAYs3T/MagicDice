@@ -110,11 +110,44 @@ public float MDParseParamFloat(char[] param)
 	return StringToFloat(param);
 }
 
+/*
+ * Enums for the DiceStatus retun of Diced()
+ * Representing if a dice was successfull or not
+ */
+enum DiceStatus
+{
+	DiceStatus_Success, /* The dice result has been processed successfully */
+	DiceStatus_Failed, /* An error occured while processing the dice result */
+}
 
 public bool MDEvaluateResult(int idx, int client, char[] param1, char[] param2, char[] param3, char[] param4, char[] param5){
 	char diceText[255];
-	Diced(client, diceText, param1, param2, param3, param4, param5); // This should be implemented by every module
-	MDPublishDiceResult(client, diceText, idx);
+	// This method(Diced()) should be implemented by every module
+	DiceStatus status = Diced(client, diceText, param1, param2, param3, param4, param5);
+	if(status == DiceStatus_Success)
+	{
+		MDPublishDiceResult(client, diceText, idx);
+		return true;
+	}
+	else if(status == DiceStatus_Failed)
+	{
+		// Restore one dice turn since this was our fault
+		MDAddAllowedDices(client, 1);
+	
+		// Blame to the log	
+		MDReportFailure("Module respond with failure code - a dice turn has been restored [client: %i] (watch for error above this line)", client);
+		MDReportFailure("Used parameters: \n\
+		P1: '%s'\n\
+		P2: '%s'\n\
+		P3: '%s'\n\
+		P4: '%s'\n\
+		P5: '%s'\n", param1, param2, param3, param4, param5);
+	}
+	else
+	{
+		MDReportFailure("Module respond with unknown return code: %i", status);
+	}
+	return false;
 }
 
 

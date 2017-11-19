@@ -51,17 +51,18 @@ public void OnPluginEnd()
 }
 
 
-public void Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
+public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
 {
 	int knives = MDParseParamInt(param1);
 	if(knives == 0) {
 		MDReportInvalidParameter(1, "Amount of knives", param1);
-		return;
+		return DiceStatus_Failed;
 	}
 	
 	AddKnives(client, knives);
 	
 	Format(diceText, sizeof(diceText), "%t", "you_got_knives", knives);
+	return DiceStatus_Success;
 }
 
 void AddKnives(int client, int kniveCount)

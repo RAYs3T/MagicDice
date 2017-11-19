@@ -1,0 +1,13 @@
+"Phrases"
+{
+	"fire"
+	{
+		"#format"	"{1:.2f}"
+		"en"		"This {fuchsia}Girl {mediumvioletred}is on {orangered}fire! {mediumvioletred}(for {1} seconds)"
+	}
+	"freezed"
+	{
+		"#format"	"{1:.2f}"
+		"en"		"{cyan}Ice {dodgerblue}Ice {fuchsia}Baby! {mediumvioletred}(you can freeze Players for {1} seconds)"
+	}
+}

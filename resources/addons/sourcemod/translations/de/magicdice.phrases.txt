@@ -4,6 +4,10 @@
 	{
 		"de"		"Mhm, du kannst diese Runde nicht mehr würfeln :("
 	}
+	"dice_module_error"
+	{
+		"de"		"Entschuldige, eines der Ergebnismodule hat sich entschieden zu sterben, statt dir zu dienen. :( - Du kannst noch einmal würfeln!"
+	}
 	"dice_not_allowed_for_your_team"
 	{
 		"de"		"Dein Team kann den Würfel nicht benutzen!"
