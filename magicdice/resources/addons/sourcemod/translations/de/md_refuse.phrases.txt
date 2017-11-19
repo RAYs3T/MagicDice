@@ -1,0 +1,8 @@
+"Phrases"
+{
+	"refuses_added"
+	{
+		"#format"	"{1:i}"
+		"de"		"Du kannst {1} mal mehr verweigern"
+	}
+}
