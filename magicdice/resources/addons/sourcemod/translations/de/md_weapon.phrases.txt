@@ -13,7 +13,7 @@
 	"got_weapon_with_modified_mags"
 	{
 		"#format"	"{1:s},{2:i},{3:i}"
-		"de"		"Du hast eine {2} mit {3}/{4} gefüllten Magazinen"
+		"de"		"Du hast eine {1} mit {2}/{3} gefüllten Magazinen"
 	}
 	"got_multiple_weapon_with_modified_mags"
 	{
