@@ -86,6 +86,6 @@ public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] pa
 	SetEntityRenderMode(client, renderMode);
 	SetEntityRenderColor(client, RoundToCeil(red), RoundToCeil(green), RoundToCeil(blue), RoundToCeil(alpha));
 	
-	Format(diceText, sizeof(diceText), "%t", "colored", ((red / 256) * 100), ((green / 256) * 100), ((blue / 256) * 100), ((alpha / 256) * 100));
+	Format(diceText, sizeof(diceText), "%t", "colored", ((red / 255) * 100), ((green / 255) * 100), ((blue / 255) * 100), ((alpha / 255) * 100));
 	return DiceStatus_Success;
 }
