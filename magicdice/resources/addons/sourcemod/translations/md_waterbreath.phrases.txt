@@ -1,0 +1,7 @@
+"Phrases"
+{
+	"diced"
+	{
+		"en"		"You can breath underwater like a fish"
+	}
+}
