@@ -38,6 +38,7 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	MDOnPluginStart();
+	HookEvent("round_end", Event_RoundEnd, EventHookMode_Post);
 }
 
 
@@ -51,17 +52,52 @@ public void OnPluginEnd()
 	MDUnRegisterModule();
 }
 
-public void Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
+public DiceStatus Diced(int client, char diceText[255], char[] mode, char[] gravityParam, char[] param3, char[] param4, char[] param5)
 {
-	//If the param isnt set or the param is negative
-	if(!MDIsStringSet(param1) || MDParseParamFloat(param1) < 0){
-		MDReportInvalidParameter(1, "gravityMultiplier", param1);
-		return;
+	
+	float gravityInput = MDParseParamFloat(gravityParam);
+	
+	float currentGravity = GetGravity(client);
+	//TODO remove the line below and find solution for the line above
+	currentGravity = 1.0;
+	
+	if(strcmp(mode, "set") == 0) 
+	{
+		SetGravity(client, gravityInput);
+		Format(diceText, sizeof(diceText), "%t", "gravity_set", gravityInput * 100);
+	} 
+	else if(strcmp(mode, "mult") == 0)
+	{
+		float newGravity = (currentGravity * gravityInput);
+		SetGravity(client, newGravity);
+		Format(diceText, sizeof(diceText), "%t", "gravity_mult", gravityInput * 100 , newGravity * 100);
 	}
-	
-	float amount = MDParseParamFloat(param1);
-	
-	SetEntityGravity(client, amount);
-	
-	Format(diceText, sizeof(diceText), "%t", "gravity_set", amount);
+	else
+	{
+		MDReportFailure("Unknown gravity mode: %s", mode);
+		return DiceStatus_Failed;
+	}
+	return DiceStatus_Success;
+}
+
+public Action Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast)
+{
+	for (int i = 0; i < MAXPLAYERS; i++)
+	{
+		if(!IsValidClient(i))
+		{
+			continue; // Skip invalid clients
+		}
+		SetEntityGravity(i, 1.0);
+	}
+}
+
+static float GetGravity(int client)
+{
+	return GetEntityGravity(client);
+}
+
+static void SetGravity(int client, float newGravity)
+{
+	SetEntityGravity(client, newGravity);
 }

@@ -3,6 +3,6 @@
 	"nervous"
 	{
 		"#format"	"{1:.1f}{2:.1f}"
-		"de"	"Du bist nervös. Dein Fadenkreuz verutscht alle {2} Sekunden mit einer kraft von {1}"
+		"de"	"Du bist nervös. Dein Fadenkreuz verutscht alle {2} Sekunden mit einer Kraft von {1}"
 	}
 }

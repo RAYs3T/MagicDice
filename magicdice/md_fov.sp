@@ -55,18 +55,19 @@ public void OnPluginEnd()
 	MDUnRegisterModule();
 }
 
-public void Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
+public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
 {
 	int amount = MDParseParamInt(param1);
 	
 	if(amount <= 0|| amount == 90){
 		MDReportInvalidParameter(1, "value", param1);
-		return;
+		return DiceStatus_Failed;
 	}
 	
 	g_fovClients[client] = amount;
 	
 	Format(diceText, sizeof(diceText), "%t", "fov_set", amount);
+	return DiceStatus_Success;
 }
 
 public Action Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)

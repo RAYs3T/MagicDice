@@ -73,12 +73,12 @@ public Action Event_RoundStart(Handle event, const char[] name, bool dontBroadca
 	}
 }
 
-public void Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
+public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
 {
 	float noClipTime = MDParseParamFloat(param1);
 	if(noClipTime == 0.0) {
 		MDReportInvalidParameter(1, "NoClip time", param1);
-		return;
+		return DiceStatus_Failed;
 	}
 	
 	// If no start delay is set, this is fine. Just use no delay :)
@@ -90,7 +90,8 @@ public void Diced(int client, char diceText[255], char[] param1, char[] param2, 
 		Format(diceText, sizeof(diceText), "%t", "noclip_direct", noClipTime);
 	} else {
 		Format(diceText, sizeof(diceText), "%t", "noclip_delayed", startDelay, noClipTime);
-	}	
+	}
+	return DiceStatus_Success;
 }
 
 bool StartNoClip(int client, float time, float delay) 
@@ -110,11 +111,13 @@ bool StartNoClip(int client, float time, float delay)
 
 public Action Timer_StartDelay(Handle timer, int client){
 	ToggleNoClip(client, true);
+	delayTimers[client] = INVALID_HANDLE;
 	return Plugin_Stop;
 }
 
 public Action Timer_StopNoclip(Handle timer, int client) {
 	ToggleNoClip(client, false);
+	clipTimers[client] = INVALID_HANDLE;
 	return Plugin_Stop;
 }
 

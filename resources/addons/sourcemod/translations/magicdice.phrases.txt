@@ -4,13 +4,17 @@
 	{
 		"en"		"Sorry, no dice modules available at this time :("
 	}
+	"dice_module_error"
+	{
+		"en"		"Sorry, one of the result modules decided to die instead of serve you :( - You can dice again!"
+	}
 	"dice_not_allowed_for_your_team"
 	{
 		"en"		"Your team is not allowed to dice!"
 	}
 	"all_dices_are_gone"
 	{
-		"#format"	"{1:i}
+		"#format"	"{1:i}"
 		"en"		"{orange}All your dices are gone! ({blue}{1}{orange}) - {pink}try again in the next round!"
 	}
 	"missing_fixed_result_test_parameter"
@@ -19,12 +23,12 @@
 	}
 	"not_found_fixed_result"
 	{
-		"#format"	"{1:i}
+		"#format"	"{1:i}"
 		"en"		"{default}Invalid dice result: {1}"
 	}
 	"using_fixed_dice_result"
 	{
-		"#format"	"{1:i}
+		"#format"	"{1:i}"
 		"en"		"{red}Using a fixed result for dice: {1}"
 	}
 	"dice_not_possible_in_this_game_phase"

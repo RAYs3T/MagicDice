@@ -1,0 +1,7 @@
+"Phrases"
+{
+	"diced"
+	{
+		"de"		"Du hast Kiemen bekommen. Du kannst Unterwasser atmen"
+	}
+}

@@ -12,18 +12,20 @@
 
 // Code style rules
 #pragma semicolon 1
+#pragma newdecls required
 
 // Plugin info
 #define MODULE_PLUGIN_VERSION "${-version-}" // Version is replaced by the GitLab-Runner compile script
-#define MODULE_PLUGIN_NAME "MagicDice - Throwing Knives"
+#define MODULE_PLUGIN_NAME "MagicDice - Refuse Amount"
 #define MODULE_PLUGIN_AUTHOR "Kevin 'RAYs3T' Urbainczyk"
-#define MODULE_PLUGIN_DESCRIPTION "Gives the players some knives to throw on other palyers"
+#define MODULE_PLUGIN_DESCRIPTION "Adds additional refuses to a player"
 #define MODULE_PLUGIN_WEBSITE "https://ptl-clan.de"
 
 #include ../include/magicdice
-#include ../include/cssthrowingknives
+#include ../include/refusemgr
 
-#pragma newdecls required
+
+
 
 public Plugin myinfo =
 {
@@ -50,25 +52,18 @@ public void OnPluginEnd()
 	MDUnRegisterModule();
 }
 
-
 public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
 {
-	int knives = MDParseParamInt(param1);
-	if(knives == 0) {
-		MDReportInvalidParameter(1, "Amount of knives", param1);
+	int amount = MDParseParamInt(param1);
+	if(amount == 0)
+	{
+		MDReportInvalidParameter(1, "amount", param1);
 		return DiceStatus_Failed;
 	}
 	
-	AddKnives(client, knives);
 	
-	Format(diceText, sizeof(diceText), "%t", "you_got_knives", knives);
+	RefuseAddAmount(client, amount);
+	
+	Format(diceText, sizeof(diceText), "%t", "refuses_added", amount);
 	return DiceStatus_Success;
-}
-
-void AddKnives(int client, int kniveCount)
-{
-	int currentCount = GetClientThrowingKnives(client);
-	currentCount += kniveCount;
-	SetClientThrowingKnives(client, currentCount);
-	 
 }

@@ -48,31 +48,38 @@ public void OnPluginEnd()
 	MDUnRegisterModule();
 }
 
-public void Diced(int client, char diceText[255], char[] mode, char[] speedParam, char[] param3, char[] param4, char[] param5)
+public DiceStatus Diced(int client, char diceText[255], char[] mode, char[] speedParam, char[] param3, char[] param4, char[] param5)
 {
 	
-	float speed = StringToFloat(speedParam);
+	float speedInput = MDParseParamFloat(speedParam);
+	
+	float currentSpeed = GetSpeed(client);
+	
 	if(strcmp(mode, "set") == 0) 
 	{
-		SetSpeed(client, speed);
-		Format(diceText, sizeof(diceText), "%t", "speed_set", speed);
-	} else if(strcmp(mode, "add") == 0) {
-		SetSpeed(client, GetSpeed(client) + speed);
-		Format(diceText, sizeof(diceText), "%t", "speed_add", speed);
-	} else if(strcmp(mode, "take") == 0) {
-		SetSpeed(client, GetSpeed(client) - speed);
-		Format(diceText, sizeof(diceText), "%t", "speed_take", speed);
-	} else {
-		LogError("Unknown speed mode: %s", mode);
+		SetSpeed(client, speedInput);
+		Format(diceText, sizeof(diceText), "%t", "speed_set", speedInput * 100);
+	} 
+	else if(strcmp(mode, "mult") == 0)
+	{
+		float newSpeed = (currentSpeed * speedInput);
+		SetSpeed(client, newSpeed);
+		Format(diceText, sizeof(diceText), "%t", "speed_mult", speedInput * 100, newSpeed * 100);
 	}
+	else 
+	{
+		MDReportFailure("Unknown speed mode: %s", mode);
+		return DiceStatus_Failed;
+	}
+	return DiceStatus_Success;
 }
 
-float GetSpeed(int client) 
+static float GetSpeed(int client) 
 {
 	return GetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue");
 }
 
-void SetSpeed(int client, float newSpeed)
+static void SetSpeed(int client, float newSpeed)
 {
 	SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", newSpeed);
 }
