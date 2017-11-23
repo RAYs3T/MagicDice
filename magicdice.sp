@@ -279,8 +279,8 @@ public Action OnDiceCommand(int client)
 		return Plugin_Handled;
 	}
 	if(!CanPlayerDice(client)){
-		CPrintToChat(client, "{lightgreen}%s %t", 
-			MD_PREFIX_COLORED, "all_dices_are_gone", g_allowedDices[client]);
+		// We expect that the method for checking this condition is reporting any failure to the player
+		// So we don't display another message here
 		return Plugin_Handled;
 	}
 	// TODO Replace with real random
@@ -540,10 +540,9 @@ static bool CanPlayerDice(int client)
 	}
 	
 	if(g_dices[client] >= g_allowedDices[client]) {
+		CPrintToChat(client, "{lightgreen}%s %t", MD_PREFIX_COLORED, "all_dices_are_gone", g_allowedDices[client]);
 		return false;
 	}
-	
-	
 	return true;
 }
 
