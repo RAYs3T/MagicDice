@@ -17,6 +17,7 @@
 #include <morecolors>
 #include <autoexecconfig>
 #include <cstrike>
+#include <sdktools>
 
 // Switch to enable / disable debugging 
 #define DEBUG true
@@ -287,7 +288,7 @@ public Action OnDiceCommand(int client)
 	//int choosenIndex = GetRandomInt(0, GetArraySize(g_modulesArray) -1);
 	PickResult(client);
 	
-	if(GetConVarBool(g_keepEmptyTeamDices) == true) 
+	if(GetConVarBool(g_keepEmptyTeamDices) == true && IsSingleTeamEmpty()) 
 	{
 		PrintToChat(client, "%s %t", MD_PREFIX_COLORED, "dices_are_keept_empty_team");
 	}
@@ -574,4 +575,13 @@ static void ResetDiceCounter(int client)
 static bool hasModules()
 {
 	return GetArraySize(g_modulesArray) > 0;
+}
+
+/*
+ * Check if one of the both (playing) teams is empty
+ * @return bool true, if one team is emoty
+ */
+static bool IsSingleTeamEmpty()
+{
+	return GetTeamClientCount(CS_TEAM_CT) == 0 || GetTeamClientCount(CS_TEAM_T) == 0;
 }
