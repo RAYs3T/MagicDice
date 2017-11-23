@@ -290,7 +290,7 @@ public Action OnDiceCommand(int client)
 	
 	if(GetConVarBool(g_keepEmptyTeamDices) == true && IsSingleTeamEmpty()) 
 	{
-		PrintToChat(client, "%s %t", MD_PREFIX_COLORED, "dices_are_keept_empty_team");
+		CPrintToChat(client, "%s %t", MD_PREFIX_COLORED, "dices_are_keept_empty_team");
 	}
 	else
 	{
