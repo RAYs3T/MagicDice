@@ -39,4 +39,8 @@
 	{
 		"en"		"Sorry, there are no dice results for your team"
 	}
+	"dices_are_keept_empty_team"
+	{
+		"en"	"You won't loose any dices while one team is empty"
+	}
 }

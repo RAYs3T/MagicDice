@@ -39,4 +39,8 @@
 	{
 		"de"		"Entschuldige, für dein Team gibt es keine Würfelergebnisse"
 	}
+	"dices_are_keept_empty_team"
+	{
+		"de"	"Du verlierst keine Würfel solange ein Team leer ist."
+	}
 }

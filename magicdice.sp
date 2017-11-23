@@ -36,6 +36,7 @@
 static ConVar g_cvar_dicesPerRound;
 static ConVar g_cvar_allowDiceTeamT;
 static ConVar g_cvar_allowDiceTeamCT;
+static ConVar g_keepEmptyTeamDices;
 
 // Plugin prefixes used by console and chat outputs
 public char MD_PREFIX[12] = "[MagicDice]";
@@ -106,6 +107,8 @@ void PrepareAndLoadConfig()
 	// Team dice restrictions
 	g_cvar_allowDiceTeamT = 	AutoExecConfig_CreateConVar("sm_md_allow_dice_team_t", "1", "Can the T-team dice?");
 	g_cvar_allowDiceTeamCT = 	AutoExecConfig_CreateConVar("sm_md_allow_dice_team_ct", "0", "Can the CT-team dice?");
+	
+	g_keepEmptyTeamDices =		AutoExecConfig_CreateConVar("sm_md_keep_empty_team_dices", "1", "Do not count dices when one team is empty");
 	
 	LoadTranslations("magicdice.phrases");
 	
@@ -273,7 +276,15 @@ public Action OnDiceCommand(int client, int params)
 	// TODO Replace with real random
 	//int choosenIndex = GetRandomInt(0, GetArraySize(g_modulesArray) -1);
 	PickResult(client);
-	g_dices[client]++;
+	
+	if(GetConVarBool(g_keepEmptyTeamDices) == true) 
+	{
+		PrintToChat(client, "%s %t", MD_PREFIX_COLORED, "dices_are_keept_empty_team");
+	}
+	else
+	{
+		g_dices[client]++;
+	}
 	return Plugin_Handled;
 }
 
