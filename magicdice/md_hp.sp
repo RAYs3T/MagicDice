@@ -89,20 +89,24 @@ public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] pa
 void UpdateHealth(int client, int amount, bool onlySet)
 {
 	int newHealth = 0;
+	int newMaxHealth = 0;
 	int currentHealth = GetClientHealth(client);
+	int currentMaxHealth = GetEntProp(client, Prop_Data, "m_iMaxHealth", currentMaxHealth);
+	
 	if(onlySet){
 		// Just set
 		newHealth = amount;
 	} else {
 		// Add / remove
 		newHealth = currentHealth + amount;
+		newMaxHealth = currentMaxHealth + amount;
 	}
 	
-	if(newHealth <= 0) {
+	if(newHealth <= 0 || newMaxHealth <= 0) {
 		// Since the player could have negative HP, we need to deal with that
 		ForcePlayerSuicide(client);
 	} else {
-		SetEntProp(client, Prop_Data, "m_iMaxHealth", newHealth);
+		SetEntProp(client, Prop_Data, "m_iMaxHealth", newMaxHealth);
 		SetEntityHealth(client, newHealth);
 	}	
 }
