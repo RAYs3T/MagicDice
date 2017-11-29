@@ -8,6 +8,6 @@
 	"gravity_mult"
 	{
 		"#format"	"{1:.1f}{2:.1f}"
-		"en"		"Your gravity has been changed by {1}%% ({2}%%)"
+		"en"		"Your gravity has been altered by {1}%% (Now: {2}%%)"
 	}
 }

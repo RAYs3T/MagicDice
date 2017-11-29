@@ -58,7 +58,7 @@ public DiceStatus Diced(int client, char diceText[255], char[] mode, char[] grav
 	float gravityInput = MDParseParamFloat(gravityParam);
 	
 	float currentGravity = GetGravity(client);
-	//TODO remove the line below and find solution for the line above
+	//TODO remove the line below and find solution for the line above, maybe https://sm.alliedmods.net/new-api/entity_prop_stocks/GetEntityGravity ??
 	currentGravity = 1.0;
 	
 	if(strcmp(mode, "set") == 0) 
