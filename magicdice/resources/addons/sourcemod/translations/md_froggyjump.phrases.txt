@@ -3,6 +3,6 @@
 	"froggy_jump"
 	{
 		"#format"	"{1:i}"
-		"en"		"You can jump like a frog ({1} times stacking)"
+		"en"		"You can jump additional times mid air ({1} more time(s))"
 	}
 }
