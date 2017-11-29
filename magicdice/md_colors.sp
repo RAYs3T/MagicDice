@@ -86,6 +86,19 @@ public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] pa
 	SetEntityRenderMode(client, renderMode);
 	SetEntityRenderColor(client, RoundToCeil(red), RoundToCeil(green), RoundToCeil(blue), RoundToCeil(alpha));
 	
-	Format(diceText, sizeof(diceText), "%t", "colored", ((red / 255) * 100), ((green / 255) * 100), ((blue / 255) * 100), ((alpha / 255) * 100));
+	if((red != 255 || green != 255 || blue != 255) && alpha == 255 )
+	{
+		Format(diceText, sizeof(diceText), "%t", "colored", ((red / 255) * 100), ((green / 255) * 100), ((blue / 255) * 100));
+	}
+	else if(red == 255 && green == 255 && blue == 255)
+	{
+		Format(diceText, sizeof(diceText), "%t", "transparented", ((alpha / 255) * 100));
+	}
+	else
+	{
+		Format(diceText, sizeof(diceText), "%t", "both", ((red / 255) * 100), ((green / 255) * 100), ((blue / 255) * 100), ((alpha / 255) * 100));
+	}
+	
+	
 	return DiceStatus_Success;
 }

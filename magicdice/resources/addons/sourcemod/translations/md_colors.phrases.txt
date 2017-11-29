@@ -10,4 +10,9 @@
 		"#format"	"{1:.1f}"
 		"en"		"You are {1}%% more transparent"
 	}
+	"both"
+	{
+		"#format"	"{1:.1f}{2:.1f}{3:.1f}{4:.1f}"
+		"en"		"Your colors have been altered. {black}({fullred}Red: {1}%% {lime}Green: {2}%% {aqua}Blue: {3}%% {white}Alpha: {4}%%{black})"
+	}
 }
