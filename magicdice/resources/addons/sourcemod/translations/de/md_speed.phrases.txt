@@ -8,6 +8,6 @@
 	"speed_mult"
 	{
 		"#format"	"{1:.1f}{2:.1f}"
-		"de"		"Deine Geschwindigkeit wurde um {1}%% verändert ({2}%%)"
+		"de"		"Deine Geschwindigkeit wurde um {1}%% verändert (Jetzt: {2}%%)"
 	}
 }
