@@ -96,6 +96,7 @@ void UpdateHealth(int client, int amount, bool onlySet)
 	if(onlySet){
 		// Just set
 		newHealth = amount;
+		newMaxHealth = amount;
 	} else {
 		// Add / remove
 		newHealth = currentHealth + amount;
