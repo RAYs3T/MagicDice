@@ -72,9 +72,9 @@ public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] pa
 	g_playerDamageMultiplier[client] = damageMultiplier;
 	
 	if(damageMultiplier >= 1.0) {
-		Format(diceText, sizeof(diceText), "%t", "more_damage", damageMultiplier);
+		Format(diceText, sizeof(diceText), "%t", "more_damage", damageMultiplier * 100);
 	} else {
-		Format(diceText, sizeof(diceText), "%t", "less_damage", damageMultiplier);
+		Format(diceText, sizeof(diceText), "%t", "less_damage", damageMultiplier * 100);
 	}
 	return DiceStatus_Success;
 }

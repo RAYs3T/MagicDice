@@ -3,11 +3,11 @@
 	"more_damage"
 	{
 		"#format"	"{1:.1f}"
-		"en"		"You deal {1}x more damage"
+		"en"		"Your damage has been increased to {1}%%"
 	}
 	"less_damage"
 	{
 		"#format"	"{1:.1f}"
-		"en"		"You only deal {1}x damage"
+		"en"		"You damage has been decreased to {1}%%"
 	}
 }
