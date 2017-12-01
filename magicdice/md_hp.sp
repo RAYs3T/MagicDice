@@ -65,28 +65,35 @@ public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] pa
 		return DiceStatus_Failed;
 	}
 	
-	if(strcmp(param1, "set") == 0) {
-		
-		UpdateHealth(client, amount, true);
+	if(strcmp(param1, "set") == 0)
+	{
+		UpdateHealth(client, amount, true, false);
 		Format(diceText, sizeof(diceText), "%t", "hp_set", amount);
-		
-	} else if(strcmp(param1, "add") == 0) {
-		
-		UpdateHealth(client, amount, false);
+	}
+	else if(strcmp(param1, "add") == 0) 
+	{
+		UpdateHealth(client, amount, false, false);
 		Format(diceText, sizeof(diceText), "%t", "hp_added", amount);
-		
-	}else if(strcmp(param1, "take") == 0){
-		
-		UpdateHealth(client, amount * -1, false);
+	}
+	else if(strcmp(param1, "take") == 0)
+	{
+		UpdateHealth(client, amount * -1, false, false);
 		Format(diceText, sizeof(diceText), "%t", "hp_took", amount);
-	}else{
+	}
+	else if(strcmp(param1, "mult") == 0)
+	{
+		UpdateHealth(client, GetClientHealth(client) * amount, false, true);
+		Format(diceText, sizeof(diceText), "%t", "hp_mult", amount * 100);
+	}
+	else
+	{
 		MDReportInvalidParameter(1, "Mode", param1);
 		return DiceStatus_Failed;
 	}
 	return DiceStatus_Success;
 }
 
-void UpdateHealth(int client, int amount, bool onlySet)
+void UpdateHealth(int client, int amount, bool onlySet, bool multiplied)
 {
 	int newHealth = 0;
 	int newMaxHealth = 0;
@@ -97,7 +104,10 @@ void UpdateHealth(int client, int amount, bool onlySet)
 		// Just set
 		newHealth = amount;
 		newMaxHealth = amount;
-	} else {
+	}else if(multiplied){
+		newHealth = amount * currentHealth;
+		newMaxHealth = amount * currentMaxHealth;
+	}else{
 		// Add / remove
 		newHealth = currentHealth + amount;
 		newMaxHealth = currentMaxHealth + amount;

@@ -15,4 +15,9 @@
 		"#format"	"{1:i}"
 		"en"		"You lost {1} HP"
 	}
+	"hp_mult"
+	{
+		"#format"	"{1:.1f}"
+		"en"		"Your HP have been multiplied by {1}%%"
+	}
 }
