@@ -121,8 +121,8 @@ void UpdateHealth(int client, int amount, bool onlySet, bool multiplied)
 		newMaxHealth = amount * currentMaxHealth;
 	}else{
 		// Add / remove
-		newHealth = currentHealth + amount;
-		newMaxHealth = currentMaxHealth + amount;
+		newHealth = amount;
+		newMaxHealth = amount;
 	}
 	
 	if(newHealth <= 0 || newMaxHealth <= 0) {
