@@ -59,7 +59,19 @@ public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] pa
 		return DiceStatus_Failed;
 	}
 	
-	int amount = MDParseParamInt(param2);
+	float multAmount = 1.0;
+	int amount = 0;
+	
+	if(strcmp(param1, "mult") == 0)
+	{
+		multAmount = MDParseParamFloat(param2);
+	}
+	else
+	{
+		amount = MDParseParamInt(param2);
+	}
+	
+	
 	if(amount == 0){
 		MDReportInvalidParameter(2, "Amount", param2);
 		return DiceStatus_Failed;
@@ -82,8 +94,8 @@ public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] pa
 	}
 	else if(strcmp(param1, "mult") == 0)
 	{
-		UpdateHealth(client, GetClientHealth(client) * amount, false, true);
-		Format(diceText, sizeof(diceText), "%t", "hp_mult", amount * 100);
+		UpdateHealth(client, RoundToNearest(GetClientHealth(client) * multAmount), false, true);
+		Format(diceText, sizeof(diceText), "%t", "hp_mult", multAmount * 100);
 	}
 	else
 	{
