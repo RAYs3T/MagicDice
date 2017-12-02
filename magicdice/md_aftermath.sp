@@ -188,8 +188,8 @@ static void SlowPlayer(int client, float time)
 	
 		
 	float freezeStepSize = time / FREEZE_STEPS;
-	float newSpeed = 1.0;
-	float speedStep = 1.0 / FREEZE_STEPS;
+	float newSpeed = GetSpeed(client);
+	float speedStep = newSpeed / FREEZE_STEPS;
 	
 	int colorStepSize[4];		
 	int newColors[4];
