@@ -35,6 +35,7 @@ static float g_effectStrengthFreeze[MAXPLAYERS + 1]				= {0.0, ...};
 // Timers for removing the slowdown effect, require for multiple hits
 static Handle g_playerSlowRemoveTimers[MAXPLAYERS + 1] = {INVALID_HANDLE, ...};
 static int g_playerSlowOriginalColors[MAXPLAYERS + 1][4];
+static float g_playerOriginalSpeed[MAXPLAYERS + 1];
 static int g_freezeColor[] = {0, 170, 240, 180};
 
 static ConVar g_soundFire;
@@ -198,6 +199,7 @@ static void SlowPlayer(int client, float time)
 		newColors[c] = colors[c];
 		g_playerSlowOriginalColors[client][c] = colors[c];
 	}
+	g_playerOriginalSpeed[client] = GetSpeed(client);
 	
 	for (int i = 1; i <= FREEZE_STEPS; i++)
 	{
@@ -250,7 +252,7 @@ public Action Timer_ResetSlowPlayer(Handle timer, any client)
 	}
 	
 	// Reset speed
-	SetSpeed(client, 1.0);
+	SetSpeed(client, g_playerOriginalSpeed[client]);
 	// Reset color
 	SetEntityRenderColor(client, 
 		g_playerSlowOriginalColors[client][0], 
@@ -307,4 +309,9 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 
 	
 	return Plugin_Continue;
+}
+
+static float GetSpeed(int client) 
+{
+	return GetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue");
 }
