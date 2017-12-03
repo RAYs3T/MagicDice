@@ -1,0 +1,7 @@
+"Phrases"
+{
+	"diced"
+	{
+		"de"		"Du bekommst keinen Fallschaden"
+	}
+}
