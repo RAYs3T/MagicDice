@@ -16,9 +16,9 @@
 
 // Plugin info
 #define MODULE_PLUGIN_VERSION "${-version-}" // Version is replaced by the GitLab-Runner compile script
-#define MODULE_PLUGIN_NAME "MagicDice - Example Module"
+#define MODULE_PLUGIN_NAME "MagicDice - FallDamage"
 #define MODULE_PLUGIN_AUTHOR "Kevin 'RAYs3T' Urbainczyk"
-#define MODULE_PLUGIN_DESCRIPTION "The Example module as reference"
+#define MODULE_PLUGIN_DESCRIPTION "Players won't get hurt by falling down"
 #define MODULE_PLUGIN_WEBSITE "https://ptl-clan.de"
 
 #include ../include/magicdice
