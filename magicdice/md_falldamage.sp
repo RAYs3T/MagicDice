@@ -45,6 +45,10 @@ public void OnPluginStart()
 	
 	for (int i = 0; i < MaxClients; i++)
 	{
+		if(!IsValidClient(i))
+		{
+			continue; // Skip invalid clients
+		}
 		HookOnTakeDamage(i);
 	}
 }
@@ -77,6 +81,7 @@ public void HookOnTakeDamage(int client)
 {
 	SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
 }
+
 public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] param2, char[] param3, char[] param4, char[] param5)
 {
 	g_hasNoFallDamage[client] = true;
@@ -94,7 +99,7 @@ public Action OnTakeDamage(int client, int &attacker, int &inflictor, float &dam
 	
 	if (damagetype & DMG_FALL)
 	{
-		return Plugin_Handled;
+		return Plugin_Handled; // Supress the damage event
 	}
 	
 	return Plugin_Continue;
