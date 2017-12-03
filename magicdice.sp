@@ -77,7 +77,7 @@ static bool g_cannotDice = true;
 #include core_components/configuration.inc
 #include core_components/probability_calculation.inc
 #include core_components/random_string_parser.inc
-//#include core_components/database.inc
+#include core_components/database.inc
 
 
 public Plugin myinfo =
@@ -132,7 +132,7 @@ public void OnPluginStart()
 	g_cannotDice = false;
 	PrintToServer("%s Plugin start", MD_PREFIX);
 	
-	//InitializeDatabase();
+	InitializeDatabase();
 }
 
 
@@ -356,19 +356,21 @@ public Action OnReconfigureCommand(int client, int params)
 static void PickResult(int client, int forcedResult = -1)
 {
 	int selectedIndex;
+	int team = GetClientTeam(client);
+	
 	if(forcedResult != -1)
 	{
 		selectedIndex = forcedResult;
-	} else {
+	} 
+	else
+	{
 		// Now things getting complicated:
 		// We store all results by index, but when it comes to team selection
 		// this indexes are no loger valid for our probability selection.
 		// So we need to remap them to get only the ones matching for the requested team
 		// (othwewise we would mess up the probability selection)
 		// At the end (when a result for a team is choosen), we need to get its original index again.
-		
-		int team = GetClientTeam(client);
-		
+				
 		int teamProbabillities[256][2];
 		bool hasResults = GetTeamProbabillities(teamProbabillities, team);
 		if(!hasResults)
@@ -383,10 +385,15 @@ static void PickResult(int client, int forcedResult = -1)
 		{
 			selectableProbabillities[i] = teamProbabillities[i][1];
 		}
+		
 		int selectedTeamProbability = SelectByProbability(selectableProbabillities);
 		// Get the real result index
 		selectedIndex = teamProbabillities[selectedTeamProbability][0];
 	}
+	
+	int moduleCount = 0;
+	char moduleNames[MAX_MODULES][MODULE_PARAMETER_SIZE];
+	char moduleParams[MAX_MODULES][MAX_MODULE_FIELDS][MODULE_PARAMETER_SIZE];
 	
 	PrintToServer("Picked result %i", selectedIndex);
 	for (int i = 0; i < MAX_MODULES; i++)
@@ -405,10 +412,23 @@ static void PickResult(int client, int forcedResult = -1)
 				LogError("%s Unable to process with result module: %s", MD_PREFIX, g_results[selectedIndex][i][ModuleField_ModuleName]);
 				CPrintToChat(client, "%s %t", MD_PREFIX_COLORED, "dice_module_error");
 			}
+			
+			moduleNames[moduleCount] = g_results[selectedIndex][i][ModuleField_ModuleName];
+			moduleParams[moduleCount][0] = g_results[selectedIndex][i][ModuleField_Param1];
+			moduleParams[moduleCount][1] = g_results[selectedIndex][i][ModuleField_Param2];
+			moduleParams[moduleCount][2] = g_results[selectedIndex][i][ModuleField_Param3];
+			moduleParams[moduleCount][3] = g_results[selectedIndex][i][ModuleField_Param4];
+			moduleParams[moduleCount][4] = g_results[selectedIndex][i][ModuleField_Param5];
+			moduleCount++;
 		} else {
 			break; // No more modules to process for this result
 		}
 	}
+	
+	char steamId[20];
+	GetClientAuthId(client, AuthId_SteamID64, steamId, sizeof(steamId));
+	
+	QLogResult(-1, selectedIndex, steamId, team, moduleNames, moduleParams, moduleCount);
 }
 
 /*
