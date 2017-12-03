@@ -21,6 +21,26 @@ static Handle m_dbConnectTimer = null;
 static bool m_isConnecting = false;
 static Database m_db;
 
+/*
+ * Logs a message 
+ * @param text the format/message
+ * @param debugOnly true, if the message should only be displayed in the debug mode
+ * @param any format parameter
+ */
+static void LogDBMessage(const char[] text, bool debugOnly = false, any ...)
+{
+	if(debugOnly) // Message should only be displayed, when the debug mode is enabled
+	{
+		#if !defined DEBUG
+			return;
+		#endif
+	}
+	
+	int len = strlen(text) + 255;
+	char[] message = new char[len];
+	VFormat(message, len, text, 3);
+	LogMessage("%s %s", MD_DB_PREFIX, message);
+}
 
 public void InitializeDatabase()
 {
@@ -33,7 +53,9 @@ public void InitializeDatabase()
 		m_dbConnectTimer = CreateTimer(8.0, Timer_CheckDB, _, TIMER_REPEAT);
 	}
 	m_isConnecting = true;
+	LogDBMessage("Connecting to the database ...");
 	Database.Connect(OnDatabaseConnected, "magicdice");
+	
 }
 
 public void OnDatabaseConnected(Database db, const char[] error, any data)
@@ -52,6 +74,7 @@ public void OnDatabaseConnected(Database db, const char[] error, any data)
 	
 	// Set this as new database handle
 	m_db = db;
+	LogDBMessage("Database connection succeded!");
 }
 
 public Action Timer_CheckDB(Handle timer, Handle data)
@@ -96,21 +119,22 @@ static void AddQuotesOrSetNull(char param[MODULE_PARAMETER_SIZE], char buffer[MO
  * ####################
  */
  
-void QLogResult(int serverId, int resultId, const char steamId[20], int userTeam, char moduleNames[MAX_MODULES][MODULE_PARAMETER_SIZE], 
+void QLogResult(int serverId, int resultId, const char[] steamId, int userTeam, char moduleNames[MAX_MODULES][MODULE_PARAMETER_SIZE], 
 	char moduleParams[MAX_MODULES][MAX_MODULE_FIELDS][MODULE_PARAMETER_SIZE], int moduleCount)
 {
+	LogDBMessage("Preparing result log transaction ...", true);
 	Transaction txn = new Transaction();
 	
 	//
 	// Insert ResultPick
 	//
-	char cleanSteamId[sizeof(steamId)+2];
+	char cleanSteamId[36];
 	m_db.Escape(steamId, cleanSteamId, sizeof(cleanSteamId));
 	
 	char qInsertResultPick[2048];
 	Format(qInsertResultPick, sizeof(qInsertResultPick), "INSERT INTO md_result_picks (server_id, result_id, user_steam_id, user_team) VALUES('%i', '%i', '%s', '%i')",
 	serverId, resultId, cleanSteamId, userTeam);
-	
+	LogDBMessage("[qInsertResultPick]: %s", true, qInsertResultPick);
 	txn.AddQuery(qInsertResultPick);
 	
 	//
@@ -146,10 +170,12 @@ void QLogResult(int serverId, int resultId, const char steamId[20], int userTeam
 		"INSERT INTO md_result_module_call_log(result_pick_id, module_name, parameter_1, parameter_2, parameter_3, parameter_4, parameter_5)\
 		VALUES (@result_id, '%s', %s, %s, %s, %s, %s)", // Quotes added by function
 		moduleName, p1, p2, p3, p4, p5);
-
+		
+		LogDBMessage("[qInsertModule]: %s", true, qInsertModule);
 		txn.AddQuery(qInsertModule);
 	}
 	// Fire the query
+	LogDBMessage("Executing result log transaction ...", true);
 	m_db.Execute(txn, Callback_QLogResult, Callback_QLogResultFailure, _, DBPrio_Low);
 }
 
@@ -160,5 +186,5 @@ public void Callback_QLogResultFailure(Database db, any data, int numQueries, co
 
 public void Callback_QLogResult(Database db, any data, int numQueries, Handle[] results, any[] queryData)
 {
-	
+	LogDBMessage("Query execution succeded! Queries executed: %i", true, numQueries);
 }

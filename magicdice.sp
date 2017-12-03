@@ -429,8 +429,11 @@ static void PickResult(int client, int forcedResult = -1)
 	}
 	
 	// Get the steamId for logging ...
-	char steamId[20];
-	GetClientAuthId(client, AuthId_SteamID64, steamId, sizeof(steamId));
+	char steamId[32];
+	if(!GetClientAuthId(client, AuthId_SteamID64, steamId, sizeof(steamId)))
+	{
+		LogError("Unable to get client AuthID: %i", client);
+	}
 	
 	int serverId = GetConVarInt(g_serverId);
 	QLogResult(serverId, selectedIndex, steamId, team, moduleNames, moduleParams, moduleCount);
