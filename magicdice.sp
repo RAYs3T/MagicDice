@@ -38,6 +38,7 @@ static ConVar g_cvar_dicesPerRound;
 static ConVar g_cvar_allowDiceTeamT;
 static ConVar g_cvar_allowDiceTeamCT;
 static ConVar g_keepEmptyTeamDices;
+static ConVar g_serverId;
 
 // Plugin prefixes used by console and chat outputs
 public char MD_PREFIX[12] = "[MagicDice]";
@@ -110,6 +111,8 @@ void PrepareAndLoadConfig()
 	g_cvar_allowDiceTeamCT = 	AutoExecConfig_CreateConVar("sm_md_allow_dice_team_ct", "0", "Can the CT-team dice?");
 	
 	g_keepEmptyTeamDices =		AutoExecConfig_CreateConVar("sm_md_keep_empty_team_dices", "1", "Do not count dices when one team is empty");
+	
+	g_serverId = 				AutoExecConfig_CreateConVar("sm_md_server_id", "-1", "ID of the Server for logging");
 	
 	LoadTranslations("magicdice.phrases");
 	
@@ -429,7 +432,8 @@ static void PickResult(int client, int forcedResult = -1)
 	char steamId[20];
 	GetClientAuthId(client, AuthId_SteamID64, steamId, sizeof(steamId));
 	
-	QLogResult(-1, selectedIndex, steamId, team, moduleNames, moduleParams, moduleCount);
+	int serverId = GetConVarInt(g_serverId);
+	QLogResult(serverId, selectedIndex, steamId, team, moduleNames, moduleParams, moduleCount);
 }
 
 /*
