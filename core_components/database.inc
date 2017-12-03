@@ -14,29 +14,35 @@
 ###################################################################################
 */
 
-#define MD_DB_PREFIX "[DB]"
-#define MD_DB_TABLE_PREFIX "md_"
+#define MD_DB_PREFIX "[MagicDice DB]"
 
+static Handle m_dbConnectTimer = null;
 // Indicator if there is currenly any connection attemp running
 static bool m_isConnecting = false;
 static Database m_db;
 
-// Queries
-DBStatement m_qInsertResultPick;
 
 public void InitializeDatabase()
 {
+	if(m_isConnecting)
+	{
+		LogError("%s A Database connection attemp is already running ...", MD_DB_PREFIX);
+	}
+	if(m_dbConnectTimer == null)
+	{
+		m_dbConnectTimer = CreateTimer(8.0, Timer_CheckDB, _, TIMER_REPEAT);
+	}
 	m_isConnecting = true;
 	Database.Connect(OnDatabaseConnected, "magicdice");
 }
 
 public void OnDatabaseConnected(Database db, const char[] error, any data)
 {
-	if(db == INVALID_HANDLE)
+	if(db == null)
 	{
 		// Connection failed
 		LogError("%s %s Unable to connect to the database: %s", MD_PREFIX, MD_DB_PREFIX, error);
-		m_db = INVALID_HANDLE;
+		m_db = null;
 		return;
 	}
 	
@@ -46,21 +52,19 @@ public void OnDatabaseConnected(Database db, const char[] error, any data)
 	
 	// Set this as new database handle
 	m_db = db;
-	
-	// TODO REMOVE
-	char moduleNames[MAX_MODULES][MODULE_PARAMETER_SIZE];
-	QLogResult(1, 2, "test", 0, moduleNames, moduleNames, 0); 
 }
 
-/*
- * Added the table prefix by replacing all __prefix__ strings with the actual prefix for tables.
- */
-static void AddTablePrefix(char query[2048])
+public Action Timer_CheckDB(Handle timer, Handle data)
 {
-	if(ReplaceString(query, sizeof(query), "__prefix__", MD_DB_TABLE_PREFIX) < 1)
+	if(m_db == null && !m_isConnecting)
 	{
-		// Fail when no names has been replaced
-		ThrowError("%s %s no table names (__prefix__) to replace in query: %s", MD_PREFIX, MD_DB_PREFIX, query);
+		LogError("%s The database connection died. Reconnecting ...", MD_DB_PREFIX);
+		if(m_dbConnectTimer != null)
+		{
+			KillTimer(m_dbConnectTimer);
+			m_dbConnectTimer = null;
+		}		
+		InitializeDatabase();
 	}
 }
 
@@ -71,9 +75,9 @@ static void LogQueryFailure(const char[] error)
 
 static void AddQuotesAndEscape(char[] param, char[] buffer)
 {
-	char dirtyBuffer[MODULE_PARAMETER_SIZE + 16];
-	Format(dirtyBuffer, MODULE_PARAMETER_SIZE + 16, "'%s'", param);
-	m_db.Escape(dirtyBuffer, buffer, MODULE_PARAMETER_SIZE + 16);
+	
+	m_db.Escape(param, buffer, MODULE_PARAMETER_SIZE + 16);
+	Format(buffer, MODULE_PARAMETER_SIZE + 16, "'%s'", buffer);
 }
 
 static void AddQuotesOrSetNull(char param[MODULE_PARAMETER_SIZE], char buffer[MODULE_PARAMETER_SIZE + 16])
@@ -93,7 +97,7 @@ static void AddQuotesOrSetNull(char param[MODULE_PARAMETER_SIZE], char buffer[MO
  */
  
 void QLogResult(int serverId, int resultId, const char steamId[20], int userTeam, char moduleNames[MAX_MODULES][MODULE_PARAMETER_SIZE], 
-	char moduleParams[MAX_MODULES][MODULE_PARAMETER_SIZE], int moduleCount)
+	char moduleParams[MAX_MODULES][MAX_MODULE_FIELDS][MODULE_PARAMETER_SIZE], int moduleCount)
 {
 	Transaction txn = new Transaction();
 	
@@ -104,25 +108,19 @@ void QLogResult(int serverId, int resultId, const char steamId[20], int userTeam
 	m_db.Escape(steamId, cleanSteamId, sizeof(cleanSteamId));
 	
 	char qInsertResultPick[2048];
-	Format(qInsertResultPick, sizeof(qInsertResultPick), "INSERT INTO __prefix__result_picks (server_id, result_id, user_steam_id, user_team) VALUES('%i', '%i', '%s', '%i')",
+	Format(qInsertResultPick, sizeof(qInsertResultPick), "INSERT INTO md_result_picks (server_id, result_id, user_steam_id, user_team) VALUES('%i', '%i', '%s', '%i')",
 	serverId, resultId, cleanSteamId, userTeam);
-	AddTablePrefix(qInsertResultPick);
-	#if defined DEBUG
-	PrintToServer("Query: %s", qInsertResultPick);
-	#endif
 	
 	txn.AddQuery(qInsertResultPick);
 	
 	//
 	// A query that sets a mysql variable containing the result id that we need for inserting the modules calls
 	//
-	char[] qDefineResultId = "SET @result_id = LAST_INSERT_ID()";
-	txn.AddQuery(qDefineResultId);
+	txn.AddQuery("SET @result_id = LAST_INSERT_ID()");
 	
 	//
-	// Insert result module ca
+	// Insert result modules
 	//
-	char moduleQuery[2048];
 	char moduleName[64];
 	for (int i = 0; i < moduleCount; i++)
 	{
@@ -142,6 +140,14 @@ void QLogResult(int serverId, int resultId, const char steamId[20], int userTeam
 		AddQuotesOrSetNull(moduleParams[i][2], p3);
 		AddQuotesOrSetNull(moduleParams[i][3], p4);
 		AddQuotesOrSetNull(moduleParams[i][4], p5);
+		
+		char qInsertModule[2048];
+		Format(qInsertModule, sizeof(qInsertModule), 
+		"INSERT INTO md_result_module_call_log(result_pick_id, module_name, parameter_1, parameter_2, parameter_3, parameter_4, parameter_5)\
+		VALUES (@result_id, '%s', %s, %s, %s, %s, %s)", // Quotes added by function
+		moduleName, p1, p2, p3, p4, p5);
+
+		txn.AddQuery(qInsertModule);
 	}
 	// Fire the query
 	m_db.Execute(txn, Callback_QLogResult, Callback_QLogResultFailure, _, DBPrio_Low);
