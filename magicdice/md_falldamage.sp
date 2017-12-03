@@ -25,7 +25,7 @@
 #include <sdktools>
 #include <sdkhooks>
 
-#define DMG_FALL   (1 << 5)
+#define DMG_FALL (1 << 5)
 
 static g_hasNoFallDamage[MAXPLAYERS + 1] =  { false, ... };
 
@@ -55,7 +55,7 @@ public void OnPluginStart()
 
 public Action Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
-	// Reset all allowed jump counters
+	// Reset all
 	for (int i = 0; i < MaxClients; i++)
 	{
 		g_hasNoFallDamage[i] = false;
@@ -99,7 +99,7 @@ public Action OnTakeDamage(int client, int &attacker, int &inflictor, float &dam
 	
 	if (damagetype & DMG_FALL)
 	{
-		return Plugin_Handled; // Supress the damage event
+		return Plugin_Handled; // Suppress the damage event
 	}
 	
 	return Plugin_Continue;
