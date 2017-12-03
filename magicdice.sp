@@ -425,6 +425,7 @@ static void PickResult(int client, int forcedResult = -1)
 		}
 	}
 	
+	// Get the steamId for logging ...
 	char steamId[20];
 	GetClientAuthId(client, AuthId_SteamID64, steamId, sizeof(steamId));
 	
