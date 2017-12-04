@@ -3,7 +3,7 @@
 	"speed_set"
 	{
 		"#format"	"{1:.1f}"
-		"en"		"Your speed has been set to {1}"
+		"en"		"Your speed has been set to {1}%%"
 	}
 	"speed_mult"
 	{
