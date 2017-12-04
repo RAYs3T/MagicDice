@@ -8,6 +8,6 @@
 	"gravity_mult"
 	{
 		"#format"	"{1:.1f}{2:.1f}"
-		"de"		"Deine Gravitation wurde um {1}%% verändert (Jetzt: {2}%%)"
+		"de"		"Du hast jetzt {1}%% Gravitation (Jetzt: {2}%%)"
 	}
 }
