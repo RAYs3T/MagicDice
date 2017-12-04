@@ -3,11 +3,11 @@
 	"gravity_set"
 	{
 		"#format"	"{1:.1f}"
-		"de"		"Deine Gravitation wurde auf {1}%% gesetzt"
+		"de"		"Gravitation = {1}%% "
 	}
 	"gravity_mult"
 	{
 		"#format"	"{1:.1f}{2:.1f}"
-		"de"		"Du hast jetzt {1}%% Gravitation (Jetzt: {2}%%)"
+		"de"		"{1}%% Gravitation (Insgesammt: {2}%%)"
 	}
 }

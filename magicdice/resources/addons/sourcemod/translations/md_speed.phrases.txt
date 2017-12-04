@@ -3,11 +3,11 @@
 	"speed_set"
 	{
 		"#format"	"{1:.1f}"
-		"en"		"Your speed has been set to {1}%%"
+		"en"		"Speed = {1}%%"
 	}
 	"speed_mult"
 	{
 		"#format"	"{1:.1f}{2:.1f}"
-		"en"		"Your speed has been changed by {1}%% (Now: {2}%%)"
+		"en"		"{1}%% speed (Total: {2}%%)"
 	}
 }
