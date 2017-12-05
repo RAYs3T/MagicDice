@@ -46,6 +46,10 @@ public char MD_PREFIX_COLORED[64] = "{white}[{cyan}MagicDice{white}]";
 
 // Array size definitions
 #define MAX_MODULES 6 //
+#define MAX_MODULE_LEVELS 5
+#define BASIC_MODULE_FIELDS 3
+#define MODULE_PARAMETER_COUNT 5
+#define MODULE_ARRAY_SIZE BASIC_MODULE_FIELDS + (MAX_MODULE_LEVELS * MODULE_PARAMETER_COUNT)
 #define MODULE_PARAMETER_SIZE 128
 
 enum ModuleField // Helper enum for array access
@@ -53,15 +57,13 @@ enum ModuleField // Helper enum for array access
 	ModuleField_ModuleName, // Virtual field for the module name (from layer before)
 	ModuleField_Probability, // Virtual field for the module probability (from layer before)
 	ModuleField_Team, // Virtual field for the module's team (from layer before)
-	ModuleField_Param1,
-	ModuleField_Param2,
-	ModuleField_Param3,
-	ModuleField_Param4,
-	ModuleField_Param5,
-	MAX_MODULE_FIELDS // Fake last position to get the number of params
+	ModuleField_Levels // Virtual field for the count of levels for this module in this result
 };
 
-char g_results[256][MAX_MODULES][MAX_MODULE_FIELDS][MODULE_PARAMETER_SIZE]; // [result][modules][module_name|probability|params][param values]
+
+
+
+char g_results[256][MAX_MODULES][MODULE_ARRAY_SIZE][MODULE_PARAMETER_SIZE]; // [result][modules][module_name|probability|params][param values]
 int g_probabillities[256];
 static Handle g_modulesArray;
 
@@ -73,12 +75,28 @@ static int g_allowedDices[MAXPLAYERS + 1];
 // A switch to block general dices while the game / round is ending
 static bool g_cannotDice = true;
 
+/*
+ * Finds the correct parameter for the provided level
+ * The result parameter will be written in the buffer
+ * @param int resultIndex Index of the result
+ * @param int moduleIndex Index of the module
+ * @param int level The requestet level, the parameter should be retrieved for
+ * @param int requestedParameterIndex The index of the parameter that is requested starting from zero
+ * @param char[] buffer The field to write the parameter value to.
+ */
+stock int GetMatchingParameterValue(int resultIndex, int moduleIndex, int level, int requestedParameterIndex, char buffer[MODULE_PARAMETER_SIZE])
+{
+	int paramIndex = BASIC_MODULE_FIELDS + (level * MODULE_PARAMETER_COUNT);
+	buffer = g_results[resultIndex][moduleIndex][paramIndex];
+	return paramIndex;
+}
 
 // Core components include
 #include core_components/configuration.inc
 #include core_components/probability_calculation.inc
 #include core_components/random_string_parser.inc
 #include core_components/database.inc
+
 
 
 public Plugin myinfo =
@@ -396,7 +414,7 @@ static void PickResult(int client, int forcedResult = -1)
 	
 	int moduleCount = 0;
 	char moduleNames[MAX_MODULES][MODULE_PARAMETER_SIZE];
-	char moduleParams[MAX_MODULES][MAX_MODULE_FIELDS][MODULE_PARAMETER_SIZE];
+	char moduleParams[MAX_MODULES][MODULE_PARAMETER_COUNT][MODULE_PARAMETER_SIZE];
 	
 	PrintToServer("Picked result %i", selectedIndex);
 	for (int i = 0; i < MAX_MODULES; i++)
@@ -404,24 +422,26 @@ static void PickResult(int client, int forcedResult = -1)
 		if(strcmp(g_results[selectedIndex][i][1], "") != 0)
 		{
 			Handle module = FindModuleByName(g_results[selectedIndex][i][ModuleField_ModuleName]);
+			// TODO Use correct level for parameter here
 			bool success = ProcessResult(module, selectedIndex, client, 
-			g_results[selectedIndex][i][ModuleField_Param1], 
-			g_results[selectedIndex][i][ModuleField_Param2], 
-			g_results[selectedIndex][i][ModuleField_Param3], 
-			g_results[selectedIndex][i][ModuleField_Param4], 
-			g_results[selectedIndex][i][ModuleField_Param5]);
+			g_results[selectedIndex][i][0], 
+			g_results[selectedIndex][i][1], 
+			g_results[selectedIndex][i][2], 
+			g_results[selectedIndex][i][3], 
+			g_results[selectedIndex][i][4]);
 			if(!success)
 			{
 				LogError("%s Unable to process with result module: %s", MD_PREFIX, g_results[selectedIndex][i][ModuleField_ModuleName]);
 				CPrintToChat(client, "%s %t", MD_PREFIX_COLORED, "dice_module_error");
 			}
 			
+			// TODO Use correct level for parameter here
 			moduleNames[moduleCount] = g_results[selectedIndex][i][ModuleField_ModuleName];
-			moduleParams[moduleCount][0] = g_results[selectedIndex][i][ModuleField_Param1];
-			moduleParams[moduleCount][1] = g_results[selectedIndex][i][ModuleField_Param2];
-			moduleParams[moduleCount][2] = g_results[selectedIndex][i][ModuleField_Param3];
-			moduleParams[moduleCount][3] = g_results[selectedIndex][i][ModuleField_Param4];
-			moduleParams[moduleCount][4] = g_results[selectedIndex][i][ModuleField_Param5];
+			moduleParams[moduleCount][0] = g_results[selectedIndex][i][0];
+			moduleParams[moduleCount][1] = g_results[selectedIndex][i][1];
+			moduleParams[moduleCount][2] = g_results[selectedIndex][i][2];
+			moduleParams[moduleCount][3] = g_results[selectedIndex][i][3];
+			moduleParams[moduleCount][4] = g_results[selectedIndex][i][4];
 			moduleCount++;
 		} else {
 			break; // No more modules to process for this result

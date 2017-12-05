@@ -120,7 +120,7 @@ static void AddQuotesOrSetNull(char param[MODULE_PARAMETER_SIZE], char buffer[MO
  */
  
 void QLogResult(int serverId, int resultId, const char[] steamId, int userTeam, char moduleNames[MAX_MODULES][MODULE_PARAMETER_SIZE], 
-	char moduleParams[MAX_MODULES][MAX_MODULE_FIELDS][MODULE_PARAMETER_SIZE], int moduleCount)
+	char moduleParams[MAX_MODULES][MODULE_PARAMETER_COUNT][MODULE_PARAMETER_SIZE], int moduleCount)
 {
 	LogDBMessage("Preparing result log transaction ...", true);
 	Transaction txn = new Transaction();
