@@ -75,7 +75,7 @@ static int g_allowedDices[MAXPLAYERS + 1];
 // A switch to block general dices while the game / round is ending
 static bool g_cannotDice = true;
 
-/*
+/**
  * Finds the correct parameter for the provided level
  * The result parameter will be written in the buffer
  * @param int resultIndex Index of the result
@@ -87,6 +87,13 @@ static bool g_cannotDice = true;
 stock int GetMatchingParameterValue(int resultIndex, int moduleIndex, int level, int requestedParameterIndex, char buffer[MODULE_PARAMETER_SIZE])
 {
 	int paramIndex = BASIC_MODULE_FIELDS + (level * MODULE_PARAMETER_COUNT);
+	
+	// Get the provided levels count from the module
+	int maxExistingLevel = StringToInt(g_results[resultIndex][moduleIndex][ModuleField_Levels]);
+	if(maxExistingLevel > 0 && level > maxExistingLevel)
+	{
+		ThrowError("Level %i is out of bounds. Only %i levels configured for this plugin", level, maxExistingLevel);
+	}
 	buffer = g_results[resultIndex][moduleIndex][paramIndex];
 	return paramIndex;
 }
@@ -421,27 +428,30 @@ static void PickResult(int client, int forcedResult = -1)
 	{
 		if(strcmp(g_results[selectedIndex][i][1], "") != 0)
 		{
+			moduleNames[moduleCount] = g_results[selectedIndex][i][ModuleField_ModuleName];
+			
+			int level = 1;
 			Handle module = FindModuleByName(g_results[selectedIndex][i][ModuleField_ModuleName]);
-			// TODO Use correct level for parameter here
+			
+			GetMatchingParameterValue(selectedIndex, i, level, 0, moduleParams[moduleCount][0]);
+			GetMatchingParameterValue(selectedIndex, i, level, 1, moduleParams[moduleCount][1]);
+			GetMatchingParameterValue(selectedIndex, i, level, 2, moduleParams[moduleCount][2]);
+			GetMatchingParameterValue(selectedIndex, i, level, 3, moduleParams[moduleCount][3]);
+			GetMatchingParameterValue(selectedIndex, i, level, 4, moduleParams[moduleCount][4]);
+			
 			bool success = ProcessResult(module, selectedIndex, client, 
-			g_results[selectedIndex][i][0], 
-			g_results[selectedIndex][i][1], 
-			g_results[selectedIndex][i][2], 
-			g_results[selectedIndex][i][3], 
-			g_results[selectedIndex][i][4]);
+			moduleParams[moduleCount][0],
+			moduleParams[moduleCount][1],
+			moduleParams[moduleCount][2],
+			moduleParams[moduleCount][3],
+			moduleParams[moduleCount][4]);
+			
 			if(!success)
 			{
 				LogError("%s Unable to process with result module: %s", MD_PREFIX, g_results[selectedIndex][i][ModuleField_ModuleName]);
 				CPrintToChat(client, "%s %t", MD_PREFIX_COLORED, "dice_module_error");
 			}
 			
-			// TODO Use correct level for parameter here
-			moduleNames[moduleCount] = g_results[selectedIndex][i][ModuleField_ModuleName];
-			moduleParams[moduleCount][0] = g_results[selectedIndex][i][0];
-			moduleParams[moduleCount][1] = g_results[selectedIndex][i][1];
-			moduleParams[moduleCount][2] = g_results[selectedIndex][i][2];
-			moduleParams[moduleCount][3] = g_results[selectedIndex][i][3];
-			moduleParams[moduleCount][4] = g_results[selectedIndex][i][4];
 			moduleCount++;
 		} else {
 			break; // No more modules to process for this result
