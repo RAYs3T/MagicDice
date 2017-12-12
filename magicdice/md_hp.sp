@@ -41,7 +41,6 @@ public void OnPluginStart()
 	MDOnPluginStart();
 }
 
-
 public void OnAllPluginsLoaded()
 {
 	MDRegisterModule();
@@ -59,43 +58,23 @@ public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] pa
 		return DiceStatus_Failed;
 	}
 	
-	float multAmount = 1.0;
+	float multiplier = 1.0;
 	int amount = 0;
-	
-	if(strcmp(param1, "mult") == 0)
-	{
-		multAmount = MDParseParamFloat(param2);
-	}
-	else
-	{
-		amount = MDParseParamInt(param2);
-	}
-	
-	
-	if(amount == 0){
-		MDReportInvalidParameter(2, "Amount", param2);
-		return DiceStatus_Failed;
-	}
 	
 	if(strcmp(param1, "set") == 0)
 	{
-		UpdateHealth(client, amount, true, false);
-		Format(diceText, sizeof(diceText), "%t", "hp_set", amount);
+		amount = MDParseParamInt(param2);
+		SetHealth(client, amount);
 	}
-	else if(strcmp(param1, "add") == 0) 
+	else if(strcmp(param1, "add") == 0)
 	{
-		UpdateHealth(client, amount, false, false);
-		Format(diceText, sizeof(diceText), "%t", "hp_added", amount);
-	}
-	else if(strcmp(param1, "take") == 0)
-	{
-		UpdateHealth(client, amount * -1, false, false);
-		Format(diceText, sizeof(diceText), "%t", "hp_took", amount);
+		amount = MDParseParamInt(param2);
+		AddHealth(client, amount);
 	}
 	else if(strcmp(param1, "mult") == 0)
 	{
-		UpdateHealth(client, RoundToNearest(GetClientHealth(client) * multAmount), false, true);
-		Format(diceText, sizeof(diceText), "%t", "hp_mult", multAmount * 100);
+		multiplier = MDParseParamFloat(param2);
+		MultHealth(client, multiplier);
 	}
 	else
 	{
@@ -105,31 +84,47 @@ public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] pa
 	return DiceStatus_Success;
 }
 
-void UpdateHealth(int client, int amount, bool onlySet, bool multiplied)
+void SetHealth(int client, int amount)
+{
+	UpdateHealth(client, amount, amount);
+}
+
+void AddHealth(int client, int amount)
 {
 	int newHealth = 0;
 	int newMaxHealth = 0;
 	int currentHealth = GetClientHealth(client);
 	int currentMaxHealth = GetEntProp(client, Prop_Data, "m_iMaxHealth", currentMaxHealth);
 	
-	if(onlySet){
-		// Just set
-		newHealth = amount;
-		newMaxHealth = amount;
-	}else if(multiplied){
-		newHealth = amount * currentHealth;
-		newMaxHealth = amount * currentMaxHealth;
-	}else{
-		// Add / remove
-		newHealth = amount;
-		newMaxHealth = amount;
-	}
+	newHealth = currentHealth + amount;
+	newMaxHealth = currentMaxHealth + amount;
 	
-	if(newHealth <= 0 || newMaxHealth <= 0) {
+	UpdateHealth(client, newHealth, newMaxHealth);
+}
+
+void MultHealth(int client, float multiplier)
+{
+	int newHealth = 0;
+	int newMaxHealth = 0;
+	int currentHealth = GetClientHealth(client);
+	int currentMaxHealth = GetEntProp(client, Prop_Data, "m_iMaxHealth", currentMaxHealth);
+	
+	newHealth = RoundToNearest(currentHealth * multiplier);
+	newMaxHealth = RoundToNearest(currentMaxHealth * multiplier);
+	
+	UpdateHealth(client, newHealth, newMaxHealth);
+}
+
+void UpdateHealth(int client, int newHealth, int newMaxHealth)
+{
+	if(newHealth <= 0 || newMaxHealth <= 0) 
+	{
 		// Since the player could have negative HP, we need to deal with that
 		ForcePlayerSuicide(client);
-	} else {
+	}
+	else
+	{
 		SetEntProp(client, Prop_Data, "m_iMaxHealth", newMaxHealth);
 		SetEntityHealth(client, newHealth);
-	}	
+	}
 }
