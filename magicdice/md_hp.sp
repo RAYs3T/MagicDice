@@ -65,16 +65,19 @@ public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] pa
 	{
 		amount = MDParseParamInt(param2);
 		SetHealth(client, amount);
+		Format(diceText, sizeof(diceText), "%t", "hp_set", amount);
 	}
 	else if(strcmp(param1, "add") == 0)
 	{
 		amount = MDParseParamInt(param2);
 		AddHealth(client, amount);
+		Format(diceText, sizeof(diceText), "%t", "hp_add", amount);
 	}
 	else if(strcmp(param1, "mult") == 0)
 	{
 		multiplier = MDParseParamFloat(param2);
 		MultHealth(client, multiplier);
+		Format(diceText, sizeof(diceText), "%t", "hp_mult", multiplier * 100);
 	}
 	else
 	{
@@ -99,7 +102,7 @@ void AddHealth(int client, int amount)
 	newHealth = currentHealth + amount;
 	newMaxHealth = currentMaxHealth + amount;
 	
-	UpdateHealth(client, newHealth, newMaxHealth);
+	UpdateHealth(client, newHealth, newMaxHealth);	
 }
 
 void MultHealth(int client, float multiplier)
