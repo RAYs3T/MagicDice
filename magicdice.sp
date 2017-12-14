@@ -78,7 +78,7 @@ static bool g_cannotDice = true;
 #include core_components/configuration.inc
 #include core_components/probability_calculation.inc
 #include core_components/random_string_parser.inc
-#include core_components/database.inc
+//#include core_components/database.inc
 
 
 public Plugin myinfo =
@@ -436,7 +436,7 @@ static void PickResult(int client, int forcedResult = -1)
 	}
 	
 	int serverId = GetConVarInt(g_serverId);
-	QLogResult(serverId, selectedIndex, steamId, team, moduleNames, moduleParams, moduleCount);
+	//QLogResult(serverId, selectedIndex, steamId, team, moduleNames, moduleParams, moduleCount);
 }
 
 /*
