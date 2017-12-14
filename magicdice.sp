@@ -135,7 +135,7 @@ public void OnPluginStart()
 	g_cannotDice = false;
 	PrintToServer("%s Plugin start", MD_PREFIX);
 	
-	InitializeDatabase();
+	//InitializeDatabase();
 }
 
 
