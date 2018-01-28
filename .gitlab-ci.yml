@@ -92,6 +92,7 @@ test:source:
     - echo "# $DEBIAN_RELEASE-updates, previously known as "volatile"" >> /etc/apt/sources.list
     - echo "deb http://http.debian.net/debian $DEBIAN_RELEASE-updates main contrib non-free" >> /etc/apt/sources.list
     - echo "deb-src http://http.debian.net/debian $DEBIAN_RELEASE-updates main contrib non-free" >> /etc/apt/sources.list
+    - apt-get install ia32-libs
     - apt-get update
     - apt-get install -y lib32gcc1 wget unzip curl steamcmd
     - teamcmd +login anonymous +force_install_dir test_gameserver +app_update 232330 +quit
