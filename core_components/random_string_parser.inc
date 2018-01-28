@@ -1,12 +1,22 @@
 /* 
 ###################################################################################
-# Copyright © 2017 Kevin Urbainczyk <kevin@rays3t.info> - All Rights Reserved     #
-# Unauthorized copying of this file, via any medium is strictly prohibited.       #
-# Proprietary and confidential.                                                   #
+# This file is part of MagicDice.                                                 #
+# Copyright (C) 2018 Kevin 'RAYs3T' Urbainczyk                                    #
 #                                                                                 #
-# This file is part of the MagicDice-Plugin.                                      #
-# Written by Kevin 'RAYs3T' Urbainczyk <kevin@rays3t.info>                        #
-# Homepage: https://ptl-clan.de                                                   #
+# MagicDice is free software: you can redistribute it and/or modify               #
+# it under the terms of the GNU General Public License as published by            #
+# the Free Software Foundation, either version 3 of the License, or               #
+# (at your option) any later version.                                             #
+#                                                                                 #
+# MagicDice is distributed in the hope that it will be useful,                    #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of                  #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                   #
+# GNU General Public License for more details.                                    #
+#                                                                                 #
+# You should have received a copy of the GNU General Public License               #
+# along with MagicDice. If not, see <http://www.gnu.org/licenses/>.               #
+#                                                                                 #
+# MagicDice Website: https://gitlab.com/PushTheLimits/Sourcemod/MagicDice         #
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
 # File Description: This file hold all methods for parsing random parameters.     #
 ###################################################################################
