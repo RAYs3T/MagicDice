@@ -89,6 +89,7 @@ test:source:
     - ln -s ./linux32 ~/.steam/sdk32
     - ./steamcmd.sh +login anonymous +force_install_dir test_gameserver +app_update 232330 +quit
     - cd test_gameserver
+    - ls -all /root/.steam/sdk32
     - ./srcds_run -game cstrike -ip 127.0.0.1 -port 27015 -maxplayers 2 +sv_lan 1 +map de_dust2 +log on + &
     - sleep 30
     - pkill -f srcds_run
