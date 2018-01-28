@@ -29,7 +29,7 @@
 #define MODULE_PLUGIN_NAME "MagicDice - Refuse Amount"
 #define MODULE_PLUGIN_AUTHOR "Kevin 'RAYs3T' Urbainczyk"
 #define MODULE_PLUGIN_DESCRIPTION "Adds additional refuses to a player"
-#define MODULE_PLUGIN_WEBSITE "https://ptl-clan.de"
+#define MODULE_PLUGIN_WEBSITE "https://gitlab.com/PushTheLimits/Sourcemod/MagicDice"
 
 #include ../include/magicdice
 #include ../include/refusemgr

@@ -29,7 +29,7 @@
 #define MODULE_PLUGIN_NAME "MagicDice - Nervous"
 #define MODULE_PLUGIN_AUTHOR "Philip aka Lightningblade"
 #define MODULE_PLUGIN_DESCRIPTION "Changes the players aim"
-#define MODULE_PLUGIN_WEBSITE "https://ptl-clan.de"
+#define MODULE_PLUGIN_WEBSITE "https://gitlab.com/PushTheLimits/Sourcemod/MagicDice"
 
 #include ../include/magicdice
 #include <sdktools>

@@ -6,13 +6,13 @@
 (Up to five parameters that the module can take)
 
 
-| param | value | optional |
+| param | value | optional/required? |
 | -------- | -------- | -------- |
-| 1   | (parameter description)   | (optional) |
-| 2   | (parameter description)   | (optional) |
-| 3   | (parameter description)   | (optional) |
-| 4   | (parameter description)   | (optional) |
-| 5   | (parameter description)   | (optional) |
+| 1   | (parameter description)   | (optional?) |
+| 2   | (parameter description)   | (optional?) |
+| 3   | (parameter description)   | (optional?) |
+| 4   | (parameter description)   | (optional?) |
+| 5   | (parameter description)   | (optional?) |
 
 # Checklist
 * [ ] Create the `md_<modulename>` as copy from `md_example.sp`.

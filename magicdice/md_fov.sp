@@ -29,7 +29,7 @@
 #define MODULE_PLUGIN_NAME "MagicDice - Fov Module"
 #define MODULE_PLUGIN_AUTHOR "Philip 'Lightningblade'"
 #define MODULE_PLUGIN_DESCRIPTION "Changes the field of view of the client"
-#define MODULE_PLUGIN_WEBSITE "https://ptl-clan.de"
+#define MODULE_PLUGIN_WEBSITE "https://gitlab.com/PushTheLimits/Sourcemod/MagicDice"
 
 #include ../include/magicdice
 
