@@ -17,5 +17,8 @@
 # Checklist
 * [ ] Create the `md_<modulename>` as copy from `md_example.sp`.
 * [ ] Create new translations files (in `resources/addons/sourcemod/translations`).
+* [ ] develop the module
 * [ ] Add the new module to the example [results config](resources/cfg/magicdice/results.cfg).
-* [ ] Add any may required resources to the [resources](resources) folder.
+* [ ] Add any may required resources to the [modules resources](magicdice/resources) folder.
+* [ ] Test if everythig is working fine, maybe test with some other players together.
+* [ ] Remove WIP status from the merge request, so it can be reviewed and merged.
