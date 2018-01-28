@@ -51,7 +51,13 @@ build:modules:
         name: "${CI_PROJECT_NAME}_modules_${CI_COMMIT_REF_NAME}"
         paths:
         - package/*
-        
+ 
+build:scripts:
+    stage: build
+    image: sklemmer/gitlab-shellcheck
+    script:
+    - shellcheck script/updater.sh
+    
 compress-fdl:
     stage: compress-fdl
     image: alpine:latest
