@@ -10,6 +10,8 @@ This plugin offers:
 * Modern API usage and style: We tried to just use the new stuff.
 * Full translation support. We some kind of force an developer to create at least one translation.
 
+# Getting started
+If you want to install MagicDice on your server, [please have a look at our wiki](https://gitlab.com/PushTheLimits/Sourcemod/MagicDice/wikis/home)
 # Developers
 For developing we recommand to use [SPEdit](https://github.com/JulienKluge/Spedit).
 
