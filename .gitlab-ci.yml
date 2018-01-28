@@ -80,15 +80,21 @@ test:source:
     stage: test
     image: debian
     before_script:
+    - DEBIAN_RELEASE=`cat /etc/*-release 2> /dev/null | grep PRETTY_NAME | awk -F "=" {'print $2'} | awk -F "(" {'print $2'} | awk -F ")" {'print $1'}`
+    - echo "# deb http://http.debian.net/debian $DEBIAN_RELEASE main" > /etc/apt/sources.list
+    - echo "" >> /etc/apt/sources.list
+    - echo "deb http://http.debian.net/debian $DEBIAN_RELEASE main contrib non-free" >> /etc/apt/sources.list
+    - echo "deb-src http://http.debian.net/debian $DEBIAN_RELEASE main contrib non-free" >> /etc/apt/sources.list
+    - echo "" >> /etc/apt/sources.list
+    - echo "deb http://security.debian.org/ $DEBIAN_RELEASE/updates main contrib non-free" >> /etc/apt/sources.list
+    - echo "deb-src http://security.debian.org/ $DEBIAN_RELEASE/updates main contrib non-free" >> /etc/apt/sources.list
+    - echo "" >> /etc/apt/sources.list
+    - echo "# $DEBIAN_RELEASE-updates, previously known as "volatile"" >> /etc/apt/sources.list
+    - echo "deb http://http.debian.net/debian $DEBIAN_RELEASE-updates main contrib non-free" >> /etc/apt/sources.list
+    - echo "deb-src http://http.debian.net/debian $DEBIAN_RELEASE-updates main contrib non-free" >> /etc/apt/sources.list
     - apt-get update
-    - apt-get install -y lib32gcc1 wget unzip curl
-    - curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxvf -
-    - mkdir ~/.steam
-    - ln -s ./linux32 ~/.steam/sdk32
-    - ls -all /root/.steam/sdk32/
-    - ls -all /root/.steam/sdk32/steamclient.so
-    - ll /root/.steam/sdk32/steamclient.so
-    - ./steamcmd.sh +login anonymous +force_install_dir test_gameserver +app_update 232330 +quit
+    - apt-get install -y lib32gcc1 wget unzip curl steamcmd
+    - teamcmd +login anonymous +force_install_dir test_gameserver +app_update 232330 +quit
     - cd test_gameserver
     - ls -all /root/.steam/sdk32
     - ./srcds_run -game cstrike -ip 127.0.0.1 -port 27015 -maxplayers 2 +sv_lan 1 +map de_dust2 +log on + &
