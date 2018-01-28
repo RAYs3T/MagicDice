@@ -2,6 +2,7 @@ image: rays3t/sourcemod-plugins-builder-ci
 stages:
   - build
   - compress-fdl
+  - test
 build:core:
     stage: build
     variables:
@@ -75,3 +76,13 @@ compress-fdl:
         paths:
         - fastdl/*
         
+test:source:
+    stage: test
+    image: debian
+    before_script:
+    - apt-get update
+    - apt-get install steamcmd
+    - steamcmd +login anonymous +force_install_dir test_gameserver +app_update 232330 +quit
+    
+    script:
+    - ls -all test_gameserver/
