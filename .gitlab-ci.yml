@@ -85,6 +85,7 @@ test:source:
     - curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxvf -
     - mkdir ~/.steam
     - ln -s ./linux32 ~/.steam/sdk32
+    - ls -all /root/.steam/sdk32/
     - ls -all /root/.steam/sdk32/steamclient.so
     - ll /root/.steam/sdk32/steamclient.so
     - ./steamcmd.sh +login anonymous +force_install_dir test_gameserver +app_update 232330 +quit
