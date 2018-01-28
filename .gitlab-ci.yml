@@ -56,7 +56,7 @@ build:scripts:
     stage: build
     image: sklemmer/gitlab-shellcheck
     script:
-    - shellcheck script/updater.sh
+    - shellcheck scripts/updater.sh
     
 compress-fdl:
     stage: compress-fdl
