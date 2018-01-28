@@ -1,4 +1,7 @@
 image: rays3t/sourcemod-plugins-builder-ci
+stages:
+  - build
+  - compress-fdl
 build:core:
     stage: build
     variables:
@@ -48,4 +51,21 @@ build:modules:
         name: "${CI_PROJECT_NAME}_modules_${CI_COMMIT_REF_NAME}"
         paths:
         - package/*
+        
+compress-fdl:
+    stage: compress-fdl
+    image: alpine:latest
+    before_script:
+    - apk update
+    - apk add bzip2
+    script:
+    - mkdir fastdl
+    - mkdir -p fastdl/sound
+    - cp -r magicdice/resources/sound/* fastdl/sound/
+    - for f in $(find fastdl -name '*.md'); do rm -rf "$f"; done
+    - for f in $(find fastdl -name '*.*'); do bzip2 -v -z "$f"; done
+    artifacts:
+        name: "${CI_PROJECT_NAME}_fastdl_${CI_COMMIT_REF_NAME}"
+        paths:
+        - fastdl/*
         
