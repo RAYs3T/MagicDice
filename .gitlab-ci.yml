@@ -83,7 +83,7 @@ test:source:
     - apt-get update
     - apt-get install -y lib32gcc1 wget unzip curl
     - curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxvf -
-    - ~/Steam/steamcmd.sh +login anonymous +force_install_dir test_gameserver +app_update 232330 +quit
+    - ./steamcmd.sh +login anonymous +force_install_dir test_gameserver +app_update 232330 +quit
     
     script:
     - ls -all test_gameserver/
