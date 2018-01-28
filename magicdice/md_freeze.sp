@@ -29,7 +29,7 @@
 #define MODULE_PLUGIN_NAME "MagicDice - Freeze"
 #define MODULE_PLUGIN_AUTHOR "Lightningblade 'Philip'"
 #define MODULE_PLUGIN_DESCRIPTION "Module to cause a freezelike effect"
-#define MODULE_PLUGIN_WEBSITE "https://ptl-clan.de"
+#define MODULE_PLUGIN_WEBSITE "https://gitlab.com/PushTheLimits/Sourcemod/MagicDice"
 
 #include ../include/magicdice
 #include ../include/autoexecconfig

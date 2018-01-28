@@ -29,7 +29,7 @@
 #define MODULE_PLUGIN_NAME "MagicDice - ScreenOverlay Module"
 #define MODULE_PLUGIN_AUTHOR "Kevin 'RAYs3T' Urbainczyk"
 #define MODULE_PLUGIN_DESCRIPTION "Sets a special overlay like the player took drugs or alc"
-#define MODULE_PLUGIN_WEBSITE "https://ptl-clan.de"
+#define MODULE_PLUGIN_WEBSITE "https://gitlab.com/PushTheLimits/Sourcemod/MagicDice"
 
 #include ../include/magicdice
 

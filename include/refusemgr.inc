@@ -7,7 +7,7 @@
 #                                                                                 #
 # This file is part of the RefuseMgr-Plugin.                                      #
 # Written by Kevin 'RAYs3T' Urbainczyk <kevin@rays3t.info>                        #
-# Homepage: https://ptl-clan.de                                                   #
+# Homepage: https://gitlab.com/PushTheLimits/Sourcemod/MagicDice                                                   #
 ###################################################################################
 */
 

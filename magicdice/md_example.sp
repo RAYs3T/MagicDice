@@ -25,17 +25,22 @@
 #pragma newdecls required
 
 // Plugin info
+// The version number should not be hard coded
+// We using GitLabs runner for CI / tag generation,
+// so the version number is defined by the tag/commit name
+// This way we ensure that we always know what code (version) is responsible any problems
 #define MODULE_PLUGIN_VERSION "${-version-}" // Version is replaced by the GitLab-Runner compile script
-#define MODULE_PLUGIN_NAME "MagicDice - Example Module"
-#define MODULE_PLUGIN_AUTHOR "Kevin 'RAYs3T' Urbainczyk"
-#define MODULE_PLUGIN_DESCRIPTION "The Example module as reference"
-#define MODULE_PLUGIN_WEBSITE "https://ptl-clan.de"
+#define MODULE_PLUGIN_NAME "MagicDice - Example Module" // Replace that with your modules name
+#define MODULE_PLUGIN_AUTHOR "Kevin 'RAYs3T' Urbainczyk" // Write down your name :)
+#define MODULE_PLUGIN_DESCRIPTION "The Example module as reference" // Describe your modules function
+#define MODULE_PLUGIN_WEBSITE "https://gitlab.com/PushTheLimits/Sourcemod/MagicDice" // Should be the MagicDice website
 
+// Our libary for modules. This is what makes it a MagicDice module. 
 #include ../include/magicdice
 
 
 
-
+// Please always use constant defines for the plugin info (see above)
 public Plugin myinfo =
 {
 	name = MODULE_PLUGIN_NAME,
@@ -54,7 +59,7 @@ public void OnPluginStart()
 
 public void OnAllPluginsLoaded()
 {
-	// Registers the module at the master plugin
+	// Registers the module at the master/core plugin
 	MDRegisterModule();
 }
 
@@ -77,6 +82,19 @@ public DiceStatus Diced(int client, char diceText[255], char[] param1, char[] pa
 {
 	MDAddAllowedDices(client, 2); // Allow the player to roll two more times!
 	
+	// IMPLEMENT YOUR FEATURE HERE
+	// This method tells your plugin that a player (client) diced your feature.
+	// Feel free to extract code to multiple methods.
+	// You can program nearly everything you can do in normal plugins.
+	// But you should make sure that all things are resettet at the end/start of the round,
+	// since this is a dice module.
+	// You also should program it stackable (so if a user dices this twice a round)
+	
+	
+	// This is the message the client reveives if he dice this feature.
+	// The string is a reference that later is parsed by the core plugin
+	// Feel free to answer with different texts, depending on the result.
+	// Each module has its own translation files
 	Format(diceText, sizeof(diceText), "%t", "diced");
 	
 	// This tells the core that the dice result has been processed without errors

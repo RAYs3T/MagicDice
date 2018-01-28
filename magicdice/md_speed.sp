@@ -29,7 +29,7 @@
 #define MODULE_PLUGIN_NAME "MagicDice - Speed"
 #define MODULE_PLUGIN_AUTHOR "Kevin 'RAYs3T' Urbainczyk"
 #define MODULE_PLUGIN_DESCRIPTION "Increases / Decreases the players speed"
-#define MODULE_PLUGIN_WEBSITE "https://ptl-clan.de"
+#define MODULE_PLUGIN_WEBSITE "https://gitlab.com/PushTheLimits/Sourcemod/MagicDice"
 
 #include ../include/magicdice
 

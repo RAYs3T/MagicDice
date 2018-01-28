@@ -29,7 +29,7 @@
 #define MODULE_PLUGIN_NAME "MagicDice - Colors"
 #define MODULE_PLUGIN_AUTHOR "Philip aka Lightningblade"
 #define MODULE_PLUGIN_DESCRIPTION "Colorizes the playermodel"
-#define MODULE_PLUGIN_WEBSITE "https://ptl-clan.de"
+#define MODULE_PLUGIN_WEBSITE "https://gitlab.com/PushTheLimits/Sourcemod/MagicDice"
 
 #include ../include/magicdice
 
