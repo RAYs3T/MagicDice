@@ -81,4 +81,5 @@ test:source:
     image: registry.gitlab.com/rays3t/sourcemod-integration-test-source:latest
     script:
     - cd ~/server
+    - free
     - ./srcds_run -game cstrike -ip 127.0.0.1 -port 27015 -insecure -maxplayers 2 +sv_lan 1 +map de_dust2 +log on
