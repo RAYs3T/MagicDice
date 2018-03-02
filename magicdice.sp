@@ -49,6 +49,7 @@ static ConVar g_cvar_allowDiceTeamT;
 static ConVar g_cvar_allowDiceTeamCT;
 static ConVar g_keepEmptyTeamDices;
 static ConVar g_serverId;
+static ConVar g_punishReconnectedPlayers;
 
 // Plugin prefixes used by console and chat outputs
 public char MD_PREFIX[12] = "[MagicDice]";
@@ -57,6 +58,7 @@ public char MD_PREFIX_COLORED[64] = "{white}[{cyan}MagicDice{white}]";
 // Array size definitions
 #define MAX_MODULES 6 //
 #define MODULE_PARAMETER_SIZE 128
+#define DISCONNECTED_SID_BUFFER 64 // Size of the buffer for disconnected players
 
 enum ModuleField // Helper enum for array access
 {
@@ -82,6 +84,12 @@ static int g_allowedDices[MAXPLAYERS + 1];
 
 // A switch to block general dices while the game / round is ending
 static bool g_cannotDice = true;
+
+
+// Array of steamIDs for players who have left the server in the active round
+static ArrayList g_disconnectedSIDs;
+
+
 
 
 // Core components include
@@ -124,6 +132,8 @@ void PrepareAndLoadConfig()
 	
 	g_serverId = 				AutoExecConfig_CreateConVar("sm_md_server_id", "-1", "ID of the Server for logging");
 	
+	g_punishReconnectedPlayers = AutoExecConfig_CreateConVar("sm_md_punish_reconnected_players", "1", "Punish a player who just reconnected");
+	
 	LoadTranslations("magicdice.phrases");
 	
 	AutoExecConfig_ExecuteFile();
@@ -133,12 +143,15 @@ void PrepareAndLoadConfig()
 public void OnPluginStart()
 {
 	g_modulesArray = CreateArray(128);
+	g_disconnectedSIDs = CreateArray(18, 16);
+	
 	RegAdminCmd("mdtest", OnDiceCommandFocedValue, ADMFLAG_CHEATS, "Test command for the dice. Rolls the dice result with the given number");
 	RegAdminCmd("md_reconfigure", OnReconfigureCommand, ADMFLAG_CONFIG, "Reloads and reconfigures the result configurations");
 	
 	
 	HookEvent("round_start", Event_RoundStart, EventHookMode_Post);
 	HookEvent("round_end", Event_RoundEnd, EventHookMode_Post);
+	HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Post);
 	
 	PrepareAndLoadConfig();
 	
@@ -146,6 +159,15 @@ public void OnPluginStart()
 	PrintToServer("%s Plugin start", MD_PREFIX);
 	
 	//InitializeDatabase();
+}
+
+static void ResetDisconnectedSIDs() 
+{
+	int items = GetArraySize(g_disconnectedSIDs);
+	char[] empty = "";
+	for (int i = 0; i < items; i++){
+		SetArrayString(g_disconnectedSIDs, i, empty);
+	} 
 }
 
 
@@ -190,6 +212,7 @@ static void UnloadModules()
 public Action Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
 	ResetDiceCounters();
+	ResetDisconnectedSIDs();
 	g_cannotDice = false;
 }
 
@@ -205,6 +228,43 @@ public void OnClientAuthorized(int client, const char[] auth)
 	// However an other client could connect and get the same index as the client before
 	// so we need to clean counters and other fields
 	ResetDiceCounter(client);
+}
+
+public void OnClientDisconnect(int client)
+{
+	if(GetConVarBool(g_punishReconnectedPlayers) && g_dices[client] > 0) {
+		// The client may reconnect to avoid the dice result he rolled.
+		// So we log his steamID, so we can detect if he is a cheater
+		char authBuffer[18];
+		GetClientAuthId(client, AuthId_SteamID64, authBuffer, sizeof(authBuffer));
+		int index = PushArrayString(g_disconnectedSIDs, authBuffer);
+		LogMessage("Added SID %s to disconnect log with index: %i!", authBuffer, index);
+	}
+	
+}
+
+public Action Event_PlayerSpawn(Handle event, const char[] name, bool dontBroadcast)
+{
+	if(GetConVarBool(g_punishReconnectedPlayers)) {
+		// Check if the player is a high-after-retry cheater guy ...
+		int clientId = GetEventInt(event, "userid");
+		if (clientId == 0) return Plugin_Continue;
+		int client = GetClientOfUserId(clientId);
+		if (client == 0) return Plugin_Continue;
+		char authBuffer[18];
+		GetClientAuthId(client, AuthId_SteamID64, authBuffer, sizeof(authBuffer));
+		
+		int resultIndex = FindStringInArray(g_disconnectedSIDs, authBuffer);
+		
+		if(resultIndex == -1) {
+			// Not found in array
+			return Plugin_Continue; 
+		}
+		
+		// Player has reconnected
+		LogMessage("Player %s has reconnected with active dice result!", authBuffer);		
+	}
+	return Plugin_Continue;
 }
 
 public Action OnClientSayCommand(int client, const char[] command, const char[] sArgs)
