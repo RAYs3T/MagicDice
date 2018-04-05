@@ -52,6 +52,14 @@ public void OnPluginStart()
 
 public void OnAllPluginsLoaded()
 {
+	// Check if the required plugin is loaded
+	if(!LibraryExists("cssthrowingknives")) 
+	{
+		LogError("Unable to load md_throwingknives! The required libary plugin cssthrowingknives is not loaded.\
+			Please download and install the plugin from: https://forums.alliedmods.net/showthread.php?p=1160952");
+		SetFailState("Required plugin cssthrowingknives is not loaded!");
+		return; // Do not register the module at the core since our dependency plugin is not loaded.
+	}
 	MDRegisterModule();
 }
 
