@@ -88,6 +88,9 @@ public DiceStatus Diced(int client, char diceText[255], char[] p_weaponId, char[
 	// Give the player the requested amount of weapons
 	for (int i = 0; i < amount; i++) {
 		int weaponIndex = GiveItem(client, p_weaponId);
+		if(weaponIndex == -1) {
+			return DiceStatus_Failed;
+		}
 		// Set ammo
 		// To find weaponId in m_iAmmo array we should add multiplied m_iPrimaryAmmoType datamap offset by 4 onto m_iAmmo player array, meh
 		int weaponId = GetEntData(weaponIndex, m_iPrimaryAmmoType) * 4;
@@ -129,5 +132,10 @@ public DiceStatus Diced(int client, char diceText[255], char[] p_weaponId, char[
 int GiveItem(int client, char[] weaponId)
 {
 	int entryIndex = GivePlayerItem(client, weaponId);
+	if(entryIndex == -1) {
+		// Unable to equip weapon
+		// See: https://sm.alliedmods.net/new-api/sdktools_functions/GivePlayerItem
+		LogError("Unable to equip player (%i) with weapon %s", client, weaponId);
+	}
 	return entryIndex;
 }
