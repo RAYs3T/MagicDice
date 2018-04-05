@@ -59,7 +59,11 @@ public void OnPluginStart()
 
 public void OnAllPluginsLoaded()
 {
-	// Registers the module at the master/core plugin
+    // Do all required dependency checks here
+    // Ensure the plugin is able to run properly
+    // If not, abort registration at core
+    
+	// Registers the module at the master/core plugin if all checks have passed
 	MDRegisterModule();
 }
 
