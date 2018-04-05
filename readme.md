@@ -8,12 +8,12 @@ This plugin offers:
 * Modular plugin support. You can super easy develop your own extensions and just load them. The core plugin offers a great API.
 * ErrorSafe: If one module encounters an error, the core will detect this and just continue to work. The player will even get a new turn.
 * Modern API usage and style: We tried to just use the new stuff.
-* Full translation support. We some kind of force an developer to create at least one translation.
+* Full translation support. We some kind of force a developer to create at least one translation for each plugin.
 
 # Getting started
 If you want to install MagicDice on your server, [please have a look at our wiki](https://gitlab.com/PushTheLimits/Sourcemod/MagicDice/wikis/home)
 # Developers
-For developing we recommand to use [SPEdit](https://github.com/JulienKluge/Spedit).
+For developing we recommend to use [SPEdit](https://github.com/JulienKluge/Spedit) as IDE.
 
 ## Contribution
 If you want to contribute, please create a [merge request](https://gitlab.com/PushTheLimits/Sourcemod/MagicDice/merge_requests)
