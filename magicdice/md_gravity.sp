@@ -34,7 +34,9 @@
 #include ../include/magicdice
 #include <sdktools>
 
+float currentPlayerGravity[MAXPLAYERS + 1] = {-1.0, ...};
 
+Handle g_enforceGravityTimer;
 
 public Plugin myinfo =
 {
@@ -48,6 +50,7 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	MDOnPluginStart();
+	HookEvent("round_start", Event_RoundStart, EventHookMode_Post);
 	HookEvent("round_end", Event_RoundEnd, EventHookMode_Post);
 }
 
@@ -64,13 +67,7 @@ public void OnPluginEnd()
 
 public DiceStatus Diced(int client, char diceText[255], char[] mode, char[] gravityParam, char[] param3, char[] param4, char[] param5)
 {
-	
 	float gravityInput = MDParseParamFloat(gravityParam);
-	
-	float currentGravity = GetGravity(client);
-	//TODO remove the line below and find solution for the line above, maybe https://sm.alliedmods.net/new-api/entity_prop_stocks/GetEntityGravity ??
-	currentGravity = 1.0;
-	
 	if(strcmp(mode, "set") == 0) 
 	{
 		SetGravity(client, gravityInput);
@@ -78,7 +75,7 @@ public DiceStatus Diced(int client, char diceText[255], char[] mode, char[] grav
 	} 
 	else if(strcmp(mode, "mult") == 0)
 	{
-		float newGravity = (currentGravity * gravityInput);
+		float newGravity = (gravityInput);
 		SetGravity(client, newGravity);
 		Format(diceText, sizeof(diceText), "%t", "gravity_mult", gravityInput * 100 , newGravity * 100);
 	}
@@ -90,24 +87,61 @@ public DiceStatus Diced(int client, char diceText[255], char[] mode, char[] grav
 	return DiceStatus_Success;
 }
 
-public Action Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast)
+public Action Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
-	for (int i = 0; i < MAXPLAYERS; i++)
-	{
-		if(!IsValidClient(i))
-		{
-			continue; // Skip invalid clients
-		}
-		SetEntityGravity(i, 1.0);
-	}
+	g_enforceGravityTimer = CreateTimer(0.1, Timer_EnforceGravityOnAllPlayers, _, TIMER_REPEAT);
 }
 
-static float GetGravity(int client)
+public Action Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast)
 {
-	return GetEntityGravity(client);
+	if(g_enforceGravityTimer != INVALID_HANDLE)
+	{
+		KillTimer(g_enforceGravityTimer);
+	}	
+	ResetAllPlayersGravity();
 }
 
 static void SetGravity(int client, float newGravity)
 {
+	if (newGravity == 1.0)
+	{
+		currentPlayerGravity[client] = -1.0;
+	} else {
+		currentPlayerGravity[client] = newGravity;
+	}
+	if(IsValidClient(client) && IsPlayerAlive(client))
+	{
+		SetGravityInternal(client, newGravity);
+	}
+}
+
+static void SetGravityInternal(int client, float newGravity)
+{
 	SetEntityGravity(client, newGravity);
+}
+
+
+static void ResetAllPlayersGravity()
+{
+	// Reset the gravity of each player.
+	// Since we don't want to force gravity on players not affected by any gravity change
+	// We set the default "non-value" to -1
+	for (int i = 0; i < MAXPLAYERS + 1; i++)
+	{
+		SetGravity(i, -1.0);
+	}
+}
+
+public Action Timer_EnforceGravityOnAllPlayers(Handle timer)
+{
+	for (int i = 0; i < MAXPLAYERS + 1; i++)
+	{
+		if(currentPlayerGravity[i] != -1.0) // Is the gravity for that player modified?
+		{
+			if(IsValidClient(i) && IsPlayerAlive(i))
+			{
+				SetGravityInternal(i, currentPlayerGravity[i]);
+			}
+		}
+	}
 }
