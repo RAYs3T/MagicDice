@@ -128,7 +128,7 @@ static void ResetAllPlayersGravity()
 	// We set the default "non-value" to -1
 	for (int i = 0; i < MAXPLAYERS + 1; i++)
 	{
-		SetGravity(i, -1.0);
+		SetGravity(i, 1.0);
 	}
 }
 
