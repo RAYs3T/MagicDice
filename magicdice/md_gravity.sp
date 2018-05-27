@@ -36,7 +36,7 @@
 
 float currentPlayerGravity[MAXPLAYERS + 1] = {-1.0, ...};
 
-Handle g_enforceGravityTimer;
+Handle g_enforceGravityTimer = INVALID_HANDLE;
 
 public Plugin myinfo =
 {
@@ -89,6 +89,7 @@ public DiceStatus Diced(int client, char diceText[255], char[] mode, char[] grav
 
 public Action Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
+	ResetAllPlayersGravity();
 	g_enforceGravityTimer = CreateTimer(0.1, Timer_EnforceGravityOnAllPlayers, _, TIMER_REPEAT);
 }
 
@@ -97,6 +98,7 @@ public Action Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast
 	if(g_enforceGravityTimer != INVALID_HANDLE)
 	{
 		KillTimer(g_enforceGravityTimer);
+		g_enforceGravityTimer = INVALID_HANDLE;
 	}	
 	ResetAllPlayersGravity();
 }
