@@ -191,6 +191,9 @@ public Action Event_RoundStart(Handle event, const char[] name, bool dontBroadca
 {
 	ResetDiceCounters();
 	g_cannotDice = false;
+	
+	// Some self-ads
+	CreateTimer(6.0, Timer_PrintContributionMessage, _);
 }
 
 public Action Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast)
@@ -622,4 +625,35 @@ static bool hasModules()
 static bool IsSingleTeamEmpty()
 {
 	return GetTeamClientCount(CS_TEAM_CT) == 0 || GetTeamClientCount(CS_TEAM_T) == 0;
+}
+
+public Action Timer_PrintContributionMessage(Handle timer, any data)
+{
+	PrintContributionMessageToAll();
+}
+
+public void PrintContributionMessageToAll()
+{
+	for (int i = 0; i < MAXPLAYERS + 1; i++) {
+		if(i <= 0 || i > MaxClients || !IsClientConnected(i))
+		{
+			continue;
+		}
+		PrintToConsole(i, "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
+		PrintToConsole(i, "~                                 __                      ~");
+		PrintToConsole(i, "~              )\\/) _   _   *  _  ) ) *  _  _             ~");
+		PrintToConsole(i, "~             (  ( (_( (_(  ( (_ /_/  ( (_ )_)            ~");
+		PrintToConsole(i, "~                        _)               (_              ~");
+		PrintToConsole(i, "~           MagicDice is completely open-source!          ~");
+		PrintToConsole(i, "~                         - - -                           ~");
+		PrintToConsole(i, "~   Any new ideas for features or results are more then   ~");
+		PrintToConsole(i, "~   welcome! Or even better If you're an developer /      ~");
+		PrintToConsole(i, "~   scripter for sourcemod, you can contribute your       ~");
+		PrintToConsole(i, "~   own modules to the plugin.                            ~");
+		PrintToConsole(i, "~                         - - -                           ~");
+		PrintToConsole(i, "~   Have a look at our Codebase, located on GitLab:       ~");
+		PrintToConsole(i, "~   https://gitlab.com/PushTheLimits/Sourcemod/MagicDice  ~");
+		PrintToConsole(i, "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
+		
+	}
 }
