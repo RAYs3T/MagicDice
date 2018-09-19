@@ -24,7 +24,7 @@
 */
 
 // Includes
-#include <morecolors>
+#include <multicolors>
 #include <autoexecconfig>
 #include <cstrike>
 #include <sdktools>
@@ -52,7 +52,6 @@ static ConVar g_serverId;
 
 // Plugin prefixes used by console and chat outputs
 public char MD_PREFIX[12] = "[MagicDice]";
-public char MD_PREFIX_COLORED[64] = "{white}[{cyan}MagicDice{white}]";
 
 // Array size definitions
 #define MAX_MODULES 6 //
@@ -132,6 +131,8 @@ void PrepareAndLoadConfig()
 
 public void OnPluginStart()
 {
+	
+	CSetPrefix("{blue}[{lightblue}MagicDice{blue}] ");
 	g_modulesArray = CreateArray(128);
 	RegAdminCmd("mdtest", OnDiceCommandFocedValue, ADMFLAG_CHEATS, "Test command for the dice. Rolls the dice result with the given number");
 	RegAdminCmd("md_reconfigure", OnReconfigureCommand, ADMFLAG_CONFIG, "Reloads and reconfigures the result configurations");
@@ -269,7 +270,7 @@ public int Native_MDPublishDiceResult(Handle plugin, int params)
 #if defined DEBUG
 	PrintToServer("%s %s rolled %s", MD_PREFIX, clientName, diceText);
 #endif
-	CPrintToChat(client, "{lightgreen}%s {default}({grey}%i{default}) {mediumvioletred}%s", MD_PREFIX_COLORED, dicedResultNumber, diceText);
+	CPrintToChat(client, "({grey}%i{default}) {darkred}%s", dicedResultNumber, diceText);
 }
 
 // Adds additionals dices for a user
@@ -287,12 +288,12 @@ public Action OnDiceCommand(int client)
 	if(!hasModules())
 	{
 		PrintToServer("%s No modules available! You should load at least one module.", MD_PREFIX);	
-		CPrintToChat(client, "{lightgreen}%s {default}%t", MD_PREFIX_COLORED, "no_modules_registered");
+		CPrintToChat(client, "%t", "no_modules_registered");
 		return Plugin_Continue;
 	}
 	
 	if(!CanPlayerDiceInTeam(client)){
-		CPrintToChat(client, "{lightgreen}%s {orange}%t", MD_PREFIX_COLORED, "dice_not_allowed_for_your_team");
+		CPrintToChat(client, "{orange}%t", "dice_not_allowed_for_your_team");
 		return Plugin_Handled;
 	}
 	if(!CanPlayerDice(client)){
@@ -306,7 +307,7 @@ public Action OnDiceCommand(int client)
 	
 	if(GetConVarBool(g_keepEmptyTeamDices) == true && IsSingleTeamEmpty()) 
 	{
-		CPrintToChat(client, "%s %t", MD_PREFIX_COLORED, "dices_are_keept_empty_team");
+		CPrintToChat(client, "%t", "dices_are_keept_empty_team");
 	}
 	else
 	{
@@ -319,7 +320,7 @@ public Action OnDiceCommand(int client)
 public Action OnDiceCommandFocedValue(int client, int params)
 {
 	if(params != 1) {
-		CPrintToChat(client, "{lightgreen}%s %t", MD_PREFIX_COLORED, "missing_fixed_result_test_parameter");
+		CPrintToChat(client, "%t", "missing_fixed_result_test_parameter");
 		return Plugin_Handled;
 	}
 	char buffer[255];
@@ -327,11 +328,11 @@ public Action OnDiceCommandFocedValue(int client, int params)
 	int index = StringToInt(buffer);
 	
 	if(index > sizeof(g_probabillities) || g_probabillities[index] == 0){
-		CPrintToChat(client, "{lightgreen}%s %t", MD_PREFIX_COLORED, "not_found_fixed_result", index);
+		CPrintToChat(client, "%t", "not_found_fixed_result", index);
 		return Plugin_Handled;
 	}
 	
-	CPrintToChat(client, "%s %t", MD_PREFIX_COLORED, "using_fixed_dice_result", index);
+	CPrintToChat(client, "%t", "using_fixed_dice_result", index);
 	PickResult(client, index);
 	return Plugin_Handled;
 }
@@ -392,7 +393,7 @@ static void PickResult(int client, int forcedResult = -1)
 		if(!hasResults)
 		{
 			// No results for the clients team
-			CPrintToChat(client, "%s %t", MD_PREFIX_COLORED, "no_dice_results_for_your_team");
+			CPrintToChat(client, "%t", "no_dice_results_for_your_team");
 			return;
 		}
 		
@@ -426,7 +427,7 @@ static void PickResult(int client, int forcedResult = -1)
 			if(!success)
 			{
 				LogError("%s Unable to process with result module: %s", MD_PREFIX, g_results[selectedIndex][i][ModuleField_ModuleName]);
-				CPrintToChat(client, "%s %t", MD_PREFIX_COLORED, "dice_module_error");
+				CPrintToChat(client, "%t", "dice_module_error");
 			}
 			
 			moduleNames[moduleCount] = g_results[selectedIndex][i][ModuleField_ModuleName];
@@ -572,17 +573,17 @@ static bool CanPlayerDiceInTeam(int client)
 static bool CanPlayerDice(int client)
 {
 	if(!IsClientInGame(client) || !IsPlayerAlive(client)) {
-		CPrintToChat(client, "%s {red}%t", MD_PREFIX_COLORED, "dice_not_possible_when_dead");
+		CPrintToChat(client, "{red}%t", "dice_not_possible_when_dead");
 		return false;
 	}
 	
 	if(g_cannotDice) {
-		CPrintToChat(client, "%s {red}%t", MD_PREFIX_COLORED, "dice_not_possible_in_this_game_phase");
+		CPrintToChat(client, "{red}%t", "dice_not_possible_in_this_game_phase");
 		return false;
 	}
 	
 	if(g_dices[client] >= g_allowedDices[client]) {
-		CPrintToChat(client, "{lightgreen}%s %t", MD_PREFIX_COLORED, "all_dices_are_gone", g_allowedDices[client]);
+		CPrintToChat(client, "%t", "all_dices_are_gone", g_allowedDices[client]);
 		return false;
 	}
 	return true;

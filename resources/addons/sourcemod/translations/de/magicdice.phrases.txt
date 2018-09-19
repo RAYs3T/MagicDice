@@ -15,7 +15,7 @@
 	"all_dices_are_gone"
 	{
 		"#format"	"{1:i}"
-		"de"		"{orange}Du hast keine Würfel mehr über! ({blue}{1}{orange}) - {pink}Versuch es nächste Runde erneut"
+		"de"		"{orange}Du hast keine Würfel mehr über! ({blue}{1}{orange}) - {lime}Versuch es nächste Runde erneut"
 	}
 	"missing_fixed_result_test_parameter"
 	{

@@ -15,7 +15,7 @@
 	"all_dices_are_gone"
 	{
 		"#format"	"{1:i}"
-		"en"		"{orange}All your dices are gone! ({blue}{1}{orange}) - {pink}try again in the next round!"
+		"en"		"{orange}All your dices are gone! ({blue}{1}{orange}) - {lime}try again in the next round!"
 	}
 	"missing_fixed_result_test_parameter"
 	{
